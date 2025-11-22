@@ -1,0 +1,128 @@
+.page{
+  max-width:360px;
+  margin:0 auto;
+  padding:6px;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  font-size:14px;
+  background:#ffffff;
+  margin:0;
+}
+
+h2,
+h3{
+  color:#cc0000;
+  border-bottom:1px solid #cc0000;
+  padding-bottom:3px;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+form{
+  margin-bottom:12px;
+}
+
+input[type="text"],
+input[name="from"],
+input[name="to"]{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #000;
+  padding:4px;
+}
+
+button,
+.btn{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  padding:8px;
+  font-size:14px;
+  line-height:1.2;
+  margin:0 0 8px 0;
+  border:1px solid #444;
+  background:#eeeeee;
+  text-align:center;
+  text-decoration:none;
+  color:#000000;
+  cursor:pointer;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.btn-primary{
+  background:#cc0000;
+  color:#ffffff;
+  border-color:#cc0000;
+}
+
+.btn-secondary{
+  background:#f2f2f2;
+}
+
+.btn-danger{
+  background:#ffffff;
+  border-color:#cc0000;
+  color:#cc0000;
+}
+
+.fav{
+  padding:3px 0;
+}
+
+.fav a{
+  text-decoration:none;
+  color:#0000cc;
+}
+
+.journey{
+  border:1px solid #cc0000;
+  padding:5px;
+  margin-bottom:10px;
+}
+
+.departure {
+  padding: 4px 6px;
+  margin: 6px 0;
+  border-left: 4px solid #888;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.departure-long-distance {
+  background: #fff0f0;
+  border-left-color: #d00000;
+}
+
+.departure-regional {
+  background: #fff7e6;
+  border-left-color: #ff9500;
+}
+
+.departure-sbahn {
+  background: #e9f8ef;
+  border-left-color: #1fa54a;
+}
+
+.departure-ubahn {
+  background: #e9f1ff;
+  border-left-color: #004f9f;
+}
+
+.departure-tram {
+  background: #f6ecff;
+  border-left-color: #9b3bff;
+}
+
+.departure-bus {
+  background: #fffbe6;
+  border-left-color: #e6b800;
+}
+
+.departure-other {
+  background: #f2f2f2;
+  border-left-color: #777;
+}

@@ -1,0 +1,11 @@
+{% extends "layout.njk" %}
+
+{% set style = "journey" %}
+
+{% block title %}Fehler – Abfahrten{% endblock %}
+
+{% block content %}
+  <h2>Fehler</h2>
+  <p>Fehler: {{ message }}</p>
+  <p><a href="/departures">Zurück</a></p>
+{% endblock %}

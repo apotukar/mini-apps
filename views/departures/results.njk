@@ -1,0 +1,35 @@
+{% extends "layout.njk" %}
+
+{% set style = "journey" %}
+
+{% block title %}Abfahrten – {{ stationName }}{% endblock %}
+
+{% block content %}
+  <h2>Abfahrten für {{ stationName }}</h2>
+
+  <a href="/departures?station={{ stationName | urlencode }}">Neue Suche</a><br /><br />
+
+  {% if departures.length %}
+    {% for dep in departures %}
+      {% include "departures/partials/departure.njk" %}
+    {% endfor %}
+
+    <div style="display:flex; justify-content:space-between; margin-top:12px;">
+      {% if earlierIso %}
+        <a href="/departures/search?station={{ stationName | urlencode }}&when={{ earlierIso | urlencode }}">
+          &larr; Frühere Abfahrten
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      {% if laterIso %}
+        <a href="/departures/search?station={{ stationName | urlencode }}&when={{ laterIso | urlencode }}">
+          Spätere Abfahrten &rarr;
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    <p>Keine Abfahrten gefunden.</p>
+  {% endif %}
+{% endblock %}

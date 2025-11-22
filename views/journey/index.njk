@@ -1,0 +1,43 @@
+{% extends "layout.njk" %}
+
+{% set style = "journey" %}
+
+{% block title %}DB Mini{% endblock %}
+
+{% block content %}
+  <h2>DB Mini Fahrplan</h2>
+
+  <form method="POST">
+    Start:<br>
+    <input name="from" value="{{ from }}"><br><br>
+
+    Ziel:<br>
+    <input name="to" value="{{ to }}"><br><br>
+
+    <button type="submit" formaction="/journey/search" class="btn btn-primary">
+      Suchen
+    </button>
+    <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary">
+      ⭐ Favorit speichern
+    </button>
+  </form>
+
+  <h3>Favoriten</h3>
+  {% if favs.length %}
+    {% for fav in favs %}
+      {% include "journey/partials/favorite.njk" %}
+    {% endfor %}
+  {% else %}
+    <i>Keine Favoriten</i>
+  {% endif %}
+
+  <form method="GET" action="/journey/clear-favs">
+    <button type="submit" class="btn btn-danger">
+      ❌ Alle Favoriten löschen
+    </button>
+  </form>
+
+  <p class="hint">
+    Ultra-leichte Version, optimiert für schwache Verbindungen / Opera Mini.
+  </p>
+{% endblock %}

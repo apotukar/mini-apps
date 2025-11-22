@@ -1,0 +1,23 @@
+{% extends "layout.njk" %}
+
+{% set style = "journey" %}
+
+{% block title %}Abfahrten{% endblock %}
+
+{% block content %}
+  <h2>Abfahrten</h2>
+  <form action="/departures/search" method="post">
+    <label for="station">Station / Haltestelle:</label><br/>
+    <input
+      type="text"
+      id="station"
+      name="station"
+      value="{{ station }}"
+      autocomplete="off"/>
+    <br/><br/>
+    <button type="submit">Anzeigen</button>
+  </form>
+  <p class="hint">
+    Ultra-leichte Version, optimiert für schwache Verbindungen / Opera Mini.
+  </p>
+{% endblock %}

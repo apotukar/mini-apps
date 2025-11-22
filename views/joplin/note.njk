@@ -1,0 +1,54 @@
+{% extends "layout.njk" %}
+
+{% set style = "joplin" %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ note.title }}</h1>
+
+{% if note.updated %}
+<p><small>Zuletzt bearbeitet: {{ note.updated | formatDate }}</small></p>
+{% endif %}
+
+<div class="note-toolbar">
+  <button type="button" id="toggle-markdown" class="note-toggle-btn">
+    Markdown anzeigen
+  </button>
+</div>
+
+<div class="note-split md-collapsed" id="noteSplit">
+  <div class="note-pane note-pane-md">
+    <div class="note-pane-header">Markdown</div>
+    <pre class="note-md">{{ note.bodyMarkdown }}</pre>
+  </div>
+
+  <div class="note-pane note-pane-html">
+    <div class="note-pane-header">HTML-Vorschau</div>
+    <div class="note-body">
+      {{ note.bodyHtml | safe }}
+    </div>
+  </div>
+</div>
+
+<p class="back-link"><a href="/joplin">Zurück</a></p>
+
+<script>
+  (function () {
+    var split = document.getElementById('noteSplit');
+    var btn = document.getElementById('toggle-markdown');
+    if (!split || !btn) return;
+    function updateLabel() {
+      var collapsed = split.classList.contains('md-collapsed');
+      btn.textContent = collapsed ? 'Markdown anzeigen' : 'Markdown ausblenden';
+    }
+    btn.addEventListener('click', function () {
+      split.classList.toggle('md-collapsed');
+      updateLabel();
+    });
+    updateLabel();
+  })();
+</script>
+
+{% endblock %}

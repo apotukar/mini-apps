@@ -1,0 +1,15 @@
+{% extends "layout.njk" %}
+
+{% set style = "home" %}
+
+{% block title %}Keine Verbindungen{% endblock %}
+
+{% block content %}
+  <h2>Keine Verbindungen gefunden</h2>
+  {% if fromName and toName %}
+    <p>Für die Strecke {{ fromName }} → {{ toName }} wurden keine Verbindungen gefunden.</p>
+  {% else %}
+    <p>Es wurden keine Verbindungen gefunden.</p>
+  {% endif %}
+  <p><a href="/journey">Zurück</a></p>
+{% endblock %}

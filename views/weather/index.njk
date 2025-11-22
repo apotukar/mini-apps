@@ -1,0 +1,25 @@
+{% extends "layout.njk" %}
+
+{% set style = "weather" %}
+
+{% block title %}Wetter (Ultra-Light){% endblock %}
+
+{% block content %}
+  <h2>Wetter</h2>
+
+  <form action="/weather/search" method="post">
+    <label for="city">Ort:</label><br />
+    <input
+      type="text"
+      id="city"
+      name="city"
+      value="{{ city }}"
+      autocomplete="off"
+    /><br /><br />
+    <button type="submit">Wetter anzeigen</button>
+  </form>
+
+  <p class="hint">
+    Ultra-leichte Version, optimiert für schwache Verbindungen / Opera Mini.
+  </p>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "layout.njk" %}
+
+{% set style = "tasks" %}
+
+{% block title %}Google Tasks{% endblock %}
+
+{% block content %}
+
+{% macro renderTask(task) %}
+  <li>
+    {{ task.title }}
+
+    {% if task.subtasks and task.subtasks.length %}
+      <ul>
+        {% for child in task.subtasks %}
+          {{ renderTask(child) }}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </li>
+{% endmacro %}
+
+<h1>Aufgaben</h1>
+
+{% for list in lists %}
+  <div class="task-list list-{{ loop.index }}">
+    <h2>{{ list.title }}</h2>
+
+    {% if list.tasks.length == 0 %}
+      <p><i>Keine Aufgaben</i></p>
+    {% else %}
+      <ul>
+        {% for t in list.tasks %}
+          {{ renderTask(t) }}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% macro renderTask(task) %}
+  <li>
+    {{ task.title }}
+
+    {% if task.subtasks and task.subtasks.length %}
+      <ul>
+        {% for child in task.subtasks %}
+          {{ renderTask(child) }}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </li>
+{% endmacro %}

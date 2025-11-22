@@ -1,0 +1,106 @@
+{% extends "layout.njk" %}
+
+{% set style = "home" %}
+
+{% block title %}Mini-Apps{% endblock %}
+
+{% block content %}
+
+  <h1>Mini-Apps</h1>
+
+  <ul>
+
+    <li>
+      <a href="/journey">🚆 Bahn-Verbindungen</a><br/>
+      <small>Fahrten suchen, extrem leicht.</small>
+    </li>
+
+    <li>
+      <a href="/departures">🕒 Abfahrten</a><br/>
+      <small>Nächste Abfahrten an einer Station.</small>
+
+      <details>
+        <summary>Favoriten anzeigen/verbergen</summary>
+
+        <ul class="favorites">
+          {% for station in departuresFavorites %}
+            <li>
+              <form action="/departures/search" method="post" style="margin:0;padding:0;">
+                <input type="hidden" name="station" value="{{ station }}">
+                <button type="submit" style="background:none;border:none;padding:0;color:#0033cc;font-size:15px;text-align:left;">
+                  {{ station }}
+                </button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      </details>
+    </li>
+
+    <li>
+      <a href="/weather">☁️ Wetter</a><br/>
+      <small>Aktuelles Wetter und Vorhersage.</small>
+
+      <details>
+        <summary>Favoriten anzeigen/verbergen</summary>
+
+        <ul class="favorites">
+          {% for city in weatherFavorites %}
+            <li>
+              <form action="/weather/search" method="post" style="margin:0;padding:0;">
+                <input type="hidden" name="city" value="{{ city }}">
+                <button type="submit" style="background:none;border:none;padding:0;color:#0033cc;font-size:15px;text-align:left;">
+                  {{ city }}
+                </button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      </details>
+    </li>
+
+    <li>
+      <a href="/tasks">📝 Aufgaben</a><br/>
+      <small>Alle Google-Task-Listen (nur lesend).</small>
+    </li>
+
+    <li>
+      <a href="/news">📰 News</a><br/>
+      <small>Aktuelle Schlagzeilen.</small>
+    </li>
+
+    <li>
+      <a href="/pois">📍 POIs</a><br/>
+      <small>Apotheken, Tankstellen & mehr ohne GPS.</small>
+    </li>
+
+    <li>
+      <a href="/joplin">🗒️ Joplin</a><br/>
+      <small>Leseansicht ausgewählter Notizen.</small>
+    </li>
+
+    <li>
+      <a href="/weather">⭐ Bookmarks</a><br/>
+      <small>Nützliche Bookmarks.</small>
+
+      <ul class="favorites">
+        {% for bookmark in bookmarks %}
+          <li>
+            <a href="{{ bookmark.url }}" target="_blank">
+              {{ bookmark.title }}
+            </a><br/>
+            {% if bookmark.description %}
+              <small>{{ bookmark.description }}</small>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+
+  </ul>
+
+  <p class="hint">
+    Komplett ohne JavaScript. Optimiert für Opera Mini und schwache Verbindungen.
+  </p>
+
+{% endblock %}

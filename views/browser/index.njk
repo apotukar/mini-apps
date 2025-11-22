@@ -1,0 +1,35 @@
+{% extends "layout.njk" %}
+
+{% set style = "browser" %}
+
+{% block title %}Legacy-Browser{% endblock %}
+
+{% block content %}
+  <div class="ns-toolbar">
+    <form class="ns-address" action="/browser/browse" method="get">
+      <input type="text" name="url" value="{{ url }}" placeholder="Adresse eingeben…" class="ns-input">
+      <button type="submit" class="ns-btn">Los</button>
+    </form>
+    <div class="ns-actions">
+      {% if canGoBack %}
+        <a href="/browser/back" class="ns-btn">Zurück</a>
+      {% endif %}
+      {% if canGoForward %}
+        <a href="/browser/forward" class="ns-btn">Vorwärts</a>
+      {% endif %}
+      {% if canGoHome %}
+        <a href="/browser/home" class="ns-btn">Home</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if error %}
+    <div class="ns-alert">{{ error }}</div>
+  {% endif %}
+
+  {% if content %}
+    <div class="ns-content">
+      {{ content | safe }}
+    </div>
+  {% endif %}
+{% endblock %}

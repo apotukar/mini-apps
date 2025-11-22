@@ -1,0 +1,25 @@
+{% extends "layout.njk" %}
+
+{% set style = "weather" %}
+
+{% block title %}Wetter – {{ locationTitle }}{% endblock %}
+
+{% block content %}
+  <h2>Wetter für {{ locationTitle }}</h2>
+  
+  <a href="/weather?city={{ city | urlencode }}">Neue Suche</a><br /><br />
+
+  <div class="weather-current">
+    <b>Aktuell:</b><br />
+    Temperatur: {{ current.temperature }} °C<br />
+    Wind: {{ current.windspeed }} km/h<br />
+    Zustand: {{ current.description }} (Code {{ current.code }})<br />
+    Zeit: {{ current.timeFormatted }}<br />
+  </div>
+
+  <b>Vorhersage (heute + 6 Tage):</b><br />
+
+  {% for day in days %}
+    {% include "weather/partials/day.njk" %}
+  {% endfor %}
+{% endblock %}

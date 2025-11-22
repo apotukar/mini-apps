@@ -1,0 +1,176 @@
+{
+  "port": 3000,
+  "routes": [
+    {
+      "path": "/journey",
+      "label": "Journey App"
+    },
+    {
+      "path": "/departures",
+      "label": "Departures App"
+    },
+    {
+      "path": "/weather",
+      "label": "Weather App"
+    },
+    {
+      "path": "/tasks",
+      "label": "Tasks App"
+    },
+    {
+      "path": "/news",
+      "label": "News App"
+    },
+    {
+      "path": "/pois",
+      "label": "POIs App"
+    },
+    {
+      "path": "/joplin",
+      "label": "Joplin App"
+    },
+    {
+      "path": "/browser",
+      "label": "Browser App"
+    }
+  ],
+  "transport": {
+    "labels": {
+      "suburban": "S-Bahn",
+      "subway": "U-Bahn",
+      "tram": "Straßenbahn",
+      "bus": "Bus",
+      "regional": "Regionalzug",
+      "regionalExpress": "Regional-Express",
+      "national": "Fernzug",
+      "nationalExpress": "Fernzug (Express)",
+      "ferry": "Fähre",
+      "taxi": "Anruf-Sammel-Taxi",
+      "unknown": ""
+    },
+    "types": {
+      "national": "long-distance",
+      "nationalExpress": "long-distance",
+      "longDistance": "long-distance",
+      "regional": "regional",
+      "regionalExpress": "regional",
+      "suburban": "sbahn",
+      "subway": "ubahn",
+      "tram": "tram",
+      "bus": "bus"
+    },
+    "departures": {
+      "favorites": [
+        "Grillparzerstraße, München",
+        "Hauptbahnhof, München",
+        "Hauptbahnhof, Landhut",
+        "Hermann-Gmeiner-Weg, München",
+        "Leuchtenbergring, München",
+        "Lehel, München",
+        "Max-Weber-Platz, München",
+        "Moselstraße, München",
+        "Ostbahnhof, München",
+        "Prinzregentenplatz, München",
+        "Schwarzwaldstraße, München"
+      ]
+    }
+  },
+  "weather": {
+    "favorites": ["München", "Berlin", "Essen", "Landshut"],
+    "descriptions": {
+      "0": "Klarer Himmel",
+      "1": "Überwiegend klar",
+      "2": "Teilweise bewölkt",
+      "3": "Bedeckt",
+      "45": "Nebel",
+      "48": "Reifnebel",
+      "51": "Leichter Nieselregen",
+      "53": "Mäßiger Nieselregen",
+      "55": "Starker Nieselregen",
+      "56": "Leichter gefrierender Nieselregen",
+      "57": "Starker gefrierender Nieselregen",
+      "61": "Leichter Regen",
+      "63": "Mäßiger Regen",
+      "65": "Starker Regen",
+      "66": "Leichter gefrierender Regen",
+      "67": "Starker gefrierender Regen",
+      "71": "Leichter Schneefall",
+      "73": "Mäßiger Schneefall",
+      "75": "Starker Schneefall",
+      "77": "Schneekörner",
+      "80": "Leichte Regenschauer",
+      "81": "Mäßige Regenschauer",
+      "82": "Heftige Regenschauer",
+      "85": "Leichte Schneeschauer",
+      "86": "Heftige Schneeschauer",
+      "95": "Gewitter",
+      "96": "Gewitter mit leichtem Hagel",
+      "99": "Gewitter mit starkem Hagel"
+    }
+  },
+  "joplin": {
+    "webdavUrl": "https://server-nextcloudpi/remote.php/dav/files/apotukar/Misc/Joplin",
+    "notebookIds": ["d4ca0fc8a96d4aaca8694e0ea054f488"],
+    "secret": {
+      "username": "ENV:JOPLIN_USERNAME",
+      "appPassword": "ENV:JOPLIN_APP_PASSWORD"
+    }
+  },
+  "news": {
+    "feeds": [
+      "https://www.tagesschau.de/xml/rss2/",
+      "https://rss.dw.com/rdf/rss-en-all",
+      "https://www.spiegel.de/schlagzeilen/index.rss",
+      "https://newsfeed.zeit.de/index",
+      "https://www.heise.de/rss/heise-atom.xml",
+      "https://www.jungewelt.de/aktuell/newsticker.rss",
+      "https://www.freitag.de/@@RSS"
+    ],
+    "limit": 10,
+    "browserProxy": "http://frogfind.de/read.php?lg=de-de&a="
+  },
+  "browser": {
+    "timeout": 120000,
+    "waitUntil": "domcontentloaded",
+    "loadImages": true,
+    "modes": ["simplify", "frogfind"],
+    "imageWidth": 200
+  },
+  "bookmarks": [
+    {
+      "title": "FrogFind (DE)",
+      "url": "http://frogfind.de/?lg=de-de",
+      "description": "Suchmaschine und Webseiten-Textvereinfacher für alte Browser."
+    },
+    {
+      "title": "Textise",
+      "url": "https://www.textise.net/",
+      "description": "Wandelt moderne Websites in reinen Text um."
+    },
+    {
+      "title": "DuckDuckGo",
+      "url": "https://duckduckgo.com/",
+      "description": "Datenschutzfreundliche Suchmaschine ohne Tracking."
+    },
+    {
+      "title": "Wiby – Suchmaschine für das Old Web",
+      "url": "https://wiby.me/",
+      "description": "Suchmaschine speziell für kleine, alte und persönliche Webseiten."
+    },
+    {
+      "title": "Marginalia Search",
+      "url": "https://search.marginalia.nu/",
+      "description": "Fokussiert auf kleine, nicht SEO-optimierte Websites."
+    },
+    {
+      "title": "Wayback Machine",
+      "url": "https://archive.org/web/",
+      "description": "Durchsucht archivierte Versionen alter Websites."
+    },
+    {
+      "title": "OldWeb.today",
+      "url": "https://oldweb.today/",
+      "description": "Zeigt Websites in emulierten alten Browsern wie Netscape oder Mosaic."
+    }
+  ]
+}

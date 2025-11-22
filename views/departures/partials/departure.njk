@@ -1,0 +1,12 @@
+<div class="departure departure-{{ dep.type }}">
+  <b>{{ dep.time | formatDate }}</b>
+  {% if dep.lineText %} – {{ dep.lineText }}
+  {% endif %}
+  {% if dep.direction %} → {{ dep.direction }}
+  {% endif %}<br/>
+
+  {% if dep.platform %}
+    Gleis/Steig: {{ dep.platform }}<br/>
+  {% endif %}
+  <br/>
+</div>

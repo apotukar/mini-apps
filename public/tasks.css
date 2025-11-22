@@ -1,0 +1,63 @@
+body{
+  font-family:sans-serif;
+  margin:0;
+  padding:20px;
+  font-size:16px;
+  line-height:1.4;
+}
+
+.page{
+  max-width:480px;
+  margin:0 auto;
+}
+
+h1{
+  font-size:22px;
+}
+
+h2{
+  margin-top:20px;
+  font-size:18px;
+}
+
+ul{
+  padding-left:20px;
+  margin:0;
+}
+
+li{
+  margin-bottom:4px;
+}
+
+.list-1{
+  background:#f1f8ff;
+  padding:10px;
+  border-radius:6px;
+}
+
+.list-2{
+  background:#f9f6ff;
+  padding:10px;
+  border-radius:6px;
+}
+
+.list-3{
+  background:#f9fff6;
+  padding:10px;
+  border-radius:6px;
+}
+
+.list-4{
+  background:#fff8f0;
+  padding:10px;
+  border-radius:6px;
+}
+
+.list-5{
+  background:#fff0f6;
+  padding:10px;
+  border-radius:6px;
+}
+.task-list{
+  margin-bottom:20px;
+}

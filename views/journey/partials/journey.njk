@@ -1,0 +1,13 @@
+<div class="journey">
+  <b>{{ journey.number }}. Verbindung</b><br>
+  Abfahrt: {{ journey.departure | formatDate }}<br>
+  Ankunft: {{ journey.arrival | formatDate }}<br>
+  Dauer: {{ journey.duration }} Min<br>
+  Umstiege: {{ journey.transfers }}<br><br>
+
+  Teilstrecken:<br>
+
+  {% for leg in journey.legs %}
+    {% include "journey/partials/leg.njk" %}
+  {% endfor %}
+</div>

@@ -1,0 +1,60 @@
+{% extends "layout.njk" %}
+
+{% set style = "pois" %}
+
+{% block title %}POIs{% endblock %}
+
+{% block content %}
+
+<h1>POIs im Umkreis</h1>
+
+<form action="/pois" method="get">
+  <label>Ort oder PLZ:</label><br />
+  <input type="text" name="q" value="{{ query }}" class="input" />
+
+  <label>Art:</label><br />
+  <select name="t" class="input">
+    <option value="apotheke"   {% if type == "apotheke" %}selected{% endif %}>Apotheken</option>
+    <option value="tankstelle" {% if type == "tankstelle" %}selected{% endif %}>Tankstellen</option>
+    <option value="geldautomat" {% if type == "geldautomat" %}selected{% endif %}>Geldautomaten</option>
+    <option value="arzt" {% if type == "arzt" %}selected{% endif %}>Ärzte</option>
+    <option value="cafe" {% if type == "cafe" %}selected{% endif %}>Cafés</option>
+  </select>
+
+  <button type="submit" class="btn">Suchen</button>
+</form>
+
+{% if results.length > 0 %}
+  <ul class="poi-list">
+    {% for r in results %}
+      <li class="poi-item">
+        <strong>{{ r.name }}</strong><br />
+
+        {% if r.address %}
+          <small>{{ r.address }}</small><br />
+        {% else %}
+          <small>(Adresse nicht verfügbar)</small><br />
+        {% endif %}
+
+        {% if r.lat and r.lon %}
+          <small>
+            <a href="https://www.openstreetmap.org/?mlat={{ r.lat }}&mlon={{ r.lon }}">
+              Karte öffnen
+            </a>
+          </small>
+        {% else %}
+          <small>(keine Standortdaten)</small>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+{% elseif query %}
+  <p>Keine Ergebnisse gefunden.</p>
+{% endif %}
+
+<p class="hint">
+  Komplett ohne Geolocation. Nur Ortsname oder PLZ.
+</p>
+
+{% endblock %}

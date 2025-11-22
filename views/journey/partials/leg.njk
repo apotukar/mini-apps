@@ -1,0 +1,9 @@
+#{{ leg.idx }}: {{ leg.originName }} → {{ leg.destName }}<br>
+Ab: {{ leg.depTime }}<br>
+An: {{ leg.arrTime }}<br>
+
+{% if leg.lineText %}
+  Linie: {{ leg.lineText }}<br>
+{% endif %}
+
+<br>

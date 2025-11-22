@@ -1,0 +1,26 @@
+{% extends "layout.njk" %}
+
+{% set style = "joplin" %}
+
+{% block title %}Joplin – Notizen{% endblock %}
+
+{% block content %}
+  <h1>Joplin – Notizen</h1>
+
+  {% if notes and notes.length %}
+    <ul>
+      {% for note in notes %}
+        <li>
+          <a href="/joplin/note/{{ note.id }}">{{ note.title }}</a>
+          {% if note.updated %}
+            <small> – zuletzt geändert: {{ note.updated | formatDate }}
+            </small>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Keine Notizen gefunden.</p>
+  {% endif %}
+  
+{% endblock %}
