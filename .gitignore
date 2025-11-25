@@ -1,6 +1,18 @@
-token.json
+# System
 .DS_Store
+
+# Environment/Secrets
 .env
+token.json
+
+# Build/Cache
 .cache
 node_modules
+
+# IDE
 .idea
+
+# Generated assets
+*.min.css
+*.min.png
+*.min.js

@@ -21,8 +21,8 @@ mkdir -p "$DEST_DIR"
 for img in "$SRC_DIR"/*.png; do
   [ -e "$img" ] || continue  # skip if no PNGs found
 
-  base="$(basename "$img")"
-  out="$DEST_DIR/$base"
+  base="$(basename "$img" .png)"
+  out="$DEST_DIR/${base}.min.png"
 
   magick "$img" \
     -filter Lanczos \
