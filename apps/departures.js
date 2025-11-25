@@ -1,12 +1,58 @@
+import {
+  getFavorites,
+  saveFavorites,
+  clearFavorites,
+  getHideFlag,
+  clearHideFlag,
+  dedupeFavs
+} from '../helpers/favorites.js'
+
 export function registerDepartureRoutes(app, params) {
   const client = params.client
   const config = params.config || {}
   const transportModeLabels = config.labels || {}
   const transportModeTypes = config.types || {}
+  const favoritesNamespace = 'departures'
 
   app.get('/departures', (req, res) => {
     const station = req.query.station || ''
-    res.render('departures/index.njk', { station })
+
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
+    const configFavorites = !hideConfig && Array.isArray(config.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const favorites = dedupeFavs(baseFavorites)
+
+    res.render('departures/index.njk', {
+      station,
+      favs: favorites
+    })
+  })
+
+  app.post('/departures/save-fav', (req, res) => {
+    const stationName = (req.body.station || '').trim()
+    if (!stationName) {
+      return res.redirect('/departures')
+    }
+
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
+    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const newFavorites = dedupeFavs([...baseFavorites, stationName])
+    saveFavorites(res, newFavorites, favoritesNamespace)
+
+    res.redirect(`/departures?station=${encodeURIComponent(stationName)}`)
+  })
+
+  app.get('/departures/clear-favs', (req, res) => {
+    clearFavorites(res, favoritesNamespace)
+    res.redirect('/departures')
+  })
+
+  app.get('/departures/show-config-favs', (req, res) => {
+    clearHideFlag(res, favoritesNamespace)
+    res.redirect('/departures')
   })
 
   app.get(
@@ -22,10 +68,12 @@ export function registerDepartureRoutes(app, params) {
     handleDeparturesSearch(req => req.body.station)
   )
 
-  async function findStationId(name) {
+  async function findStation(name) {
     const list = await client.locations(name, { results: 1 })
     if (!list || list.length === 0) throw new Error('Station nicht gefunden: ' + name)
-    return list[0].id
+    const station = list[0]
+    if (!station.id) throw new Error('Station hat keine ID: ' + name)
+    return station
   }
 
   function buildDeparturesView(stationName, departures) {
@@ -63,7 +111,7 @@ export function registerDepartureRoutes(app, params) {
       const lineText = formatLine(productGerman, lineName)
 
       return {
-        time: d ? d : '–',
+        time: d || '–',
         direction: dep.direction || '',
         lineText,
         platform: dep.platform || dep.plannedPlatform || '',
@@ -99,37 +147,60 @@ export function registerDepartureRoutes(app, params) {
     }
   }
 
-  async function fetchDeparturesView(stationName, when) {
-    const stationId = await findStationId(stationName)
-    const opts = { duration: 60, results: 10 }
-    if (when) {
-      const d = new Date(when)
-      if (!Number.isNaN(d.getTime())) opts.when = d
+  async function fetchDeparturesUntilFound(stationId, initialWhen) {
+    let whenDate = initialWhen ? new Date(initialWhen) : new Date()
+    if (Number.isNaN(whenDate.getTime())) {
+      whenDate = new Date()
     }
 
-    const data = await client.departures(stationId, opts)
+    const stepMinutes = 15
+    let remainingTries = 48
+    const baseOpts = { duration: 60, results: 10 }
 
-    const departures = Array.isArray(data)
-      ? data
-      : data && Array.isArray(data.departures)
+    while (remainingTries-- > 0) {
+      const opts = { ...baseOpts, when: whenDate }
+
+      const data = await client.departures(stationId, opts)
+
+      const departures = Array.isArray(data?.departures)
         ? data.departures
-        : []
+        : Array.isArray(data)
+          ? data
+          : []
 
-    if (!departures.length) return null
-    return buildDeparturesView(stationName, departures)
+      if (departures.length > 0) {
+        return { departures, usedWhen: whenDate }
+      }
+
+      whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000)
+    }
+
+    return { departures: [], usedWhen: whenDate }
+  }
+
+  async function fetchDeparturesView(stationNameInput, when) {
+    const station = await findStation(stationNameInput)
+    const stationId = station.id
+    const displayName = station.name || stationNameInput
+
+    const { departures } = await fetchDeparturesUntilFound(stationId, when)
+
+    return buildDeparturesView(displayName, departures)
   }
 
   function handleDeparturesSearch(getStationName, getWhen) {
     return async (req, res) => {
       try {
-        const stationName = (getStationName(req) || '').trim()
-        if (!stationName) return res.redirect('/departures')
+        const inputName = (getStationName(req) || '').trim()
+        if (!inputName) return res.redirect('/departures')
 
         const when = getWhen ? getWhen(req) : undefined
-        const view = await fetchDeparturesView(stationName, when)
+        const view = await fetchDeparturesView(inputName, when)
 
-        if (!view) {
-          return res.render('departures/no-results.njk', { stationName })
+        if (!view || !view.departures || view.departures.length === 0) {
+          return res.render('departures/no-results.njk', {
+            stationName: view?.stationName || inputName
+          })
         }
 
         return res.render('departures/results.njk', view)

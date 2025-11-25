@@ -5,46 +5,11 @@ import path from 'path'
 import { marked } from 'marked'
 import mime from 'mime-types'
 
-const renderer = new marked.Renderer()
-
-function normalizeHref(h) {
-  if (!h) return ''
-  if (typeof h === 'string') return h
-  if (typeof h === 'object' && 'href' in h && typeof h.href === 'string') return h.href
-  return String(h)
-}
-
-renderer.link = token => {
-  let src = normalizeHref(token.href)
-
-  if (src.startsWith(':/')) {
-    const id = src.slice(2)
-    const label = token.text && token.text.trim() ? token.text.trim() : 'Anhang'
-    const encoded = encodeURIComponent(label)
-    src = `/joplin/resource/${id}?name=${encoded}`
-    const title = token.title ? ` title="${token.title}"` : ''
-    return `<a href="${src}"${title}>${label}</a>`
-  }
-
-  const label = token.text && token.text.trim() ? token.text.trim() : 'Anhang'
-  const title = token.title ? ` title="${token.title}"` : ''
-  return `<a href="${src}"${title}>${label}</a>`
-}
-
-renderer.image = token => {
-  let src = normalizeHref(token.href)
-  if (src.startsWith(':/')) src = `/joplin/resource/${src.slice(2)}`
-  const alt = token.text || ''
-  const title = token.title ? ` title="${token.title}"` : ''
-  return `<img src="${src}" alt="${alt}"${title}>`
-}
-
-marked.setOptions({ renderer })
-
 export function registerJoplinRoutes(app, params) {
-  const { webdavUrl, notebookIds, secret } = params.config
+  const { webdavUrl, secret, preferredNotebooks } = params.config
   const baseUrl = webdavUrl.replace(/\/+$/, '')
   const { username, appPassword } = secret
+  const preferred = preferredNotebooks || []
 
   const agent = new https.Agent({ keepAlive: false, rejectUnauthorized: false })
   const client = createClient(baseUrl, {
@@ -58,8 +23,7 @@ export function registerJoplinRoutes(app, params) {
 
   app.get('/joplin', async (req, res) => {
     try {
-      const notes = await loadNotesFromNotebooks(notebookIds)
-      notes.sort((a, b) => b.updated.getTime() - a.updated.getTime())
+      const notes = await loadNotes()
       res.render('joplin/index.njk', { notes })
     } catch (err) {
       res.render('joplin/error.njk', { message: err.message })
@@ -79,12 +43,25 @@ export function registerJoplinRoutes(app, params) {
       const bodyMarkdown = idx !== -1 ? raw.slice(0, idx).trim() : raw.trim()
       const bodyHtml = marked.parse(bodyMarkdown)
 
+      const notebooks = await loadNotebookMap()
+      const notebookPaths = buildNotebookPathMap(notebooks)
+      const notebook = notebooks.get(meta.parent_id)
+      const notebookTitle = notebook ? notebook.title : null
+      const notebookPath = notebookPaths.get(meta.parent_id) || notebookTitle
+
+      const isPreferred =
+        !!notebookPath && preferred.some(x => x.toLowerCase() === notebookPath.toLowerCase())
+
       res.render('joplin/note.njk', {
         note: {
           title,
           bodyMarkdown,
           bodyHtml,
-          updated: parseUpdated(meta.updated_time)
+          updated: parseUpdated(meta.updated_time),
+          notebookId: meta.parent_id,
+          notebookTitle,
+          notebookPath,
+          preferred: isPreferred
         }
       })
     } catch (err) {
@@ -95,11 +72,9 @@ export function registerJoplinRoutes(app, params) {
   app.get('/joplin/resource/:id', async (req, res) => {
     const id = req.params.id
     const downloadName = req.query.name || null
-
     try {
       const dirs = ['/resources', '/.resource', 'resources', '.resource', '/']
       let entry = null
-
       for (const dir of dirs) {
         try {
           const files = await client.getDirectoryContents(dir)
@@ -107,18 +82,13 @@ export function registerJoplinRoutes(app, params) {
           if (entry) break
         } catch {}
       }
-
       if (!entry) return res.status(404).send('Not found')
-
       const data = await client.getFileContents(entry.filename)
       const contentType = mime.lookup(entry.basename) || 'application/octet-stream'
-
       res.setHeader('Content-Type', contentType)
-
       if (downloadName) {
         res.setHeader('Content-Disposition', `attachment; filename="${downloadName}"`)
       }
-
       res.send(data)
     } catch {
       res.status(500).send('Error loading resource')
@@ -134,6 +104,26 @@ export function registerJoplinRoutes(app, params) {
   function cacheFilePathFor(entry) {
     const safe = entry.filename.replace(/[\/\\:]/g, '_')
     return path.join(CACHE_DIR, safe + '.json')
+  }
+
+  async function cleanupCache(currentEntries) {
+    try {
+      await ensureCacheDir()
+      const files = await fs.readdir(CACHE_DIR)
+      const validNames = new Set(
+        currentEntries.map(e => {
+          const safe = e.filename.replace(/[\/\\:]/g, '_')
+          return safe + '.json'
+        })
+      )
+      for (const name of files) {
+        if (!validNames.has(name)) {
+          try {
+            await fs.unlink(path.join(CACHE_DIR, name))
+          } catch {}
+        }
+      }
+    } catch {}
   }
 
   async function readFromCache(entry) {
@@ -199,6 +189,7 @@ export function registerJoplinRoutes(app, params) {
 
   async function listAllFiles() {
     const entries = await client.getDirectoryContents('')
+    await cleanupCache(entries)
     return entries.filter(
       e => e.type === 'file' && (e.basename.endsWith('.md') || e.basename.endsWith('.json'))
     )
@@ -210,29 +201,133 @@ export function registerJoplinRoutes(app, params) {
     return new Date(time)
   }
 
-  async function loadNotesFromNotebooks(notebookIds) {
+  async function loadNotebookMap() {
+    const files = await listAllFiles()
+    const notebooks = new Map()
+    for (const f of files) {
+      try {
+        const { raw, meta } = await getFileWithMeta(f)
+        if (meta.type_ === '2' || meta.type_ === 2) {
+          const id = meta.id || path.basename(f.basename, path.extname(f.basename))
+          const title = meta.title || raw.split('\n')[0] || '(ohne Titel)'
+          notebooks.set(id, { id, title, parent_id: meta.parent_id || null })
+        }
+      } catch {}
+    }
+    return notebooks
+  }
+
+  function buildNotebookPathMap(notebooks) {
+    const cache = new Map()
+    function resolve(id) {
+      if (!id) return ''
+      if (cache.has(id)) return cache.get(id)
+      const nb = notebooks.get(id)
+      if (!nb) {
+        cache.set(id, '')
+        return ''
+      }
+      const parentPath = resolve(nb.parent_id)
+      const full = parentPath ? parentPath + ' / ' + nb.title : nb.title
+      cache.set(id, full)
+      return full
+    }
+    for (const id of notebooks.keys()) resolve(id)
+    return cache
+  }
+
+  async function loadNotes() {
     const files = await listAllFiles()
     const notes = []
-    const idSet = new Set(notebookIds)
+    const notebooks = await loadNotebookMap()
+    const notebookPaths = buildNotebookPathMap(notebooks)
+
     for (const f of files) {
       try {
         const { raw, meta } = await getFileWithMeta(f)
         if (meta.type_ === '1' || meta.type_ === 1) {
-          if (idSet.has(meta.parent_id)) {
-            const title = raw.split('\n')[0] || '(ohne Titel)'
-            const idx = raw.lastIndexOf('\n\n')
-            const bodyMarkdown = idx !== -1 ? raw.slice(0, idx).trim() : raw.trim()
-            notes.push({
-              id: f.basename,
-              title,
-              body: marked.parse(bodyMarkdown),
-              updated: parseUpdated(meta.updated_time),
-              notebookId: meta.parent_id
-            })
-          }
+          const parentId = meta.parent_id
+          const title = raw.split('\n')[0] || '(ohne Titel)'
+          const idx = raw.lastIndexOf('\n\n')
+          const bodyMarkdown = idx !== -1 ? raw.slice(0, idx).trim() : raw.trim()
+          const notebook = notebooks.get(parentId)
+          const notebookTitle = notebook ? notebook.title : '(Unbekanntes Notizbuch)'
+          const notebookPath = notebookPaths.get(parentId) || notebookTitle
+
+          const isPreferred =
+            !!notebookPath && preferred.some(x => x.toLowerCase() === notebookPath.toLowerCase())
+
+          notes.push({
+            id: f.basename,
+            title,
+            body: marked.parse(bodyMarkdown),
+            updated: parseUpdated(meta.updated_time),
+            notebookId: parentId,
+            notebookTitle,
+            notebookPath,
+            preferred: isPreferred
+          })
         }
       } catch {}
     }
+
+    notes.sort((a, b) => {
+      const pathA = (a.notebookPath || '').toLowerCase()
+      const pathB = (b.notebookPath || '').toLowerCase()
+
+      const prioA = preferred.findIndex(x => x.toLowerCase() === pathA)
+      const prioB = preferred.findIndex(x => x.toLowerCase() === pathB)
+
+      const aPref = prioA !== -1
+      const bPref = prioB !== -1
+
+      if (aPref && !bPref) return -1
+      if (!aPref && bPref) return 1
+      if (aPref && bPref && prioA !== prioB) return prioA - prioB
+
+      if (pathA < pathB) return -1
+      if (pathA > pathB) return 1
+
+      const titleA = (a.title || '').toLowerCase()
+      const titleB = (b.title || '').toLowerCase()
+      if (titleA < titleB) return -1
+      if (titleA > titleB) return 1
+
+      return 0
+    })
+
     return notes
   }
 }
+
+const renderer = new marked.Renderer()
+
+function normalizeHref(h) {
+  if (!h) return ''
+  if (typeof h === 'string') return h
+  if (typeof h === 'object' && 'href' in h && typeof h.href === 'string') return h.href
+  return String(h)
+}
+
+renderer.link = token => {
+  let src = normalizeHref(token.href)
+  const label = token.text && token.text.trim() ? token.text.trim() : 'Anhang'
+  const title = token.title ? ` title="${token.title}"` : ''
+  if (src.startsWith(':/')) {
+    const id = src.slice(2)
+    const encoded = encodeURIComponent(label)
+    src = `/joplin/resource/${id}?name=${encoded}`
+    return `<a href="${src}"${title}>${label}</a>`
+  }
+  return `<a href="${src}"${title}>${label}</a>`
+}
+
+renderer.image = token => {
+  let src = normalizeHref(token.href)
+  if (src.startsWith(':/')) src = `/joplin/resource/${src.slice(2)}`
+  const alt = token.text || ''
+  const title = token.title ? ` title="${token.title}"` : ''
+  return `<img src="${src}" alt="${alt}"${title}>`
+}
+
+marked.setOptions({ renderer })

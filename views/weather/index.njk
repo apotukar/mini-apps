@@ -7,7 +7,7 @@
 {% block content %}
   <h2>Wetter</h2>
 
-  <form action="/weather/search" method="post">
+  <form method="POST">
     <label for="city">Ort:</label><br />
     <input
       type="text"
@@ -15,8 +15,38 @@
       name="city"
       value="{{ city }}"
       autocomplete="off"
-    /><br /><br />
-    <button type="submit">Wetter anzeigen</button>
+    />
+    <br/><br/>
+    <button type="submit" formaction="/weather/search" class="btn btn-primary">
+      Anzeigen
+    </button>
+    <button type="submit" formaction="/weather/save-fav" class="btn btn-secondary btn-fav">
+      <img src="/public/icons/star.png" alt="Favorit" class="btn-icon">
+      Favorit speichern
+    </button>
+  </form>
+
+  <h3>Favoriten</h3>
+  {% if favs and favs.length %}
+    {% for fav in favs %}
+      {% include "weather/partials/favorite.njk" %}
+    {% endfor %}
+  {% else %}
+    <i>Keine Favoriten</i>
+  {% endif %}
+
+  <form method="GET" action="/weather/clear-favs">
+    <button type="submit" class="btn btn-danger">
+        <img src="/public/icons/delete.png" alt="Reload" class="btn-icon">
+        Alle Favoriten löschen
+    </button>
+  </form>
+
+  <form method="GET" action="/weather/show-config-favs">
+    <button type="submit" class="btn btn-secondary">
+        <img src="/public/icons/reload.png" alt="Reload" class="btn-icon">
+        Standard-Favoriten wieder anzeigen
+    </button>
   </form>
 
   <p class="hint">

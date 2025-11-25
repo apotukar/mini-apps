@@ -193,3 +193,19 @@ button,
   border-color: #e6b800;
   color: #e6b800;
 }
+
+.btn-secondary{
+  background:#f2f2f2;
+}
+
+.btn-danger{
+  background:#ffffff;
+  border-color:#cc0000;
+  color:#cc0000;
+}
+
+.btn-icon {
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+}

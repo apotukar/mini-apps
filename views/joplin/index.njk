@@ -5,16 +5,19 @@
 {% block title %}Joplin – Notizen{% endblock %}
 
 {% block content %}
-  <h1>Joplin – Notizen</h1>
+  <h1>Joplin – Alle Notizen</h1>
 
   {% if notes and notes.length %}
     <ul>
       {% for note in notes %}
-        <li>
+        <li class="{% if note.preferred %}preferred{% endif %}">
+          {% if note.preferred %}<strong>★ </strong>{% endif %}
           <a href="/joplin/note/{{ note.id }}">{{ note.title }}</a>
+          {% if note.notebookPath %}
+            <small> — {{ note.notebookPath }}</small>
+          {% endif %}
           {% if note.updated %}
-            <small> – zuletzt geändert: {{ note.updated | formatDate }}
-            </small>
+            <small> — zuletzt geändert: {{ note.updated | formatDate }}</small>
           {% endif %}
         </li>
       {% endfor %}
@@ -22,5 +25,4 @@
   {% else %}
     <p>Keine Notizen gefunden.</p>
   {% endif %}
-  
 {% endblock %}

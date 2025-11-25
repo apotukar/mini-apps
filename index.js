@@ -16,6 +16,7 @@ import { registerNewsRoutes } from './apps/news.js'
 import { registerPOIRoutes } from './apps/pois.js'
 import { registerJoplinRoutes } from './apps/joplin.js'
 import { registerBrowserRoutes } from './apps/browser.js'
+import { types } from 'util'
 
 function applyEnvPlaceholders(obj) {
   const clone = JSON.parse(JSON.stringify(obj))
@@ -42,7 +43,6 @@ const configPath = path.join(process.cwd(), './config.json')
 const raw = fs.readFileSync(configPath, 'utf8')
 const config = JSON.parse(raw)
 const resolvedConfig = applyEnvPlaceholders(config)
-console.log(resolvedConfig)
 const app = express()
 
 const nunjucksEnv = nunjucks.configure('views', {
@@ -89,13 +89,21 @@ const client = createClient(dbProfile, 'DB-Multi')
 
 registerHomeRoutes(app, {
   config: {
-    departuresFavorites: resolvedConfig.transport.departures.favorites,
-    weatherFavorites: resolvedConfig.weather.favorites,
     bookmarks: resolvedConfig.bookmarks
   }
 })
-registerJourneyRoutes(app, { client: client })
-registerDepartureRoutes(app, { client: client, config: resolvedConfig.transport })
+registerJourneyRoutes(app, {
+  client: client,
+  config: { favorites: resolvedConfig.transport.journey.favorites }
+})
+registerDepartureRoutes(app, {
+  client: client,
+  config: {
+    labels: resolvedConfig.transport.labels,
+    types: resolvedConfig.transport.types,
+    favorites: resolvedConfig.transport.departures.favorites
+  }
+})
 registerWeatherRoutes(app, { config: resolvedConfig.weather })
 registerTaskRoutes(app)
 registerNewsRoutes(app, { config: resolvedConfig.news })

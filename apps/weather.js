@@ -1,19 +1,73 @@
+import {
+  getFavorites,
+  saveFavorites,
+  clearFavorites,
+  getHideFlag,
+  clearHideFlag,
+  dedupeFavs
+} from '../helpers/favorites.js'
+
 export function registerWeatherRoutes(app, params) {
-  const config = params.config
+  const config = params.config || {}
+  const favoritesNamespace = 'weather'
 
   app.get('/weather', (req, res) => {
     const city = (req.query.city || '').trim()
+
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
+    const configFavorites = !hideConfig && Array.isArray(config.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const favorites = dedupeFavs(baseFavorites)
+
     res.render('weather/index.njk', {
-      city
-      // favorites: config.favoriteWeatherCities || []
+      city,
+      favs: favorites
     })
   })
 
+  app.post('/weather/save-fav', (req, res) => {
+    const city = (req.body.city || '').trim()
+    if (!city) {
+      return res.redirect('/weather')
+    }
+
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
+    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const newFavorites = dedupeFavs([...baseFavorites, stationName])
+    saveFavorites(res, newFavorites, favoritesNamespace)
+
+    res.redirect(`/weather?station=${encodeURIComponent(city)}`)
+  })
+
+  app.get('/weather/clear-favs', (req, res) => {
+    clearFavorites(res, favoritesNamespace)
+    res.redirect('/weather')
+  })
+
+  app.get('/weather/show-config-favs', (req, res) => {
+    clearHideFlag(res, favoritesNamespace)
+    res.redirect('/weather')
+  })
+
+  app.get('/weather/search', async (req, res) => {
+    const city = (req.query.city || '').trim()
+    await handleWeatherSearch(req, res, city)
+  })
+
   app.post('/weather/search', async (req, res) => {
+    const city = (req.body?.city || '').trim()
+    await handleWeatherSearch(req, res, city)
+  })
+
+  async function handleWeatherSearch(req, res, city) {
     try {
-      const city = (req.body?.city || '').trim()
       if (!city) {
-        return res.render('weather/error.njk', { message: 'Bitte einen Ort eingeben.' })
+        return res.render('weather/error.njk', {
+          message: 'Bitte einen Ort eingeben.'
+        })
       }
 
       const geoUrl =
@@ -26,7 +80,9 @@ export function registerWeatherRoutes(app, params) {
 
       const geo = await geoResp.json()
       if (!geo.results || geo.results.length === 0) {
-        return res.render('weather/error.njk', { message: `Kein Ort gefunden für: "${city}".` })
+        return res.render('weather/error.njk', {
+          message: `Kein Ort gefunden für: "${city}".`
+        })
       }
 
       const place = geo.results[0]
@@ -43,8 +99,8 @@ export function registerWeatherRoutes(app, params) {
 
       const fcResp = await fetch(forecastUrl)
       if (!fcResp.ok) throw new Error('Wetterdaten-Anfrage fehlgeschlagen.')
-      const fc = await fcResp.json()
 
+      const fc = await fcResp.json()
       const tz = fc.timezone || 'Europe/Berlin'
       const cw = fc.current_weather || {}
 
@@ -72,9 +128,11 @@ export function registerWeatherRoutes(app, params) {
         days
       })
     } catch (err) {
-      res.render('weather/error.njk', { message: err.message || 'Fehler.' })
+      res.render('weather/error.njk', {
+        message: err.message || 'Fehler.'
+      })
     }
-  })
+  }
 
   function describeWeatherCode(code) {
     const map = config.descriptions || {}

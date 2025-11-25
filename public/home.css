@@ -85,3 +85,26 @@ details[open] summary{
 details > ul{
   margin-top:8px;
 }
+
+.favorite-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #0033cc;
+  font-size: 15px;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.favorite-button:hover {
+  text-decoration: underline;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  margin-right: 4px;
+}

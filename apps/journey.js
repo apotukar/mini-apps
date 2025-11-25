@@ -1,35 +1,58 @@
-const FAV_COOKIE_MAX_AGE = 90 * 86400000
+import {
+  getFavorites,
+  saveFavorites,
+  clearFavorites,
+  getHideFlag,
+  clearHideFlag,
+  dedupeFavs
+} from '../helpers/favorites.js'
 
-export function registerJourneyRoutes(app, { client }) {
+export function registerJourneyRoutes(app, params) {
+  const favoritesNamespace = 'journey'
+  const client = params.client
+  const config = params.config || {}
+
   app.get('/journey', (req, res) => {
-    const favs = getFavorites(req)
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace)
+    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const favorites = dedupeFavs(baseFavorites)
+
     const from = req.query.from || ''
     const to = req.query.to || ''
 
     res.render('journey/index.njk', {
       from,
       to,
-      favs
+      favs: favorites
     })
   })
 
   app.post('/journey/save-fav', (req, res) => {
     const fromName = (req.body.from || '').trim()
     const toName = (req.body.to || '').trim()
-
     if (!fromName && !toName) {
       return res.redirect('/journey')
     }
 
-    const favs = getFavorites(req)
-    favs.push({ from: fromName, to: toName })
+    const hideConfig = getHideFlag(req, favoritesNamespace)
+    const cookieFavorites = getFavorites(req, favoritesNamespace)
+    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
+    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
+    const newFavorites = dedupeFavs([...baseFavorites, { from: fromName, to: toName }])
+    saveFavorites(res, newFavorites, favoritesNamespace)
 
-    saveFavorites(res, favs)
     res.redirect(`/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`)
   })
 
   app.get('/journey/clear-favs', (req, res) => {
-    clearFavorites(res)
+    clearFavorites(res, favoritesNamespace)
+    res.redirect('/journey')
+  })
+
+  app.get('/journey/show-config-favs', (req, res) => {
+    clearHideFlag(res, favoritesNamespace)
     res.redirect('/journey')
   })
 
@@ -38,7 +61,6 @@ export function registerJourneyRoutes(app, { client }) {
     createJourneyHandler(req => ({
       fromName: req.body.from,
       toName: req.body.to
-      // departure/earlierThan/laterThan bleiben null
     }))
   )
 
@@ -109,16 +131,10 @@ function buildJourneyView(journey, index) {
       originName: leg.origin?.name || '',
       destName: leg.destination?.name || '',
       depTime: legDep
-        ? legDep.toLocaleTimeString('de-DE', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })
+        ? legDep.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
         : '–',
       arrTime: legArr
-        ? legArr.toLocaleTimeString('de-DE', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })
+        ? legArr.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
         : '–',
       lineText
     }
@@ -132,25 +148,6 @@ function buildJourneyView(journey, index) {
     transfers,
     legs: legsView
   }
-}
-
-function getFavorites(req) {
-  if (!req.cookies.favs) return []
-  try {
-    const parsed = JSON.parse(req.cookies.favs)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-function saveFavorites(res, favs) {
-  res.cookie('favs', JSON.stringify(favs), { maxAge: FAV_COOKIE_MAX_AGE })
-}
-
-function clearFavorites(res) {
-  res.clearCookie('favs', { path: '/' })
-  saveFavorites(res, [])
 }
 
 async function handleJourneySearch({
@@ -172,13 +169,9 @@ async function handleJourneySearch({
 
     const options = { results: 5 }
 
-    if (earlierThan) {
-      options.earlierThan = earlierThan
-    } else if (laterThan) {
-      options.laterThan = laterThan
-    } else if (departure) {
-      options.departure = departure
-    }
+    if (earlierThan) options.earlierThan = earlierThan
+    else if (laterThan) options.laterThan = laterThan
+    else if (departure) options.departure = departure
 
     const data = await client.journeys(fromId, toId, options)
     const journeys = data.journeys || []

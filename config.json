@@ -59,6 +59,12 @@
       "tram": "tram",
       "bus": "bus"
     },
+    "journey": {
+      "favorites": [
+        { "from": "Landshut Hbf", "to": "München Hbf" },
+        { "from": "München Hbf", "to": "Landshut Hbf" }
+      ]
+    },
     "departures": {
       "favorites": [
         "Grillparzerstraße, München",
@@ -109,8 +115,8 @@
     }
   },
   "joplin": {
-    "webdavUrl": "https://server-nextcloudpi/remote.php/dav/files/apotukar/Misc/Joplin",
-    "notebookIds": ["d4ca0fc8a96d4aaca8694e0ea054f488"],
+    "webdavUrl": "https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin",
+    "preferredNotebooks": ["Notizen"],
     "secret": {
       "username": "ENV:JOPLIN_USERNAME",
       "appPassword": "ENV:JOPLIN_APP_PASSWORD"

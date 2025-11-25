@@ -17,13 +17,14 @@
     <button type="submit" formaction="/journey/search" class="btn btn-primary">
       Suchen
     </button>
-    <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary">
-      ⭐ Favorit speichern
+    <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary btn-fav">
+    <img src="/public/icons/star.png" alt="Favorit" class="btn-icon">
+      Favorit speichern
     </button>
   </form>
 
   <h3>Favoriten</h3>
-  {% if favs.length %}
+  {% if favs and favs.length %}
     {% for fav in favs %}
       {% include "journey/partials/favorite.njk" %}
     {% endfor %}
@@ -33,7 +34,15 @@
 
   <form method="GET" action="/journey/clear-favs">
     <button type="submit" class="btn btn-danger">
-      ❌ Alle Favoriten löschen
+        <img src="/public/icons/delete.png" alt="Reload" class="btn-icon">
+        Alle Favoriten löschen
+    </button>
+  </form>
+
+  <form method="GET" action="/journey/show-config-favs">
+    <button type="submit" class="btn btn-secondary">
+        <img src="/public/icons/reload.png" alt="Reload" class="btn-icon">
+        Standard-Favoriten wieder anzeigen
     </button>
   </form>
 

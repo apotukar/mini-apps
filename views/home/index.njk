@@ -11,88 +11,72 @@
   <ul>
 
     <li>
-      <a href="/journey">🚆 Bahn-Verbindungen</a><br/>
+      <a href="/departures">
+        <img src="/public/icons/clock.png" alt="🕒" class="icon">
+        Abfahrten
+    </a><br/>
+    <small>Nächste Abfahrten an einer Station.</small>
+    </li>
+
+    <li>
+      <a href="/journey">
+        <img src="/public/icons/train.png" alt="🚆" class="icon">
+        Bahn-Verbindungen
+      </a><br/>
       <small>Fahrten suchen, extrem leicht.</small>
     </li>
 
     <li>
-      <a href="/departures">🕒 Abfahrten</a><br/>
-      <small>Nächste Abfahrten an einer Station.</small>
-
-      <details>
-        <summary>Favoriten anzeigen/verbergen</summary>
-
-        <ul class="favorites">
-          {% for station in departuresFavorites %}
-            <li>
-              <form action="/departures/search" method="post" style="margin:0;padding:0;">
-                <input type="hidden" name="station" value="{{ station }}">
-                <button type="submit" style="background:none;border:none;padding:0;color:#0033cc;font-size:15px;text-align:left;">
-                  {{ station }}
-                </button>
-              </form>
-            </li>
-          {% endfor %}
-        </ul>
-      </details>
-    </li>
-
-    <li>
-      <a href="/weather">☁️ Wetter</a><br/>
+      <a href="/weather">
+        <img src="/public/icons/cloud.png" alt="☁️" class="icon">
+        Wetter
+      </a><br/>
       <small>Aktuelles Wetter und Vorhersage.</small>
-
-      <details>
-        <summary>Favoriten anzeigen/verbergen</summary>
-
-        <ul class="favorites">
-          {% for city in weatherFavorites %}
-            <li>
-              <form action="/weather/search" method="post" style="margin:0;padding:0;">
-                <input type="hidden" name="city" value="{{ city }}">
-                <button type="submit" style="background:none;border:none;padding:0;color:#0033cc;font-size:15px;text-align:left;">
-                  {{ city }}
-                </button>
-              </form>
-            </li>
-          {% endfor %}
-        </ul>
-      </details>
     </li>
 
-    <li>
-      <a href="/tasks">📝 Aufgaben</a><br/>
-      <small>Alle Google-Task-Listen (nur lesend).</small>
-    </li>
 
     <li>
-      <a href="/news">📰 News</a><br/>
-      <small>Aktuelle Schlagzeilen.</small>
-    </li>
-
-    <li>
-      <a href="/pois">📍 POIs</a><br/>
+      <a href="/pois">
+        <img src="/public/icons/pin.png" alt="📍" class="icon">
+        POIs
+      </a><br/>
       <small>Apotheken, Tankstellen & mehr ohne GPS.</small>
     </li>
 
     <li>
-      <a href="/joplin">🗒️ Joplin</a><br/>
-      <small>Leseansicht ausgewählter Notizen.</small>
+      <a href="/tasks">
+        <img src="/public/icons/tasks.png" alt="📝" class="icon">
+        Aufgaben
+      </a><br/>
+      <small>Alle Google-Tasks-Listen (Leseansicht).</small>
     </li>
 
     <li>
-      <a href="/weather">⭐ Bookmarks</a><br/>
+      <a href="/joplin">
+        <img src="/public/icons/note.png" alt="🗒️" class="icon">
+        Joplin
+      </a><br/>
+      <small>Alle Notizen (Leseansicht).</small>
+    </li>
+
+    <li>
+      <a href="/news">
+        <img src="/public/icons/news.png" alt="📰" class="icon">
+        News
+      </a><br/>
+      <small>Aktuelle Nachrichten.</small>
+    </li>
+
+    <li>
+      <a href="/weather">
+        <img src="/public/icons/star.png" alt="⭐" class="icon">
+        Bookmarks
+      </a><br/>
       <small>Nützliche Bookmarks.</small>
 
       <ul class="favorites">
         {% for bookmark in bookmarks %}
-          <li>
-            <a href="{{ bookmark.url }}" target="_blank">
-              {{ bookmark.title }}
-            </a><br/>
-            {% if bookmark.description %}
-              <small>{{ bookmark.description }}</small>
-            {% endif %}
-          </li>
+          {% include "home/partials/favorite.njk" %}
         {% endfor %}
       </ul>
     </li>

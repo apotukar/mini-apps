@@ -6,7 +6,7 @@ import fetch from 'node-fetch'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const TOKENS_FILE = path.join(__dirname, '..', 'token.json')
+const TOKEN_FILE = path.join(__dirname, '..', 'token.json')
 
 export function registerTaskRoutes(app) {
   app.get('/tasks', async (req, res) => {
@@ -36,15 +36,15 @@ export function registerTaskRoutes(app) {
 }
 
 function loadTokens() {
-  if (!fs.existsSync(TOKENS_FILE)) {
+  if (!fs.existsSync(TOKEN_FILE)) {
     throw new Error('tokens.json nicht gefunden! Bitte OAuth einmal durchlaufen.')
   }
-  const json = JSON.parse(fs.readFileSync(TOKENS_FILE, 'utf8'))
+  const json = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8'))
   return json
 }
 
 function saveTokens(tokens) {
-  fs.writeFileSync(TOKENS_FILE, JSON.stringify(tokens, null, 2))
+  fs.writeFileSync(TOKEN_FILE, JSON.stringify(tokens, null, 2))
 }
 
 async function refreshAccessToken() {
@@ -65,6 +65,13 @@ async function refreshAccessToken() {
 
   if (!data.access_token) {
     console.error('Google returned:', data)
+
+    if (data.error === 'invalid_grant') {
+      throw new Error(
+        'Refresh Token ist abgelaufen oder wurde widerrufen. Bitte OAuth erneut durchlaufen und token.json aktualisieren.'
+      )
+    }
+
     throw new Error('Konnte kein Access Token erhalten')
   }
 

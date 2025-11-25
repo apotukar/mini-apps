@@ -45,6 +45,10 @@ li{
   margin-bottom:6px;
 }
 
+li.preferred strong {
+  color: gold;
+}
+
 .list-1,
 .list-2,
 .list-3,

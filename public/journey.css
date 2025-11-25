@@ -69,6 +69,12 @@ button,
   color:#cc0000;
 }
 
+.btn-icon {
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+}
+
 .fav{
   padding:3px 0;
 }
