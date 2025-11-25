@@ -14,16 +14,18 @@ for img in "$SRC_DIR"/*.png; do
   [[ "$img" == *".min.png" ]] && continue
 
   base="$(basename "$img" .png)"
+  tmp="$DEST_DIR/${base}.tmp.png"
   out="$DEST_DIR/${base}.min.png"
 
   magick "$img" \
-    -filter Lanczos \
+    -fuzz 5% \
+    -transparent white \
     -resize "${SIZE}x${SIZE}" \
-    -gravity center -extent "${SIZE}x${SIZE}" \
-    -unsharp 0x1 \
-    -strip \
-    -define png:compression-level=9 \
-    "$out"
+    "$tmp"
+
+  pngquant --force --output "$out" --quality=65-90 "$tmp"
+
+  rm "$tmp"
 
   echo "✔ generated: $out"
 done

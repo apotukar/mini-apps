@@ -15,7 +15,7 @@
     "check:css": "prettier --check \"**/*.css\" \"!**/*.min.css\"",
     "start": "node index.js",
     "minify:css": "./scripts/minify_css.sh",
-    "minify:icons": "./scripts/minify_icons.sh public/icons public/icons 16",
+    "minify:icons": "./scripts/minify_icons.sh public/icons public/icons 48",
     "create-certs": "./scripts/create_certs.sh"
   },
   "keywords": [],
