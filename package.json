@@ -34,6 +34,7 @@
     "nunjucks": "^3.2.4",
     "pupeteer": "^0.0.1",
     "puppeteer": "^24.30.0",
+    "sharp": "^0.34.5",
     "webdav": "^5.8.0",
     "xml2js": "^0.6.2"
   },

@@ -88,7 +88,7 @@ registerDepartureRoutes(app, {
 registerWeatherRoutes(app, { config: config.weather })
 registerTaskRoutes(app)
 registerNewsRoutes(app, { config: config.news })
-registerPOIRoutes(app)
+registerPOIRoutes(app, { config: config.poi })
 registerJoplinRoutes(app, { config: config.joplin })
 registerBrowserRoutes(app, { config: config.browser })
 

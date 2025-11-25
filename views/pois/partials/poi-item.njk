@@ -1,0 +1,15 @@
+<li class="poi-item">
+  <strong>{{ r.name }}</strong><br />
+
+  {% if r.address %}
+    <small>{{ r.address }}</small><br />
+  {% else %}
+    <small>(Adresse nicht verfügbar)</small><br />
+  {% endif %}
+
+  {% if r.mapUrl %}
+    <a href="{{ r.mapUrl }}" target="_blank" rel="noopener">Karte öffnen</a>
+  {% else %}
+    <small>(keine Standortdaten)</small>
+  {% endif %}
+</li>

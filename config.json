@@ -154,6 +154,10 @@
     "totalLimit": 84,
     "browserProxy": "http://frogfind.com/read.php?a="
   },
+  "poi": {
+    "zoom": 16,
+    "tiles": 3
+  },
   "browser": {
     "timeout": 120000,
     "waitUntil": "domcontentloaded",
@@ -178,7 +182,7 @@
       "description": "Datenschutzfreundliche Suchmaschine ohne Tracking."
     },
     {
-      "title": "Wiby – Suchmaschine für das Old Web",
+      "title": "Wiby",
       "url": "https://wiby.me/",
       "description": "Suchmaschine speziell für kleine, alte und persönliche Webseiten."
     },
