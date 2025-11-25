@@ -1,6 +1,6 @@
 {% extends "layout.njk" %}
 
-{% set style = "news" %}
+{% set style = "common, news" %}
 
 {% block title %}News{% endblock %}
 
@@ -13,7 +13,7 @@
       <li class="source-{{ item.source | lower | replace(' ', '-') }}">
         <a href="{{ item.link }}">{{ item.title }}</a><br/>
         {% if item.date %}
-          <small>{{ item.date }}</small><br/>
+          <small>{{ item.date | formatDate }}</small><br/>
         {% endif %}
         {% if item.description %}
           <small>{{ item.description | safe }}</small>

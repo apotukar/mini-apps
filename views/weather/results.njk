@@ -1,13 +1,13 @@
 {% extends "layout.njk" %}
 
-{% set style = "weather" %}
+{% set style = "common, weather" %}
 
 {% block title %}Wetter – {{ locationTitle }}{% endblock %}
 
 {% block content %}
   <h2>Wetter für {{ locationTitle }}</h2>
-  
-  <a href="/weather?city={{ city | urlencode }}">Neue Suche</a><br /><br />
+
+  <a href="/weather{#?city={{ city | urlencode }}#}">Neue Suche</a><br /><br />
 
   <div class="weather-current">
     <b>Aktuell:</b><br />

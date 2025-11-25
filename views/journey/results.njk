@@ -1,13 +1,13 @@
 {% extends "layout.njk" %}
 
-{% set style = "journey" %}
+{% set style = "common, journey" %}
 
 {% block title %}Verbindungen – {{ fromName }} → {{ toName }}
 {% endblock %}
 
 {% block content %}
-  <h2>{{ fromName }} → {{ toName }}</h2>
-  <a href="/journey?from={{ fromName | urlencode }}&to={{ toName | urlencode }}">Neue Suche</a><br><br>
+  <h2>{{ fromName }} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ toName }}</h2>
+  <a href="/journey{#?from={{ fromName | urlencode }}&to={{ toName | urlencode }}#}">Neue Suche</a><br><br>
   {% for journey in journeys %}
     {% include "journey/partials/journey.njk" %}
     <br>

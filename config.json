@@ -1,37 +1,49 @@
 {
+  "secret": {
+    "username": "ENV:BASIC_AUTH_USER",
+    "password": "ENV:BASIC_AUTH_PASS"
+  },
   "port": 3000,
   "routes": [
     {
       "path": "/journey",
-      "label": "Journey App"
+      "label": "Journey App",
+      "isBasicAuth": false
     },
     {
       "path": "/departures",
-      "label": "Departures App"
+      "label": "Departures App",
+      "isBasicAuth": false
     },
     {
       "path": "/weather",
-      "label": "Weather App"
+      "label": "Weather App",
+      "isBasicAuth": false
     },
     {
       "path": "/tasks",
-      "label": "Tasks App"
+      "label": "Tasks App",
+      "isBasicAuth": true
     },
     {
       "path": "/news",
-      "label": "News App"
+      "label": "News App",
+      "isBasicAuth": false
     },
     {
       "path": "/pois",
-      "label": "POIs App"
+      "label": "POIs App",
+      "isBasicAuth": false
     },
     {
       "path": "/joplin",
-      "label": "Joplin App"
+      "label": "Joplin App",
+      "isBasicAuth": true
     },
     {
       "path": "/browser",
-      "label": "Browser App"
+      "label": "Browser App",
+      "isBasicAuth": false
     }
   ],
   "transport": {
@@ -77,7 +89,8 @@
         "Moselstraße, München",
         "Ostbahnhof, München",
         "Prinzregentenplatz, München",
-        "Schwarzwaldstraße, München"
+        "Schwarzwaldstraße, München",
+        "Tegernseer Landstraße, München"
       ]
     }
   },
@@ -118,22 +131,28 @@
     "webdavUrl": "https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin",
     "preferredNotebooks": ["Notizen"],
     "secret": {
-      "username": "ENV:JOPLIN_USERNAME",
-      "appPassword": "ENV:JOPLIN_APP_PASSWORD"
+      "username": "ENV:JOPLIN_USER",
+      "password": "ENV:JOPLIN_PASS"
     }
   },
   "news": {
-    "feeds": [
-      "https://www.tagesschau.de/xml/rss2/",
-      "https://rss.dw.com/rdf/rss-en-all",
-      "https://www.spiegel.de/schlagzeilen/index.rss",
-      "https://newsfeed.zeit.de/index",
-      "https://www.heise.de/rss/heise-atom.xml",
-      "https://www.jungewelt.de/aktuell/newsticker.rss",
-      "https://www.freitag.de/@@RSS"
-    ],
-    "limit": 10,
-    "browserProxy": "http://frogfind.de/read.php?lg=de-de&a="
+    "feeds": {
+      "https://www.jungewelt.de/aktuell/newsticker.rss": 100,
+      "https://www.freitag.de/@@RSS": 100,
+      "https://www.nd-aktuell.de/rss/aktuell.php": 100,
+      "https://jacobin.com/rss/": 100,
+      "https://www.wsws.org/de/rss.xml": 100,
+      "https://www.tagesschau.de/xml/rss2/": 50,
+      "https://www.heise.de/newsticker/heise.rdf": 200,
+      "https://rss.dw.com/xml/rss-de-all": 50,
+      "https://taz.de/!p4608;rss/": 400,
+      "https://newsfeed.zeit.de/index": 300,
+      "https://www.spiegel.de/schlagzeilen/index.rss": 300,
+      "https://www.handelsblatt.com/contentexport/feed/schlagzeilen": 300
+    },
+    "limit": 7,
+    "totalLimit": 84,
+    "browserProxy": "http://frogfind.com/read.php?a="
   },
   "browser": {
     "timeout": 120000,

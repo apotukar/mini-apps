@@ -6,7 +6,5 @@
   "trailingComma": "none",
   "bracketSpacing": true,
   "arrowParens": "avoid",
-  "htmlWhitespaceSensitivity": "ignore",
-  "plugins": ["prettier-plugin-twig-melody"],
-  "twigMelodyPlugins": ["nunjucks"]
+  "htmlWhitespaceSensitivity": "ignore"
 }

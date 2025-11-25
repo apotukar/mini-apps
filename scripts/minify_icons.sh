@@ -1,25 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage:
-#   ./make_tiny_icons.sh [SRC_DIR] [DEST_DIR] [SIZE]
-#
-# Example:
-#   ./make_tiny_icons.sh public/icons public/icons/tiny 32
-#
-# Defaults:
-#   SRC_DIR  = ./icons
-#   DEST_DIR = ./icons/tiny
-#   SIZE     = 32  (results in 32x32 px icons)
-
 SRC_DIR="${1:-icons}"
 DEST_DIR="${2:-$SRC_DIR/tiny}"
 SIZE="${3:-32}"
 
 mkdir -p "$DEST_DIR"
 
+find "$DEST_DIR" -type f -name "*.min.png" -delete
+
 for img in "$SRC_DIR"/*.png; do
-  [ -e "$img" ] || continue  # skip if no PNGs found
+  [ -e "$img" ] || continue
+  [[ "$img" == *".min.png" ]] && continue
 
   base="$(basename "$img" .png)"
   out="$DEST_DIR/${base}.min.png"

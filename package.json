@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format:njk": "prettier --write '**/*.njk'",
-    "check:njk": "prettier --check '**/*.njk'",
-    "format:js": "prettier --write '**/*.js'",
-    "check:js": "prettier --check '**/*.js'",
-    "format:css": "prettier --write '**/*.css'",
-    "check:css": "prettier --check '**/*.css'",
+    "check": "npm-run-all check:js check:css check:json",
+    "format": "npm-run-all format:js format:css format:json",
+    "format:json": "prettier --write \"**/*.json\"",
+    "check:json": "prettier --check \"**/*.json\"",
+    "format:js": "prettier --write \"**/*.js\" \"!**/*.min.js\"",
+    "check:js": "prettier --check \"**/*.js\" \"!**/*.min.js\"",
+    "format:css": "prettier --write \"**/*.css\" \"!**/*.min.css\"",
+    "check:css": "prettier --check \"**/*.css\" \"!**/*.min.css\"",
     "start": "node index.js",
-    "minify:css": "for f in public/*.css; do cleancss -o \"${f%.css}.min.css\" \"$f\"; done",
-    "minify:icons": "./make_tiny_icons.sh public/icons public/icons 36"
+    "minify:css": "./scripts/minify_css.sh",
+    "minify:icons": "./scripts/minify_icons.sh public/icons public/icons 16",
+    "create-certs": "./scripts/create_certs.sh"
   },
   "keywords": [],
   "author": "",
@@ -36,9 +39,9 @@
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.5.6",
     "postcss-discard-comments": "^7.0.5",
-    "prettier": "^3.6.2",
-    "prettier-plugin-twig-melody": "^0.4.6"
+    "prettier": "^3.6.2"
   }
 }

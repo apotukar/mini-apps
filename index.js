@@ -1,9 +1,13 @@
 import fs from 'fs'
 import path from 'path'
+import https from 'https'
 import dotenv from 'dotenv'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import nunjucks from 'nunjucks'
+
+import { basicAuth } from './helpers/basic-auth.js'
+import { setupNunjucks } from './helpers/nunjucks-setup.js'
+import { loadConfig } from './helpers/config-loader.js'
 import { createClient } from 'db-vendo-client'
 import { profile as dbProfile } from 'db-vendo-client/p/dbnav/index.js'
 
@@ -16,61 +20,35 @@ import { registerNewsRoutes } from './apps/news.js'
 import { registerPOIRoutes } from './apps/pois.js'
 import { registerJoplinRoutes } from './apps/joplin.js'
 import { registerBrowserRoutes } from './apps/browser.js'
-import { types } from 'util'
 
-function applyEnvPlaceholders(obj) {
-  const clone = JSON.parse(JSON.stringify(obj))
+// ────────────────────────────────────────────────────────────
+// Bootstrap, Templating & DB Client
+// ────────────────────────────────────────────────────────────
 
-  for (const key of Object.keys(clone)) {
-    const value = clone[key]
-
-    if (typeof value === 'string' && value.startsWith('ENV:')) {
-      const envName = value.slice(4)
-      clone[key] = process.env[envName]
-    }
-
-    if (typeof value === 'object' && value !== null) {
-      clone[key] = applyEnvPlaceholders(value)
-    }
-  }
-
-  return clone
-}
-
-dotenv.config({ path: path.resolve('.env') })
-
-const configPath = path.join(process.cwd(), './config.json')
-const raw = fs.readFileSync(configPath, 'utf8')
-const config = JSON.parse(raw)
-const resolvedConfig = applyEnvPlaceholders(config)
+const config = loadConfig()
 const app = express()
+setupNunjucks(app)
+const dbClient = createClient(dbProfile, 'DB-Multi')
 
-const nunjucksEnv = nunjucks.configure('views', {
-  autoescape: true,
-  express: app
-})
+// ────────────────────────────────────────────────────────────
+// Middleware
+// ────────────────────────────────────────────────────────────
 
-nunjucksEnv.addFilter('formatDate', function (dateStr, locale = 'de-DE', options = {}) {
-  try {
-    const d = new Date(dateStr)
-    return d.toLocaleString(locale, {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      ...options
-    })
-  } catch {
-    return dateStr
-  }
-})
-
-app.set('view engine', 'njk')
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use('/public', express.static('public'))
+
+const basicAuthConfig = {
+  expectedUser: process.env.BASIC_AUTH_USER,
+  expectedPassword: process.env.BASIC_AUTH_PASS
+}
+
+config.routes
+  .filter(r => r.isBasicAuth)
+  .forEach(r => {
+    app.use(r.path, basicAuth(basicAuthConfig))
+  })
+
 app.use((req, res, next) => {
   const start = Date.now()
   const ua = req.headers['user-agent']
@@ -85,38 +63,50 @@ app.use((req, res, next) => {
   next()
 })
 
-const client = createClient(dbProfile, 'DB-Multi')
+// ────────────────────────────────────────────────────────────
+// Routes
+// ────────────────────────────────────────────────────────────
 
 registerHomeRoutes(app, {
-  config: {
-    bookmarks: resolvedConfig.bookmarks
-  }
+  config: { bookmarks: config.bookmarks }
 })
-registerJourneyRoutes(app, {
-  client: client,
-  config: { favorites: resolvedConfig.transport.journey.favorites }
-})
-registerDepartureRoutes(app, {
-  client: client,
-  config: {
-    labels: resolvedConfig.transport.labels,
-    types: resolvedConfig.transport.types,
-    favorites: resolvedConfig.transport.departures.favorites
-  }
-})
-registerWeatherRoutes(app, { config: resolvedConfig.weather })
-registerTaskRoutes(app)
-registerNewsRoutes(app, { config: resolvedConfig.news })
-registerPOIRoutes(app)
-registerJoplinRoutes(app, { config: resolvedConfig.joplin })
-registerBrowserRoutes(app, { config: resolvedConfig.browser })
 
-app.listen(resolvedConfig.port, () => {
-  console.log('Server läuft auf Port', resolvedConfig.port)
+registerJourneyRoutes(app, {
+  client: dbClient,
+  config: { favorites: config.transport.journey.favorites }
+})
+
+registerDepartureRoutes(app, {
+  client: dbClient,
+  config: {
+    labels: config.transport.labels,
+    types: config.transport.types,
+    favorites: config.transport.departures.favorites
+  }
+})
+
+registerWeatherRoutes(app, { config: config.weather })
+registerTaskRoutes(app)
+registerNewsRoutes(app, { config: config.news })
+registerPOIRoutes(app)
+registerJoplinRoutes(app, { config: config.joplin })
+registerBrowserRoutes(app, { config: config.browser })
+
+// ────────────────────────────────────────────────────────────
+// HTTPS-Server
+// ────────────────────────────────────────────────────────────
+
+const ROOT_DIR = process.cwd()
+
+const httpsOptions = {
+  key: fs.readFileSync(path.join(ROOT_DIR, 'certs', 'server.key')),
+  cert: fs.readFileSync(path.join(ROOT_DIR, 'certs', 'server.crt'))
+}
+
+https.createServer(httpsOptions, app).listen(config.port, () => {
+  console.log('HTTPS-Server läuft auf Port', config.port)
 
   config.routes.forEach(route => {
-    console.log(
-      `${route.label} (Simplified HTML): http://localhost:${resolvedConfig.port}${route.path}`
-    )
+    console.log(`${route.label} (Simplified HTML): https://localhost:${config.port}${route.path}`)
   })
 })

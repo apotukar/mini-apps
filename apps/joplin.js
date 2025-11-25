@@ -8,13 +8,13 @@ import mime from 'mime-types'
 export function registerJoplinRoutes(app, params) {
   const { webdavUrl, secret, preferredNotebooks } = params.config
   const baseUrl = webdavUrl.replace(/\/+$/, '')
-  const { username, appPassword } = secret
+  const { username, password } = secret
   const preferred = preferredNotebooks || []
 
   const agent = new https.Agent({ keepAlive: false, rejectUnauthorized: false })
   const client = createClient(baseUrl, {
     username,
-    password: appPassword,
+    password,
     httpsAgent: agent,
     headers: { Depth: '1' }
   })

@@ -3,19 +3,26 @@ import { parseStringPromise } from 'xml2js'
 
 export function registerNewsRoutes(app, params) {
   const config = {
-    feeds: ['https://www.tagesschau.de/xml/rss2/'],
+    feeds: {
+      'https://www.jungewelt.de/aktuell/newsticker.rss': 100
+    },
     limit: 10,
+    totalLimit: 100,
     browserProxy: '/browser/browse?url=',
     ...(params.config || {})
   }
 
   app.get('/news', async (req, res) => {
     try {
-      const items = await fetchAllFeeds(config.feeds, config.limit, config)
-      res.render('news/index.njk', { items })
+      const { items, errors } = await fetchAllFeeds(
+        config.feeds,
+        config.limit,
+        config.totalLimit,
+        config.browserProxy
+      )
+      res.render('news/index.njk', { items, feedErrors: errors })
     } catch (err) {
-      console.error(err)
-      res.send('Fehler beim Laden der Nachrichten: ' + err.message)
+      res.status(500).send('Fehler beim Laden der Nachrichten: ' + err.message)
     }
   })
 }
@@ -27,50 +34,98 @@ function stripImages(html) {
   return cleaned
 }
 
-async function fetchFeed(url, limit, config) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Konnte Feed nicht laden: ${url}`)
+async function fetchAllFeeds(feeds, limit, totalLimit, browserProxy) {
+  const results = []
+  const errors = []
 
-  const xml = await res.text()
-  const parsed = await parseStringPromise(xml, { explicitArray: false })
+  const feedList = []
 
-  if (!parsed.rss || !parsed.rss.channel || !parsed.rss.channel.item) {
-    return []
+  if (Array.isArray(feeds)) {
+    for (const url of feeds) {
+      feedList.push({ url, priority: 999 })
+    }
+  } else if (feeds && typeof feeds === 'object') {
+    for (const [url, priority] of Object.entries(feeds)) {
+      feedList.push({ url, priority: Number(priority) || 999 })
+    }
   }
 
-  const items = Array.isArray(parsed.rss.channel.item)
-    ? parsed.rss.channel.item
-    : [parsed.rss.channel.item]
+  const promises = feedList.map(({ url, priority }) =>
+    fetchFeed(url, limit, browserProxy, priority)
+      .then(items => items)
+      .catch(err => {
+        errors.push({ url, message: err.message })
+        return []
+      })
+  )
 
-  return items.slice(0, limit).map(item => {
-    delete item.enclosure
-    delete item['media:content']
-    delete item['media:thumbnail']
+  const allItems = await Promise.all(promises)
 
-    const originalLink = item.link
-    const link = config.browserProxy
-      ? `${config.browserProxy}${encodeURIComponent(originalLink)}`
-      : originalLink
+  for (const items of allItems) {
+    results.push(...items)
+  }
 
-    return {
-      title: item.title,
-      link,
-      date: item.pubDate,
-      description: stripImages(item.description),
-      source: parsed.rss.channel.title
-    }
+  results.sort((a, b) => {
+    const prioA = a.priority ?? 999
+    const prioB = b.priority ?? 999
+    if (prioA !== prioB) return prioA - prioB
+    return new Date(b.date) - new Date(a.date)
   })
+
+  return {
+    items: totalLimit ? results.slice(0, totalLimit) : results,
+    errors
+  }
 }
 
-async function fetchAllFeeds(feeds, limit, config) {
-  const results = []
-  for (const url of feeds) {
-    try {
-      const items = await fetchFeed(url, limit, config)
-      results.push(...items)
-    } catch (err) {
-      console.error('Feed-Fehler:', url, err.message)
+async function fetchFeed(url, limit, browserProxy, priority = 999) {
+  try {
+    const res = await fetch(url, { timeout: 8000 }).catch(err => {
+      throw new Error(`Netzwerkfehler bei ${url}: ${err.code || err.message}`)
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} beim Laden von ${url}`)
     }
+
+    const xml = await res.text()
+
+    let parsed
+    try {
+      parsed = await parseStringPromise(xml, { explicitArray: false })
+    } catch (err) {
+      throw new Error(`Ungültiges XML bei ${url}: ${err.message}`)
+    }
+
+    if (!parsed?.rss?.channel?.item) {
+      throw new Error(`Keine Items im Feed: ${url}`)
+    }
+
+    const items = Array.isArray(parsed.rss.channel.item)
+      ? parsed.rss.channel.item
+      : [parsed.rss.channel.item]
+
+    return items.slice(0, limit).map(item => {
+      delete item.enclosure
+      delete item['media:content']
+      delete item['media:thumbnail']
+
+      const originalLink = item.link
+      const link = browserProxy
+        ? `${browserProxy}${encodeURIComponent(originalLink)}`
+        : originalLink
+
+      return {
+        title: item.title,
+        link,
+        date: item.pubDate,
+        description: stripImages(item.description),
+        source: parsed.rss.channel.title || url,
+        priority
+      }
+    })
+  } catch (err) {
+    err.feedUrl = url
+    throw err
   }
-  return results.sort((a, b) => new Date(b.date) - new Date(a.date))
 }

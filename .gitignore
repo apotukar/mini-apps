@@ -4,6 +4,7 @@
 # Environment/Secrets
 .env
 token.json
+certs/
 
 # Build/Cache
 .cache

@@ -1,89 +1,65 @@
-body{
-  font-family:sans-serif;
-  background:#ffffff;
-  margin:0;
-  padding:20px;
-  font-size:16px;
-  line-height:1.4;
+body {
+  font-family: sans-serif;
+  background: #ffffff;
+  margin: 0;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.4;
 }
 
-.page{
-  max-width:480px;
-  margin:0 auto;
+.page {
+  max-width: 480px;
+  margin: 0 auto;
 }
 
-h1{
-  font-size:22px;
-  margin-bottom:16px;
+h1 {
+  font-size: 22px;
+  margin-bottom: 16px;
 }
 
-ul{
-  list-style:none;
-  padding:0;
-  margin:0;
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-li{
-  margin-bottom:18px;
+li {
+  margin-bottom: 18px;
 }
 
-a{
-  text-decoration:none;
-  color:#0033cc;
-  font-size:18px;
+a {
+  text-decoration: none;
+  color: #0033cc;
+  font-size: 18px;
 }
 
-a:hover{
-  text-decoration:underline;
+a:hover {
+  text-decoration: underline;
 }
 
-small{
-  color:#555;
+small {
+  color: #555;
 }
 
-.hint{
-  margin-top:30px;
-  color:#777;
-  font-size:14px;
+.hint {
+  margin-top: 30px;
+  color: #777;
+  font-size: 14px;
 }
 
-.favorites{
-  margin-left:18px;
-  margin-top:6px;
-  padding-left:0;
+.favorites {
+  margin-left: 18px;
+  margin-top: 6px;
+  padding-left: 0;
 }
 
-.favorites li{
-  margin-bottom:8px;
+.favorites li {
+  margin-bottom: 8px;
 }
 
-.favorites li a{
-  font-size:15px;
-  color:#0033cc;
-}
-
-details{
-  margin-top:8px;
-}
-
-summary{
-  cursor:pointer;
-  font-size:15px;
-  color:#0033cc;
-  margin-bottom:6px;
-  outline:none;
-}
-
-summary:hover{
-  text-decoration:underline;
-}
-
-details[open] summary{
-  font-weight:bold;
-}
-
-details > ul{
-  margin-top:8px;
+.favorites li a {
+  font-size: 15px;
+  color: #0033cc;
 }
 
 .favorite-button {
@@ -95,7 +71,6 @@ details > ul{
   font-size: 15px;
   text-align: left;
   font-family: inherit;
-  cursor: pointer;
 }
 
 .favorite-button:hover {
