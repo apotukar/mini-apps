@@ -15,16 +15,24 @@
   <div style="display:flex; justify-content:space-between; margin-top:12px;">
     {% if earlierRef %}
       <a href="/journey/search?from={{ fromName | urlencode }}&to={{ toName | urlencode }}&earlierThan={{ earlierRef | urlencode }}">
-        &larr; Frühere Verbindungen
+        Frühere Verbindungen <img src="/public/icons/uarrow.min.png" alt="↑" class="arrow-inline">
       </a>
     {% else %}
       <span></span>
     {% endif %}
     {% if laterRef %}
       <a href="/journey/search?from={{ fromName | urlencode }}&to={{ toName | urlencode }}&laterThan={{ laterRef | urlencode }}">
-        Spätere Verbindungen &rarr;
+        Spätere Verbindungen <img src="/public/icons/darrow.min.png" alt="↓" class="arrow-inline">
       </a>
     {% endif %}
   </div>
 
+  <br/>
+  <div style="text-align: center;">
+      <a href="https://www.bahn.de/buchung/start#?SO={{ fromName | urlencode }}&ZO={{ toName | urlencode }}"
+         target="_blank"
+         rel="noopener">
+        <img src="/public/icons/rb.min.png" alt="Bahn">
+    </a>
+  </div>
 {% endblock %}

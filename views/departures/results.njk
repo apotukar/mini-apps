@@ -17,15 +17,14 @@
     <div style="display:flex; justify-content:space-between; margin-top:12px;">
       {% if earlierIso %}
         <a href="/departures/search?station={{ stationName | urlencode }}&when={{ earlierIso | urlencode }}">
-          &larr; Frühere Abfahrten
+          Frühere Abfahren <img src="/public/icons/uarrow.min.png" alt="↑" class="arrow-inline">
         </a>
       {% else %}
         <span></span>
       {% endif %}
-
       {% if laterIso %}
         <a href="/departures/search?station={{ stationName | urlencode }}&when={{ laterIso | urlencode }}">
-          Spätere Abfahrten &rarr;
+          Spätere Abfahrten <img src="/public/icons/darrow.min.png" alt="↓" class="arrow-inline">
         </a>
       {% endif %}
     </div>
