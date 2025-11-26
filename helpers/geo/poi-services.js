@@ -44,13 +44,13 @@ export async function searchPOIs(loc, type, apiKey) {
   const results = await Promise.all(
     json.elements.map(async n => {
       const tags = n.tags || {}
-      const lat = n.lat != null ? parseFloat(n.lat) : null
-      const lon = n.lon != null ? parseFloat(n.lon) : null
+      const lat = n.lat !== null ? parseFloat(n.lat) : null
+      const lon = n.lon !== null ? parseFloat(n.lon) : null
 
       let address = formatAddress(tags)
       let isFallbackAddress = false
 
-      if (!address && lat != null && lon != null) {
+      if (!address && lat !== null && lon !== null) {
         try {
           address = await reverseSearch(lat, lon, apiKey)
           isFallbackAddress = true

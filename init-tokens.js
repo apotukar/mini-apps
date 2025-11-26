@@ -3,13 +3,9 @@ import url from 'url'
 import fs from 'fs'
 import path from 'path'
 import fetch from 'node-fetch'
-import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 
-dotenv.config() // <-- Lädt deine .env
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+dotenv.config()
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -21,8 +17,6 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 
 const PORT = 3000
 const REDIRECT_URI = `http://localhost:${PORT}/oauth2callback`
-
-// const TOKENS_FILE = path.join(__dirname, '..', 'token.json')
 const TOKENS_FILE = path.join(process.cwd(), 'token.json')
 
 function buildAuthUrl() {

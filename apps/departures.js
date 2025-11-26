@@ -137,7 +137,7 @@ export function registerDepartureRoutes(app, params) {
       laterIso = new Date(last.getTime() + halfHour).toISOString()
     }
 
-    const cleanedItems = items.map(({ rawWhen, ...rest }) => rest)
+    const cleanedItems = items.map(({ rawWhen: _, ...rest }) => rest)
 
     return {
       stationName,

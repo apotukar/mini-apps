@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import https from 'https'
-import dotenv from 'dotenv'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 

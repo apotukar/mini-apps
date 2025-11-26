@@ -29,7 +29,6 @@ export function saveFavorites(res, favs, namespace) {
 
 export function clearFavorites(res, namespace) {
   const keyFav = favKey(namespace)
-  const keyHide = hideKey(namespace)
   res.clearCookie(keyFav, { path: '/' })
 }
 

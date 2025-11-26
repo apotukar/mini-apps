@@ -9,12 +9,26 @@ const TTL = 1000 * 60 * 60 * 12
 
 async function readCache(plz) {
   const file = path.join(CACHE_DIR, `${plz}.json`)
+
   try {
     const raw = await fs.readFile(file, 'utf8')
     const data = JSON.parse(raw)
-    if (Date.now() - data.timestamp < TTL) return data.payload
-  } catch {}
-  return null
+
+    if (!data || typeof data.timestamp !== 'number' || !('payload' in data)) {
+      return null
+    }
+
+    if (Date.now() - data.timestamp < TTL) {
+      return data.payload
+    }
+
+    return null
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('Failed to read cache', file, err)
+    }
+    return null
+  }
 }
 
 async function writeCache(plz, payload) {

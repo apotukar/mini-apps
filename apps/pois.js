@@ -34,7 +34,7 @@ export function registerPOIRoutes(app, params) {
       }
 
       let results = []
-      if (type == 'notdienst') {
+      if (type === 'notdienst') {
         results = await getEmergencyPharmacies(loc.postcode)
       } else {
         results = await searchPOIs(loc, type, reverseGeocodingKey)
@@ -43,7 +43,7 @@ export function registerPOIRoutes(app, params) {
       const resultsWithMap = results.map(result => ({
         ...result,
         mapUrl:
-          result.lat != null && result.lon != null
+          result.lat !== null && result.lon !== null
             ? `/pois/map?lat=${result.lat}&lon=${result.lon}`
             : null
       }))

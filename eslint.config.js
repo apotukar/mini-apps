@@ -2,7 +2,10 @@ import eslintPlugin from '@eslint/js'
 import globals from 'globals'
 
 export default [
-  // eslint:recommended aktivieren
+  {
+    ignores: ['**/*.min.js']
+  },
+
   eslintPlugin.configs.recommended,
 
   {
@@ -11,8 +14,6 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-
-      // Hier kommen die früheren envs hin
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -21,7 +22,7 @@ export default [
     },
 
     rules: {
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-undef': 'error',
       'no-console': 'off',
       eqeqeq: 'warn',

@@ -2,7 +2,6 @@ import { createClient } from 'webdav'
 import https from 'https'
 import fs from 'fs/promises'
 import path from 'path'
-import { marked } from 'marked'
 import mime from 'mime-types'
 import { renderMarkdown } from '../helpers/markdown-joplin.js'
 
@@ -81,7 +80,9 @@ export function registerJoplinRoutes(app, params) {
           const files = await client.getDirectoryContents(dir)
           entry = files.find(f => f.basename.startsWith(id))
           if (entry) break
-        } catch {}
+        } catch (err) {
+          void err
+        }
       }
       if (!entry) return res.status(404).send('Not found')
       const data = await client.getFileContents(entry.filename)
@@ -99,11 +100,13 @@ export function registerJoplinRoutes(app, params) {
   async function ensureCacheDir() {
     try {
       await fs.mkdir(CACHE_DIR, { recursive: true })
-    } catch {}
+    } catch (err) {
+      void err
+    }
   }
 
   function cacheFilePathFor(entry) {
-    const safe = entry.filename.replace(/[\/\\:]/g, '_')
+    const safe = entry.filename.replace(/[/\\:]/g, '_')
     return path.join(CACHE_DIR, safe + '.json')
   }
 
@@ -113,7 +116,7 @@ export function registerJoplinRoutes(app, params) {
       const files = await fs.readdir(CACHE_DIR)
       const validNames = new Set(
         currentEntries.map(e => {
-          const safe = e.filename.replace(/[\/\\:]/g, '_')
+          const safe = e.filename.replace(/[/\\:]/g, '_')
           return safe + '.json'
         })
       )
@@ -121,10 +124,14 @@ export function registerJoplinRoutes(app, params) {
         if (!validNames.has(name)) {
           try {
             await fs.unlink(path.join(CACHE_DIR, name))
-          } catch {}
+          } catch (err) {
+            void err
+          }
         }
       }
-    } catch {}
+    } catch (err) {
+      void err
+    }
   }
 
   async function readFromCache(entry) {
@@ -136,7 +143,9 @@ export function registerJoplinRoutes(app, params) {
       const sameLastmod =
         cached.lastmod && entry.lastmod && String(cached.lastmod) === String(entry.lastmod)
       if (sameEtag || sameLastmod) return cached
-    } catch {}
+    } catch (err) {
+      void err
+    }
     return null
   }
 
@@ -154,7 +163,9 @@ export function registerJoplinRoutes(app, params) {
         }),
         'utf8'
       )
-    } catch {}
+    } catch (err) {
+      void err
+    }
   }
 
   async function getFileWithMeta(entry) {
@@ -213,7 +224,9 @@ export function registerJoplinRoutes(app, params) {
           const title = meta.title || raw.split('\n')[0] || '(ohne Titel)'
           notebooks.set(id, { id, title, parent_id: meta.parent_id || null })
         }
-      } catch {}
+      } catch (err) {
+        void err
+      }
     }
     return notebooks
   }
@@ -269,7 +282,9 @@ export function registerJoplinRoutes(app, params) {
             preferred: isPreferred
           })
         }
-      } catch {}
+      } catch (err) {
+        void err
+      }
     }
 
     notes.sort((a, b) => {

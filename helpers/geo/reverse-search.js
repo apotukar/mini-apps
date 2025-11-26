@@ -1,5 +1,3 @@
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/reverse'
-
 export async function reverseSearch(lat, lon, apiKey, retries = 2) {
   const url = new URL('https://eu1.locationiq.com/v1/reverse')
   url.searchParams.set('key', String(apiKey))
