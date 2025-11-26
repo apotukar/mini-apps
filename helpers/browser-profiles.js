@@ -35,11 +35,11 @@ export function getBrowserProfiles() {
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
       acceptLanguage: 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7'
     }
-  ]
+  ];
 }
 
 export function getRandomBrowserProfile() {
-  const profiles = getBrowserProfiles()
-  const i = Math.floor(Math.random() * profiles.length)
-  return profiles[i]
+  const profiles = getBrowserProfiles();
+  const i = Math.floor(Math.random() * profiles.length);
+  return profiles[i];
 }

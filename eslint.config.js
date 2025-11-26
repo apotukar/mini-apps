@@ -1,5 +1,5 @@
-import eslintPlugin from '@eslint/js'
-import globals from 'globals'
+import eslintPlugin from '@eslint/js';
+import globals from 'globals';
 
 export default [
   {
@@ -26,8 +26,8 @@ export default [
       'no-undef': 'error',
       'no-console': 'off',
       eqeqeq: 'warn',
-      semi: ['error', 'never'],
+      semi: ['error', 'always'],
       quotes: ['error', 'single']
     }
   }
-]
+];

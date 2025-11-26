@@ -1,16 +1,16 @@
-import fetch from 'node-fetch'
-import { reverseSearch } from './reverse-search.js'
+import fetch from 'node-fetch';
+import { reverseSearch } from './reverse-search.js';
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
+const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 export async function searchPOIs(loc, type, apiKey) {
   if (!loc) {
-    return []
+    return [];
   }
 
-  const latCenter = loc.lat
-  const lonCenter = loc.lon
-  const radius = 1500
+  const latCenter = loc.lat;
+  const lonCenter = loc.lon;
+  const radius = 1500;
 
   const poiType =
     {
@@ -19,53 +19,53 @@ export async function searchPOIs(loc, type, apiKey) {
       geldautomat: 'amenity=atm',
       arzt: 'amenity=doctors',
       cafe: 'amenity=cafe'
-    }[type] || 'amenity=pharmacy'
+    }[type] || 'amenity=pharmacy';
 
-  const overpassQuery = `[out:json];node[${poiType}](around:${radius},${latCenter},${lonCenter});out body;`
+  const overpassQuery = `[out:json];node[${poiType}](around:${radius},${latCenter},${lonCenter});out body;`;
 
-  const body = new URLSearchParams()
-  body.set('data', overpassQuery)
+  const body = new URLSearchParams();
+  body.set('data', overpassQuery);
 
   const res = await fetch(OVERPASS_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body
-  })
+  });
 
   if (!res.ok) {
-    return []
+    return [];
   }
 
-  const json = await res.json()
+  const json = await res.json();
   if (!json.elements) {
-    return []
+    return [];
   }
 
   const results = await Promise.all(
     json.elements.map(async n => {
-      const tags = n.tags || {}
-      const lat = n.lat !== null ? parseFloat(n.lat) : null
-      const lon = n.lon !== null ? parseFloat(n.lon) : null
+      const tags = n.tags || {};
+      const lat = n.lat !== null ? parseFloat(n.lat) : null;
+      const lon = n.lon !== null ? parseFloat(n.lon) : null;
 
-      let address = formatAddress(tags)
-      let isFallbackAddress = false
+      let address = formatAddress(tags);
+      let isFallbackAddress = false;
 
       if (!address && lat !== null && lon !== null) {
         try {
-          address = await reverseSearch(lat, lon, apiKey)
-          isFallbackAddress = true
+          address = await reverseSearch(lat, lon, apiKey);
+          isFallbackAddress = true;
         } catch {
-          address = address || null
+          address = address || null;
         }
       }
 
-      let speciality = null
+      let speciality = null;
       if (poiType === 'amenity=doctors') {
-        speciality = getDoctorSpecialty(tags)
+        speciality = getDoctorSpecialty(tags);
       }
 
       const displayName =
-        tags.name || (speciality && type === 'arzt' ? `Arzt (${speciality})` : 'Unbekannt')
+        tags.name || (speciality && type === 'arzt' ? `Arzt (${speciality})` : 'Unbekannt');
 
       return {
         name: displayName,
@@ -75,26 +75,26 @@ export async function searchPOIs(loc, type, apiKey) {
         lon,
         isFallbackAddress,
         phone: null
-      }
+      };
     })
-  )
+  );
 
-  return results
+  return results;
 }
 
 function formatAddress(tags) {
-  const street = tags['addr:street'] || ''
-  const number = tags['addr:housenumber'] || ''
-  const city = tags['addr:city'] || ''
-  const pc = tags['addr:postcode'] || ''
+  const street = tags['addr:street'] || '';
+  const number = tags['addr:housenumber'] || '';
+  const city = tags['addr:city'] || '';
+  const pc = tags['addr:postcode'] || '';
 
-  const line1 = street && number ? `${street} ${number}` : street || ''
-  const line2 = pc && city ? `${pc} ${city}` : city || ''
+  const line1 = street && number ? `${street} ${number}` : street || '';
+  const line2 = pc && city ? `${pc} ${city}` : city || '';
 
   if (!line1 && !line2) {
-    return null
+    return null;
   }
-  return [line1, line2].filter(Boolean).join(', ')
+  return [line1, line2].filter(Boolean).join(', ');
 }
 
 function getDoctorSpecialty(tags) {
@@ -104,13 +104,13 @@ function getDoctorSpecialty(tags) {
     tags['healthcare'] ||
     tags['doctor'] ||
     tags['speciality'] ||
-    null
+    null;
 
   if (!raw) {
-    return null
+    return null;
   }
 
-  const first = String(raw).split(';')[0].trim()
+  const first = String(raw).split(';')[0].trim();
 
   const map = {
     dentist: 'Zahnarzt',
@@ -138,8 +138,8 @@ function getDoctorSpecialty(tags) {
     gastroenterology: 'Gastroenterologe',
     proctology: 'Proktologe',
     doctor: 'Arztpraxis'
-  }
+  };
 
-  const key = first.toLowerCase()
-  return map[key] || first
+  const key = first.toLowerCase();
+  return map[key] || first;
 }
