@@ -1,10 +1,20 @@
 <li class="poi-item">
-  <strong>{{ r.name }}</strong><br />
+  <strong>{{ r.name }}</strong><br/>
+  {% if r.speciality %}
+    <div class="poi-speciality">{{ r.speciality }}</div>
+  {% endif %}
 
   {% if r.address %}
     <small>{{ r.address }}</small><br />
+    {% if r.isFallbackAddress %}
+      <small class="fallback-hint">(Adresse automatisch ergänzt)</small><br />
+    {% endif %}
   {% else %}
     <small>(Adresse nicht verfügbar)</small><br />
+  {% endif %}
+
+  {% if r.phone %}
+    <small>Telefon: {{ r.phone }}</small><br />
   {% endif %}
 
   {% if r.mapUrl %}

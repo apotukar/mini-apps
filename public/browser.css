@@ -1,5 +1,5 @@
 body {
-  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-family: 'MS Sans Serif', Tahoma, sans-serif;
   background: #c0c0c0;
   color: black;
   margin: 0;
@@ -9,7 +9,7 @@ body {
 .page {
   margin: 10px;
   border: 2px solid #808080;
-  background: #ffffff;
+  background: #fff;
   padding: 8px;
 }
 
@@ -64,6 +64,17 @@ body {
   font-size: 12px;
 }
 
+/* globale Links VOR .ns-nav a / :hover */
+.link a {
+  color: blue;
+  text-decoration: underline;
+}
+
+/* globale Paragraphen VOR .ns-nav p */
+p {
+  margin: 4px 0;
+}
+
 table.layout {
   width: 100%;
   border-collapse: collapse;
@@ -80,7 +91,7 @@ td.nav {
 }
 
 td.content {
-  background: #ffffff;
+  background: #fff;
   padding: 8px;
   vertical-align: top;
   font-size: 12px;
@@ -110,22 +121,18 @@ td.content {
 
 .ns-content {
   border: 2px inset #fff;
-  background: #ffffff;
+  background: #fff;
   padding: 6px;
   font-size: 12px;
   line-height: 1.4;
 }
 
-.link a {
-  color: blue;
-  text-decoration: underline;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'MS Sans Serif', Tahoma, sans-serif;
   margin: 6px 0;
-}
-
-p {
-  margin: 4px 0;
 }

@@ -4,7 +4,8 @@ import {
   clearFavorites,
   getHideFlag,
   clearHideFlag,
-  dedupeFavs
+  dedupeFavs,
+  setHideFlag
 } from '../helpers/favorites.js'
 
 export function registerDepartureRoutes(app, params) {
@@ -13,15 +14,17 @@ export function registerDepartureRoutes(app, params) {
   const transportModeLabels = config.labels || {}
   const transportModeTypes = config.types || {}
   const favoritesNamespace = 'departures'
+  const configFavorites = Array.isArray(config.favorites) ? config.favorites : []
 
   app.get('/departures', (req, res) => {
-    const station = req.query.station || ''
+    let favorites = getFavorites(req, favoritesNamespace)
+    if (!getHideFlag(req, favoritesNamespace)) {
+      favorites = dedupeFavs([...favorites, ...configFavorites])
+      saveFavorites(res, favorites, favoritesNamespace)
+      setHideFlag(res, favoritesNamespace)
+    }
 
-    const hideConfig = getHideFlag(req, favoritesNamespace)
-    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
-    const configFavorites = !hideConfig && Array.isArray(config.favorites) ? config.favorites : []
-    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
-    const favorites = dedupeFavs(baseFavorites)
+    const station = req.query.station || ''
 
     res.render('departures/index.njk', {
       station,
@@ -35,12 +38,9 @@ export function registerDepartureRoutes(app, params) {
       return res.redirect('/departures')
     }
 
-    const hideConfig = getHideFlag(req, favoritesNamespace)
-    const cookieFavorites = getFavorites(req, favoritesNamespace).filter(f => typeof f === 'string')
-    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
-    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
-    const newFavorites = dedupeFavs([...baseFavorites, stationName])
-    saveFavorites(res, newFavorites, favoritesNamespace)
+    let favorites = getFavorites(req, favoritesNamespace)
+    favorites = dedupeFavs([stationName, ...favorites])
+    saveFavorites(res, favorites, favoritesNamespace)
 
     res.redirect(`/departures?station=${encodeURIComponent(stationName)}`)
   })

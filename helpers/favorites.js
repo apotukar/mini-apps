@@ -30,9 +30,12 @@ export function saveFavorites(res, favs, namespace) {
 export function clearFavorites(res, namespace) {
   const keyFav = favKey(namespace)
   const keyHide = hideKey(namespace)
-
   res.clearCookie(keyFav, { path: '/' })
-  res.cookie(keyHide, '1', {
+}
+
+export function setHideFlag(res, namespace) {
+  const key = hideKey(namespace)
+  res.cookie(key, '1', {
     maxAge: FAV_COOKIE_MAX_AGE,
     path: '/'
   })

@@ -156,7 +156,8 @@
   },
   "poi": {
     "zoom": 16,
-    "tiles": 3
+    "tiles": 3,
+    "reverseGeocodingKey": "ENV:REVERSE_GEOCODING_KEY"
   },
   "browser": {
     "timeout": 120000,

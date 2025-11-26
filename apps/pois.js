@@ -1,11 +1,13 @@
-import { searchPOIs } from '../helpers/geo/poi-service.js'
+import { searchPOIs } from '../helpers/geo/poi-services.js'
 import { geocodePlace } from '../helpers/geo/geocode.js'
 import { generateStaticMap } from '../helpers/geo/map-generator.js'
+import { getEmergencyPharmacies } from '../helpers/geo/poi-emergency-pharmacy-service.js'
 
 export function registerPOIRoutes(app, params) {
   const config = params.config
   const zoom = config.zoom || 15
   const tiles = config.tiles || 3
+  const reverseGeocodingKey = config.reverseGeocodingKey || ''
 
   app.get('/pois', async (req, res) => {
     const query = req.query.q || ''
@@ -31,10 +33,19 @@ export function registerPOIRoutes(app, params) {
         })
       }
 
-      const results = await searchPOIs(loc, type)
-      const resultsWithMap = results.map(r => ({
-        ...r,
-        mapUrl: r.lat != null && r.lon != null ? `/pois/map?lat=${r.lat}&lon=${r.lon}` : null
+      let results = []
+      if (type == 'notdienst') {
+        results = await getEmergencyPharmacies(loc.postcode)
+      } else {
+        results = await searchPOIs(loc, type, reverseGeocodingKey)
+      }
+
+      const resultsWithMap = results.map(result => ({
+        ...result,
+        mapUrl:
+          result.lat != null && result.lon != null
+            ? `/pois/map?lat=${result.lat}&lon=${result.lon}`
+            : null
       }))
 
       res.render('pois/index.njk', {

@@ -32,21 +32,9 @@
     <i>Keine Favoriten</i>
   {% endif %}
 
-  <form method="GET" action="/journey/clear-favs">
-    <button type="submit" class="btn btn-danger">
-        <img src="/public/icons/delete.min.png" alt="Reload" class="btn-icon">
-        Alle Favoriten löschen
-    </button>
-  </form>
+  {% from "common/fav-buttons-bottom.njk" import favButtons %}
+  {{ favButtons("/journey") }}
 
-  <form method="GET" action="/journey/show-config-favs">
-    <button type="submit" class="btn btn-secondary">
-        <img src="/public/icons/reload.min.png" alt="Reload" class="btn-icon">
-        Standard-Favoriten wieder anzeigen
-    </button>
-  </form>
+  {% include "common/hint.njk" %}
 
-  <p class="hint">
-    Ultra-leichte Version, optimiert für schwache Verbindungen / Opera Mini.
-  </p>
 {% endblock %}

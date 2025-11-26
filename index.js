@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
-import { basicAuth } from './helpers/basic-auth.js'
+import { basicAuth } from './helpers/security/basic-auth.js'
 import { setupNunjucks } from './helpers/nunjucks-setup.js'
 import { loadConfig } from './helpers/config-loader.js'
 import { createClient } from 'db-vendo-client'

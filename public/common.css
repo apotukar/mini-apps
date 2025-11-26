@@ -2,3 +2,15 @@
   height: 1em;
   vertical-align: -0.1em;
 }
+
+.page {
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 6px;
+}
+
+@supports (width: max-content) {
+  .page {
+    max-width: 560px;
+  }
+}

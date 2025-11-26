@@ -3,21 +3,24 @@ import {
   saveFavorites,
   clearFavorites,
   getHideFlag,
+  setHideFlag,
   clearHideFlag,
   dedupeFavs
 } from '../helpers/favorites.js'
 
 export function registerJourneyRoutes(app, params) {
-  const favoritesNamespace = 'journey'
   const client = params.client
   const config = params.config || {}
+  const favoritesNamespace = 'journey'
+  const configFavorites = Array.isArray(config.favorites) ? config.favorites : []
 
   app.get('/journey', (req, res) => {
-    const hideConfig = getHideFlag(req, favoritesNamespace)
-    const cookieFavorites = getFavorites(req, favoritesNamespace)
-    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
-    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
-    const favorites = dedupeFavs(baseFavorites)
+    let favorites = getFavorites(req, favoritesNamespace)
+    if (!getHideFlag(req, favoritesNamespace)) {
+      favorites = dedupeFavs([...favorites, ...configFavorites])
+      saveFavorites(res, favorites, favoritesNamespace)
+      setHideFlag(res, favoritesNamespace)
+    }
 
     const from = req.query.from || ''
     const to = req.query.to || ''
@@ -36,12 +39,9 @@ export function registerJourneyRoutes(app, params) {
       return res.redirect('/journey')
     }
 
-    const hideConfig = getHideFlag(req, favoritesNamespace)
-    const cookieFavorites = getFavorites(req, favoritesNamespace)
-    const configFavorites = !hideConfig && Array.isArray(config?.favorites) ? config.favorites : []
-    const baseFavorites = cookieFavorites.length > 0 ? cookieFavorites : configFavorites
-    const newFavorites = dedupeFavs([...baseFavorites, { from: fromName, to: toName }])
-    saveFavorites(res, newFavorites, favoritesNamespace)
+    let favorites = getFavorites(req, favoritesNamespace)
+    favorites = dedupeFavs([{ from: fromName, to: toName }, ...favorites])
+    saveFavorites(res, favorites, favoritesNamespace)
 
     res.redirect(`/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`)
   })

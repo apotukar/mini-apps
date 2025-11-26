@@ -14,7 +14,8 @@
 
   <label>Art:</label><br />
   <select name="t" class="input">
-    <option value="apotheke"   {% if type == "apotheke" %}selected{% endif %}>Apotheken</option>
+    <option value="apotheke" {% if type == "apotheke" %}selected{% endif %}>Apotheken</option>
+    <option value="notdienst" {% if type == "notdienst" %}selected{% endif %}>Apotheken-Notdienst</option>
     <option value="tankstelle" {% if type == "tankstelle" %}selected{% endif %}>Tankstellen</option>
     <option value="geldautomat" {% if type == "geldautomat" %}selected{% endif %}>Geldautomaten</option>
     <option value="arzt" {% if type == "arzt" %}selected{% endif %}>Ärzte</option>
@@ -37,5 +38,7 @@
 <p class="hint">
   Komplett ohne Geolocation. Nur Ortsname oder PLZ.
 </p>
+
+<script src="public/js/geo.min.js"></script>
 
 {% endblock %}

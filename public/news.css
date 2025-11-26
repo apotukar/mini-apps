@@ -7,11 +7,6 @@ body {
   background: #fafafa;
 }
 
-.page {
-  max-width: 480px;
-  margin: 0 auto;
-}
-
 h1 {
   font-size: 22px;
   margin-top: 0;
@@ -52,24 +47,24 @@ small {
 }
 
 /* Quelle-spezifische Farben über Teilstrings */
-li[class*="tagesschau"] a {
+li[class*='tagesschau'] a {
   color: #004f9f;
 }
 
-li[class*="spiegel"] a {
-  color: #cc0000;
+li[class*='spiegel'] a {
+  color: #c00;
 }
 
-li[class*="dw"] a,
-li[class*="deutsche-welle"] a {
+li[class*='dw'] a,
+li[class*='deutsche-welle'] a {
   color: #009688;
 }
 
-li[class*="zeit"] a {
+li[class*='zeit'] a {
   color: #ff9800;
 }
 
-li[class*="heise"] a {
+li[class*='heise'] a {
   color: #673ab7;
 }
 

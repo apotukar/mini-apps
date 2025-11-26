@@ -11,12 +11,15 @@
     "check:json": "prettier --check \"**/*.json\"",
     "format:js": "prettier --write \"**/*.js\" \"!**/*.min.js\"",
     "check:js": "prettier --check \"**/*.js\" \"!**/*.min.js\"",
-    "format:css": "prettier --write \"**/*.css\" \"!**/*.min.css\"",
-    "check:css": "prettier --check \"**/*.css\" \"!**/*.min.css\"",
     "start": "node index.js",
+    "minify": "npm-run-all minify:js minify:css minify:js",
     "minify:css": "./scripts/minify_css.sh",
+    "minify:js": "./scripts/minify_js.sh",
     "minify:icons": "./scripts/minify_icons.sh public/icons public/icons 48",
-    "create-certs": "./scripts/create_certs.sh"
+    "create-certs": "./scripts/create_certs.sh",
+    "check:css": "stylelint \"**/*.css\" \"!**/*.min.css\"",
+    "lint:css:fix": "stylelint \"**/*.css\" \"!**/*.min.css\" --fix",
+    "format:css": "prettier --write \"**/*.css\" \"!**/*.min.css\""
   },
   "keywords": [],
   "author": "",
@@ -32,17 +35,22 @@
     "marked": "^17.0.0",
     "node-fetch": "^3.3.2",
     "nunjucks": "^3.2.4",
-    "pupeteer": "^0.0.1",
     "puppeteer": "^24.30.0",
     "sharp": "^0.34.5",
     "webdav": "^5.8.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "clean-css-cli": "^5.6.3",
+    "eslint": "^9.39.1",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.5.6",
     "postcss-discard-comments": "^7.0.5",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "stylelint": "^16.26.0",
+    "stylelint-config-standard": "^39.0.1",
+    "stylelint-prettier": "^5.0.3",
+    "terser": "^5.44.1"
   }
 }

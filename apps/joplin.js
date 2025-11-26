@@ -4,6 +4,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { marked } from 'marked'
 import mime from 'mime-types'
+import { renderMarkdown } from '../helpers/markdown-joplin.js'
 
 export function registerJoplinRoutes(app, params) {
   const { webdavUrl, secret, preferredNotebooks } = params.config
@@ -41,7 +42,7 @@ export function registerJoplinRoutes(app, params) {
       const title = raw.split('\n')[0] || '(ohne Titel)'
       const idx = raw.lastIndexOf('\n\n')
       const bodyMarkdown = idx !== -1 ? raw.slice(0, idx).trim() : raw.trim()
-      const bodyHtml = marked.parse(bodyMarkdown)
+      const bodyHtml = renderMarkdown(bodyMarkdown)
 
       const notebooks = await loadNotebookMap()
       const notebookPaths = buildNotebookPathMap(notebooks)
@@ -260,7 +261,7 @@ export function registerJoplinRoutes(app, params) {
           notes.push({
             id: f.basename,
             title,
-            body: marked.parse(bodyMarkdown),
+            body: renderMarkdown(bodyMarkdown),
             updated: parseUpdated(meta.updated_time),
             notebookId: parentId,
             notebookTitle,
@@ -299,35 +300,3 @@ export function registerJoplinRoutes(app, params) {
     return notes
   }
 }
-
-const renderer = new marked.Renderer()
-
-function normalizeHref(h) {
-  if (!h) return ''
-  if (typeof h === 'string') return h
-  if (typeof h === 'object' && 'href' in h && typeof h.href === 'string') return h.href
-  return String(h)
-}
-
-renderer.link = token => {
-  let src = normalizeHref(token.href)
-  const label = token.text && token.text.trim() ? token.text.trim() : 'Anhang'
-  const title = token.title ? ` title="${token.title}"` : ''
-  if (src.startsWith(':/')) {
-    const id = src.slice(2)
-    const encoded = encodeURIComponent(label)
-    src = `/joplin/resource/${id}?name=${encoded}`
-    return `<a href="${src}"${title}>${label}</a>`
-  }
-  return `<a href="${src}"${title}>${label}</a>`
-}
-
-renderer.image = token => {
-  let src = normalizeHref(token.href)
-  if (src.startsWith(':/')) src = `/joplin/resource/${src.slice(2)}`
-  const alt = token.text || ''
-  const title = token.title ? ` title="${token.title}"` : ''
-  return `<img src="${src}" alt="${alt}"${title}>`
-}
-
-marked.setOptions({ renderer })
