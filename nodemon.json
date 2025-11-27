@@ -1,0 +1,4 @@
+{
+  "watch": ["."],
+  "ignore": ["token.json", "node_modules"]
+}

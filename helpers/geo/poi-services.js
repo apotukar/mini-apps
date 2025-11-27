@@ -3,25 +3,15 @@ import { reverseSearch } from './reverse-search.js';
 
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
-export async function searchPOIs(loc, type, apiKey) {
+export async function searchPOIs(types, type, loc, radiusInMeters, apiKey) {
   if (!loc) {
     return [];
   }
 
   const latCenter = loc.lat;
   const lonCenter = loc.lon;
-  const radius = 1500;
-
-  const poiType =
-    {
-      apotheke: 'amenity=pharmacy',
-      tankstelle: 'amenity=fuel',
-      geldautomat: 'amenity=atm',
-      arzt: 'amenity=doctors',
-      cafe: 'amenity=cafe'
-    }[type] || 'amenity=pharmacy';
-
-  const overpassQuery = `[out:json];node[${poiType}](around:${radius},${latCenter},${lonCenter});out body;`;
+  const poiType = types[type]?.query || 'amenity=pharmacy';
+  const overpassQuery = `[out:json];node[${poiType}](around:${radiusInMeters},${latCenter},${lonCenter});out body;`;
 
   const body = new URLSearchParams();
   body.set('data', overpassQuery);

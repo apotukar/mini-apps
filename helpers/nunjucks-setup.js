@@ -1,11 +1,15 @@
 import nunjucks from 'nunjucks';
 
-export function setupNunjucks(app) {
+export function setupNunjucks(app, params) {
+  const config = params.config || {};
+
   app.set('view engine', 'njk');
 
   const env = nunjucks.configure('views', {
     autoescape: true,
-    express: app
+    express: app,
+    watch: config.modeEnv === 'DEV',
+    noCache: config.modeEnv === 'DEV'
   });
 
   env.addFilter('formatDate', function (dateStr, locale = 'de-DE', options = {}) {

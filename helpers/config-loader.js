@@ -4,9 +4,7 @@ import dotenv from 'dotenv';
 
 export function loadConfig(configFile = 'config.json') {
   const rootDir = process.cwd();
-
-  dotenv.config({ path: path.join(rootDir, '.env') });
-
+  dotenv.config({ path: path.join(rootDir, '.env'), override: process.env.DOTENV_OVERRIDE });
   const configPath = path.join(rootDir, configFile);
   const raw = fs.readFileSync(configPath, 'utf8');
   const rawConfig = JSON.parse(raw);

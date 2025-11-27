@@ -1,9 +1,10 @@
 {
+  "modeEnv": "ENV:MODE_ENV",
+  "port": "ENV:PORT",
   "secret": {
     "username": "ENV:BASIC_AUTH_USER",
     "password": "ENV:BASIC_AUTH_PASS"
   },
-  "port": 3000,
   "routes": [
     {
       "path": "/journey",
@@ -154,10 +155,34 @@
     "totalLimit": 84,
     "browserProxy": "http://frogfind.com/read.php?a="
   },
-  "poi": {
+  "pois": {
     "zoom": 16,
     "tiles": 3,
-    "reverseGeocodingKey": "ENV:REVERSE_GEOCODING_KEY"
+    "reverseGeocodingKey": "ENV:REVERSE_GEOCODING_KEY",
+    "types": {
+      "bank": { "label": "Bank", "query": "amenity=bank" },
+      "bar": { "label": "Bar", "query": "amenity=bar" },
+      "bookstore": { "label": "Buchhandlung", "query": "shop=books" },
+      "bus_stop": { "label": "Bushaltestelle", "query": "highway=bus_stop" },
+      "cafe": { "label": "Café", "query": "amenity=cafe" },
+      "chemist": { "label": "Drogerie", "query": "shop=chemist" },
+      "cinema": { "label": "Kino", "query": "amenity=cinema" },
+      "doctor": { "label": "Arzt", "query": "amenity=doctors" },
+      "emergency_pharmacy": { "label": "Apotheken-Notdienst", "query": null },
+      "fitness_center": { "label": "Fitnessstudio", "query": "leisure=fitness_centre" },
+      "hotel": { "label": "Hotel", "query": "tourism=hotel" },
+      "hospital": { "label": "Krankenhaus", "query": "amenity=hospital" },
+      "library": { "label": "Bibliothek", "query": "amenity=library" },
+      "optician": { "label": "Optiker", "query": "shop=optician" },
+      "pharmacy": { "label": "Apotheke", "query": "amenity=pharmacy" },
+      "post_office": { "label": "Post", "query": "amenity=post_office" },
+      "pub": { "label": "Biergarten", "query": "amenity=pub" },
+      "restaurant": { "label": "Restaurant", "query": "amenity=restaurant" },
+      "supermarket": { "label": "Supermarkt", "query": "shop=supermarket" },
+      "taxi": { "label": "Taxi", "query": "amenity=taxi" },
+      "train_station": { "label": "Bahnhof", "query": "railway=station" },
+      "fuel_station": { "label": "Tankstelle", "query": "amenity=fuel" }
+    }
   },
   "browser": {
     "timeout": 120000,

@@ -41,9 +41,12 @@ async function writeCache(plz, payload) {
 async function scrape(plz) {
   const profile = getRandomBrowserProfile();
   const url = `https://www.aponet.de/apotheke/notdienstsuche/${plz}`;
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
 
+  const page = await browser.newPage();
   await page.setUserAgent(profile.userAgent);
   await page.setExtraHTTPHeaders({ 'Accept-Language': profile.acceptLanguage });
 

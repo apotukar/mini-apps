@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 BASE_DIR="$(dirname "$(realpath "$0")")"
 CERT_DIR="$BASE_DIR/../certs"

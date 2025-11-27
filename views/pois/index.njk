@@ -12,14 +12,19 @@
   <label>Ort oder PLZ:</label><br />
   <input type="text" name="q" value="{{ query }}" class="input" />
 
+  {% set rValue = radius %}
+  <select name="r" class="input" {% if type == "emergency_pharmacy" %}disabled{% endif %}>
+    {% set radiusOptions = [1, 2, 3, 5, 8, 15, 20, 30] %}
+    {% for r in radiusOptions %}
+      <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{{ r }} km</option>
+    {% endfor %}
+  </select>
+
   <label>Art:</label><br />
   <select name="t" class="input">
-    <option value="apotheke" {% if type == "apotheke" %}selected{% endif %}>Apotheken</option>
-    <option value="notdienst" {% if type == "notdienst" %}selected{% endif %}>Apotheken-Notdienst</option>
-    <option value="tankstelle" {% if type == "tankstelle" %}selected{% endif %}>Tankstellen</option>
-    <option value="geldautomat" {% if type == "geldautomat" %}selected{% endif %}>Geldautomaten</option>
-    <option value="arzt" {% if type == "arzt" %}selected{% endif %}>Ärzte</option>
-    <option value="cafe" {% if type == "cafe" %}selected{% endif %}>Cafés</option>
+    {% for key, label in types %}
+      <option value="{{ key }}"{% if type == key %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
   </select>
 
   <button type="submit" class="btn">Suchen</button>

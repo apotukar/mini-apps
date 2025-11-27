@@ -17,3 +17,5 @@ node_modules
 *.min.css
 *.min.png
 *.min.js
+
+.books/

@@ -1,23 +1,29 @@
-import http from 'http';
+import https from 'https';
 import url from 'url';
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ override: process.env.DOTENV_OVERRIDE });
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const PORT = Number(process.env.PORT) || 3443;
+const REDIRECT_URI = process.env.REDIRECT_URI || `https://localhost:${PORT}/oauth2callback`;
+const TOKENS_FILE = path.join(process.cwd(), 'token.json');
+
+console.log('REDIRECT_URI', REDIRECT_URI);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Fehler: GOOGLE_CLIENT_ID oder GOOGLE_CLIENT_SECRET fehlen in der .env');
   process.exit(1);
 }
 
-const PORT = 3000;
-const REDIRECT_URI = `http://localhost:${PORT}/oauth2callback`;
-const TOKENS_FILE = path.join(process.cwd(), 'token.json');
+const httpsOptions = {
+  key: fs.readFileSync(path.join(process.cwd(), 'certs', 'server.key')),
+  cert: fs.readFileSync(path.join(process.cwd(), 'certs', 'server.crt'))
+};
 
 function buildAuthUrl() {
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
@@ -46,16 +52,16 @@ async function exchangeCodeForTokens(code) {
 
   const data = await res.json();
 
-  if (!data.refresh_token || !data.access_token) {
+  if (!data.access_token) {
     console.error('Antwort von Google:', data);
-    throw new Error('Konnte kein refresh_token/access_token erhalten');
+    throw new Error('Konnte kein access_token erhalten');
   }
 
   const out = {
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
     access_token: data.access_token,
-    refresh_token: data.refresh_token
+    refresh_token: data.refresh_token || null
   };
 
   fs.writeFileSync(TOKENS_FILE, JSON.stringify(out, null, 2), 'utf8');
@@ -63,7 +69,7 @@ async function exchangeCodeForTokens(code) {
 }
 
 function startServer() {
-  const server = http.createServer(async (req, res) => {
+  const server = https.createServer(httpsOptions, async (req, res) => {
     const parsed = url.parse(req.url, true);
 
     if (parsed.pathname !== '/oauth2callback') {
@@ -93,9 +99,9 @@ function startServer() {
     }
   });
 
-  server.listen(PORT, () => {
-    console.log('OAuth Callback Server:', REDIRECT_URI);
-    console.log('Öffne diese URL im Browser:\n');
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`HTTPS OAuth Callback Server läuft auf: ${REDIRECT_URI}`);
+    console.log('Öffne diese URL im Browser, um die Authentifizierung zu starten:\n');
     console.log(buildAuthUrl());
     console.log('\nNach Login wird token.json geschrieben nach:\n' + TOKENS_FILE);
   });

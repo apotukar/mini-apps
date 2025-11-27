@@ -1,0 +1,27 @@
+services:
+  node:
+    build: .
+    container_name: node
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - '${PORT}:${PORT}'
+    environment:
+      DOTENV_OVERRIDE: 'false'
+      MODE_ENV: 'PROD'
+    env_file:
+      - .env
+    command: >
+      sh -c '
+        if [ "$MODE_ENV" = "DEV" ]; then
+          npx nodemon index.js
+        elif [ "$MODE_ENV" = "PROD" ]; then
+          node index.js
+        elif [ "$MODE_ENV" = "INIT" ]; then
+          node init-tokens.js
+        else
+          echo "Unknown MODE_ENV: $MODE_ENV"
+          exit 1
+        fi
+      '

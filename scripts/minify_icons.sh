@@ -17,7 +17,7 @@ for img in "$SRC_DIR"/*.png; do
   tmp="$DEST_DIR/${base}.tmp.png"
   out="$DEST_DIR/${base}.min.png"
 
-  magick "$img" \
+  convert "$img" \
     -fuzz 5% \
     -transparent white \
     -resize "${SIZE}x${SIZE}" \

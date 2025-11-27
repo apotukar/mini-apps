@@ -26,7 +26,7 @@ import { registerBrowserRoutes } from './apps/browser.js';
 
 const config = loadConfig();
 const app = express();
-setupNunjucks(app);
+setupNunjucks(app, { config: { modeEnv: config.modeEnv } });
 const dbClient = createClient(dbProfile, 'DB-Multi');
 
 // ────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ registerDepartureRoutes(app, {
 registerWeatherRoutes(app, { config: config.weather });
 registerTaskRoutes(app);
 registerNewsRoutes(app, { config: config.news });
-registerPOIRoutes(app, { config: config.poi });
+registerPOIRoutes(app, { config: config.pois });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
 
@@ -102,7 +102,7 @@ const httpsOptions = {
   cert: fs.readFileSync(path.join(ROOT_DIR, 'certs', 'server.crt'))
 };
 
-https.createServer(httpsOptions, app).listen(config.port, () => {
+https.createServer(httpsOptions, app).listen(config.port, '0.0.0.0', () => {
   console.log('HTTPS-Server läuft auf Port', config.port);
 
   config.routes.forEach(route => {
