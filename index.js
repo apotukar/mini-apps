@@ -72,15 +72,19 @@ registerHomeRoutes(app, {
 
 registerJourneyRoutes(app, {
   client: dbClient,
-  config: { favorites: config.transport.journey.favorites }
+  config: {
+    ...config.transport.journey,
+    saveNormalizedFavName: config.transport.saveNormalizedFavName
+  }
 });
 
 registerDepartureRoutes(app, {
   client: dbClient,
   config: {
+    ...config.transport.departures,
     labels: config.transport.labels,
     types: config.transport.types,
-    favorites: config.transport.departures.favorites
+    saveNormalizedFavName: config.transport.saveNormalizedFavName
   }
 });
 

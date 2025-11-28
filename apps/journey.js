@@ -13,6 +13,7 @@ export function registerJourneyRoutes(app, params) {
   const config = params.config || {};
   const favoritesNamespace = 'journey';
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
+  const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
 
   app.get('/journey', (req, res) => {
     let favorites = getFavorites(req, favoritesNamespace);
@@ -32,18 +33,44 @@ export function registerJourneyRoutes(app, params) {
     });
   });
 
-  app.post('/journey/save-fav', (req, res) => {
-    const fromName = (req.body.from || '').trim();
-    const toName = (req.body.to || '').trim();
-    if (!fromName && !toName) {
-      return res.redirect('/journey');
+  app.post('/journey/save-fav', async (req, res) => {
+    try {
+      const rawFromName = (req.body.from || '').trim();
+      const rawToName = (req.body.to || '').trim();
+      if (!rawFromName && !rawToName) {
+        return res.redirect('/journey');
+      }
+
+      let fromName = rawFromName;
+      let toName = rawToName;
+
+      if (configSaveNormalizedFavName) {
+        const fromId = await findStationId(client, rawFromName);
+        const toId = await findStationId(client, rawToName);
+        const options = { results: 1 };
+
+        const data = await client.journeys(fromId, toId, options);
+        const journeys = data.journeys || [];
+
+        if (journeys.length > 0) {
+          ({ fromName, toName } = normalizeJourneyNames(journeys, rawFromName, rawToName));
+        }
+      }
+
+      const favorites = dedupeFavs([
+        { from: fromName, to: toName },
+        ...getFavorites(req, favoritesNamespace)
+      ]);
+
+      saveFavorites(res, favorites, favoritesNamespace);
+
+      res.redirect(
+        `/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`
+      );
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
     }
-
-    let favorites = getFavorites(req, favoritesNamespace);
-    favorites = dedupeFavs([{ from: fromName, to: toName }, ...favorites]);
-    saveFavorites(res, favorites, favoritesNamespace);
-
-    res.redirect(`/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`);
   });
 
   app.get('/journey/clear-favs', (req, res) => {
@@ -100,7 +127,9 @@ export function registerJourneyRoutes(app, params) {
 
 async function findStationId(client, name) {
   const list = await client.locations(name, { results: 1 });
-  if (!list || list.length === 0) throw new Error('Station nicht gefunden: ' + name);
+  if (!list || list.length === 0) {
+    throw new Error('Station nicht gefunden: ' + name);
+  }
   return list[0].id;
 }
 
@@ -153,35 +182,41 @@ function buildJourneyView(journey, index) {
 async function handleJourneySearch({
   res,
   client,
-  fromName,
-  toName,
+  fromName: rawFromName,
+  toName: rawToName,
   departure,
   earlierThan,
   laterThan
 }) {
   try {
-    if (!fromName || !toName) {
+    if (!rawFromName || !rawToName) {
       return res.redirect('/journey');
     }
 
-    const fromId = await findStationId(client, fromName);
-    const toId = await findStationId(client, toName);
+    const fromId = await findStationId(client, rawFromName);
+    const toId = await findStationId(client, rawToName);
 
     const options = { results: 5 };
 
-    if (earlierThan) options.earlierThan = earlierThan;
-    else if (laterThan) options.laterThan = laterThan;
-    else if (departure) options.departure = departure;
+    if (earlierThan) {
+      options.earlierThan = earlierThan;
+    } else if (laterThan) {
+      options.laterThan = laterThan;
+    } else if (departure) {
+      options.departure = departure;
+    }
 
     const data = await client.journeys(fromId, toId, options);
     const journeys = data.journeys || [];
 
     if (!journeys.length) {
       return res.render('journey/no-results.njk', {
-        fromName,
-        toName
+        fromName: rawFromName,
+        toName: rawToName
       });
     }
+
+    const { fromName, toName } = normalizeJourneyNames(journeys, rawFromName, rawToName);
 
     const journeysView = journeys.map((journey, i) => buildJourneyView(journey, i)).filter(Boolean);
 
@@ -197,4 +232,17 @@ async function handleJourneySearch({
       message: err.message
     });
   }
+}
+
+function normalizeJourneyNames(journeys, rawFromName, rawToName) {
+  const journey = journeys?.[0];
+  const legs = journey?.legs ?? [];
+
+  const fromName = legs?.[0]?.origin?.name ?? rawFromName;
+  const toName = legs?.[legs.length - 1]?.destination?.name ?? rawToName;
+
+  return {
+    fromName,
+    toName
+  };
 }

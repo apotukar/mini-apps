@@ -48,6 +48,7 @@
     }
   ],
   "transport": {
+    "saveNormalizedFavName": true,
     "labels": {
       "suburban": "S-Bahn",
       "subway": "U-Bahn",
@@ -73,12 +74,27 @@
       "bus": "bus"
     },
     "journey": {
+      "saveNormalizedName": true,
       "favorites": [
-        { "from": "Landshut Hbf", "to": "München Hbf" },
-        { "from": "München Hbf", "to": "Landshut Hbf" }
+        {
+          "from": "München Hbf",
+          "to": "Landshut Hbf",
+          "bidirectional": true
+        },
+        {
+          "from": "München Hbf",
+          "to": "Berlin Hbf",
+          "bidirectional": true
+        },
+        {
+          "from": "München Hbf",
+          "to": "Essen Hbf",
+          "bidirectional": true
+        }
       ]
     },
     "departures": {
+      "saveNormalizedName": true,
       "favorites": [
         "Grillparzerstraße, München",
         "Hauptbahnhof, München",

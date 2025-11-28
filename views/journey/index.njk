@@ -27,6 +27,12 @@
   {% if favs and favs.length %}
     {% for fav in favs %}
       {% include "journey/partials/favorite.njk" %}
+      {% if fav.bidirectional %}
+        {% set _orig = fav %}
+        {% set fav = { from: _orig.to, to: _orig.from, bidirectional: false } %}
+        {% include "journey/partials/favorite.njk" %}
+        {% set fav = _orig %}
+      {% endif %}
     {% endfor %}
   {% else %}
     <i>Keine Favoriten</i>

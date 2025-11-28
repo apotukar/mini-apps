@@ -15,6 +15,7 @@ export function registerDepartureRoutes(app, params) {
   const transportModeTypes = config.types || {};
   const favoritesNamespace = 'departures';
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
+  const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
 
   app.get('/departures', (req, res) => {
     let favorites = getFavorites(req, favoritesNamespace);
@@ -32,10 +33,17 @@ export function registerDepartureRoutes(app, params) {
     });
   });
 
-  app.post('/departures/save-fav', (req, res) => {
-    const stationName = (req.body.station || '').trim();
-    if (!stationName) {
+  app.post('/departures/save-fav', async (req, res) => {
+    const rawStationName = (req.body.station || '').trim();
+    if (!rawStationName) {
       return res.redirect('/departures');
+    }
+
+    let stationName = rawStationName;
+
+    if (configSaveNormalizedFavName) {
+      const station = await findStation(rawStationName);
+      stationName = station.name;
     }
 
     let favorites = getFavorites(req, favoritesNamespace);

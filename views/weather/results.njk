@@ -9,11 +9,11 @@
 
   <a href="/weather{#?city={{ city | urlencode }}#}">Neue Suche</a><br /><br />
 
-  <div class="weather-current">
+  <div class="weather-current"">
     <b>Aktuell:</b><br />
     Temperatur: {{ current.temperature }} °C<br />
     Wind: {{ current.windspeed }} km/h<br />
-    Zustand: {{ current.description }} (Code {{ current.code }})<br />
+    <span title="Weather Code: {{ current.code }}">Zustand: {{ current.description }}</span><br />
     Zeit: {{ current.timeFormatted }}<br />
   </div>
 
