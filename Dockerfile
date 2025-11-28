@@ -1,5 +1,7 @@
 FROM node:24
 
+ARG TARGETARCH
+
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y \
@@ -26,11 +28,22 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     jq \
+    ack-grep \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g npm@latest
+RUN SHFMT_VERSION=v3.12.0 \
+    && case "$TARGETARCH" in \
+    amd64) ARCH=amd64 ;; \
+    arm64) ARCH=arm64 ;; \
+    arm)   ARCH=arm ;; \
+    *) echo "Unsupported architecture: $TARGETARCH" && exit 1 ;; \
+    esac \
+    && curl -sSL "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_${ARCH}" \
+    -o /usr/local/bin/shfmt \
+    && chmod +x /usr/local/bin/shfmt
 
+RUN npm install -g npm@latest
 ENV PUPPETEER_CACHE_DIR=/tmp/puppeteer-cache
 RUN npx puppeteer install chrome
 

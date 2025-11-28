@@ -11,8 +11,8 @@ import {
 export function registerDepartureRoutes(app, params) {
   const client = params.client;
   const config = params.config || {};
-  const transportModeLabels = config.labels || {};
-  const transportModeTypes = config.types || {};
+  const transportLabels = config.transportLabels || {};
+  const transportCssTypeAppendices = config.transportCssTypeAppendices || {};
   const favoritesNamespace = 'departures';
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
@@ -86,11 +86,11 @@ export function registerDepartureRoutes(app, params) {
 
   function buildDeparturesView(stationName, departures) {
     function translateProduct(product) {
-      return transportModeLabels[product] || product || '';
+      return transportLabels[product] || product || '';
     }
 
     function mapType(product) {
-      return transportModeTypes[product] || 'other';
+      return transportCssTypeAppendices[product] || 'other';
     }
 
     function formatLine(productGerman, raw) {

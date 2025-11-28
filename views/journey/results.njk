@@ -7,7 +7,7 @@
 
 {% block content %}
   <h2>{{ fromName }} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ toName }}</h2>
-  <a href="/journey?from={{ fromName | urlencode }}&to={{ toName | urlencode }}">Zurück</a>&nbsp;
+  <a href="/journey?from={{ fromName | urlencode }}&amp;to={{ toName | urlencode }}">Zurück</a>&nbsp;
   <a href="/journey">Neue Suche</a><br><br>
   {% for journey in journeys %}
     {% include "journey/partials/journey.njk" %}

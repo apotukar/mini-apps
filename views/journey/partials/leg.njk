@@ -1,10 +1,112 @@
-#{{ leg.idx }}: {{ leg.originName }} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ leg.destName }}
-<br>
-Ab: {{ leg.depTime }}<br>
-An: {{ leg.arrTime }}<br>
+<div class="leg">
+  <div class="leg-header">
+    {% if leg.isWalking %}
+      <strong><img src="/public/icons/walk.min.png" alt="🚶" class="icon-inline"> #{{ leg.idx }}: {{ leg.originName }} → {{ leg.destName }}</strong>
+    {% else %}
+      <strong><img src="/public/icons/train.min.png" alt="🚆" class="icon-inline"> #{{ leg.idx }}: {{ leg.originName }}
+        <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline">
+        {{ leg.destName }}
+      </strong>
+    {% endif %}
+  </div>
 
-{% if leg.lineText %}
-  Linie: {{ leg.lineText }}<br>
-{% endif %}
+  <div class="leg-main">
+    {# Abfahrt #}
+    <div class="leg-row">
+      <span class="label">Ab:</span>
+      <span class="value">
+        {{ leg.depTime | formatTime }}
+        {% if leg.depPlannedTime and leg.depPlannedTime != leg.depTime %}
+          <span class="planned-time">(geplant: {{ leg.depPlannedTime | formatTime }})</span>
+        {% endif %}
+        {% if leg.depDelayMin and leg.depDelayMin > 0 %}
+          <span class="delay delay-bad">+{{ leg.depDelayMin }} Min</span>
+        {% endif %}
+        {% if leg.depPlatform %}
+          , Gleis {{ leg.depPlatform }}
+          {% if leg.depPlatformPlanned and leg.depPlatformPlanned != leg.depPlatform %}
+            <span class="platform-change">(geplant: {{ leg.depPlatformPlanned }})</span>
+          {% endif %}
+        {% endif %}
+      </span>
+    </div>
 
-<br>
+    {# Ankunft #}
+    <div class="leg-row">
+      <span class="label">An:</span>
+      <span class="value">
+        {{ leg.arrTime | formatTime }}
+        {% if leg.arrPlannedTime and leg.arrPlannedTime != leg.arrTime %}
+          <span class="planned-time">(geplant: {{ leg.arrPlannedTime | formatTime }})</span>
+        {% endif %}
+        {% if leg.arrDelayMin and leg.arrDelayMin > 0 %}
+          <span class="delay delay-bad">+{{ leg.arrDelayMin }} Min</span>
+        {% endif %}
+        {% if leg.arrPlatform %}
+          , Gleis {{ leg.arrPlatform }}
+          {% if leg.arrPlatformPlanned and leg.arrPlatformPlanned != leg.arrPlatform %}
+            <span class="platform-change">(geplant: {{ leg.arrPlatformPlanned }})</span>
+          {% endif %}
+        {% endif %}
+      </span>
+    </div>
+
+    {# Linie / Produkt / Richtung #}
+    {% if not leg.isWalking %}
+      {% if leg.lineText %}
+        <div class="leg-row">
+          <span class="label">Linie:</span>
+          <span class="value">{{ leg.lineText }}</span>
+        </div>
+      {% endif %}
+
+      {% if leg.direction %}
+        <div class="leg-row">
+          <span class="label">Richtung:</span>
+          <span class="value">{{ leg.direction }}</span>
+        </div>
+      {% endif %}
+
+      {% if leg.loadFactor %}
+        <div class="leg-row">
+          <span class="label">Auslastung:</span>
+          <span class="value">{{ leg.loadFactor }}</span>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="leg-row">
+        <span class="label">Art:</span>
+        <span class="value">Fußweg</span>
+      </div>
+    {% endif %}
+
+    {# Statusmeldungen #}
+    {% if leg.statusRemarks and leg.statusRemarks.length %}
+      <div class="leg-row leg-status">
+        <span class="label">Status:</span>
+        <span class="value">
+          {% for s in leg.statusRemarks %}
+            <div class="status-item">
+                <img src="/public/icons/warn.min.png" alt="⚠" class="icon-inline"> {{ s }}
+            </div>
+          {% endfor %}
+        </span>
+      </div>
+    {% endif %}
+
+    {# Hinweise #}
+    {% if leg.hintRemarks and leg.hintRemarks.length %}
+      <div class="leg-row leg-hints">
+        <span class="label">Hinweise:</span>
+        <span class="value">
+          {% for h in leg.hintRemarks %}
+            <div class="hint-item">
+                <img src="/public/icons/info.min.png" alt="ℹ" class="icon-inline"> {{ s }} {{ h }}
+            </div>
+          {% endfor %}
+        </span>
+      </div>
+    {% endif %}
+  </div>
+
+</div>

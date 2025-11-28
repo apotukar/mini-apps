@@ -83,12 +83,6 @@ button:active,
   color: #c00;
 }
 
-.btn-icon {
-  height: 1em;
-  vertical-align: middle;
-  margin-right: 0.3em;
-}
-
 .weather-current {
   border: 1px solid #e6b800;
   background: #fffbe6;

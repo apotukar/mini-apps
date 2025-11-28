@@ -50,28 +50,28 @@
   "transport": {
     "saveNormalizedFavName": true,
     "labels": {
-      "suburban": "S-Bahn",
-      "subway": "U-Bahn",
-      "tram": "Straßenbahn",
       "bus": "Bus",
+      "ferry": "Fähre",
+      "national": "Fernzug (IC)",
+      "nationalExpress": "Fernzug (ICE))",
       "regional": "Regionalzug",
       "regionalExpress": "Regional-Express",
-      "national": "Fernzug",
-      "nationalExpress": "Fernzug (Express)",
-      "ferry": "Fähre",
+      "suburban": "S-Bahn",
+      "subway": "U-Bahn",
       "taxi": "Anruf-Sammel-Taxi",
+      "tram": "Straßenbahn (Tram)",
       "unknown": ""
     },
-    "types": {
+    "cssTypeAppendices": {
+      "bus": "bus",
+      "longDistance": "long-distance",
       "national": "long-distance",
       "nationalExpress": "long-distance",
-      "longDistance": "long-distance",
       "regional": "regional",
       "regionalExpress": "regional",
       "suburban": "sbahn",
       "subway": "ubahn",
-      "tram": "tram",
-      "bus": "bus"
+      "tram": "tram"
     },
     "journey": {
       "saveNormalizedName": true,

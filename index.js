@@ -70,11 +70,17 @@ registerHomeRoutes(app, {
   config: { bookmarks: config.bookmarks }
 });
 
+const sharedTransportConfig = {
+  transportLabels: config.transport.labels,
+  transportCssTypeAppendices: config.transport.cssTypeAppendices,
+  saveNormalizedFavName: config.transport.saveNormalizedFavName
+};
+
 registerJourneyRoutes(app, {
   client: dbClient,
   config: {
     ...config.transport.journey,
-    saveNormalizedFavName: config.transport.saveNormalizedFavName
+    ...sharedTransportConfig
   }
 });
 
@@ -82,9 +88,7 @@ registerDepartureRoutes(app, {
   client: dbClient,
   config: {
     ...config.transport.departures,
-    labels: config.transport.labels,
-    types: config.transport.types,
-    saveNormalizedFavName: config.transport.saveNormalizedFavName
+    ...sharedTransportConfig
   }
 });
 

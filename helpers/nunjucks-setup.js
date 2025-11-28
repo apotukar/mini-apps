@@ -29,6 +29,19 @@ export function setupNunjucks(app, params) {
     }
   });
 
+  env.addFilter('formatTime', function (dateStr, locale = 'de-DE', options = {}) {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleTimeString(locale, {
+        hour: '2-digit',
+        minute: '2-digit',
+        ...options
+      });
+    } catch {
+      return dateStr;
+    }
+  });
+
   env.addFilter('split', function (str, delimiter) {
     if (typeof str !== 'string') return [];
     return str.split(delimiter).map(s => s.trim());

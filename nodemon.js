@@ -44,7 +44,11 @@ function minifyFile(file) {
     console.log('minified:', out);
   }
 
-  if (extname === '.js' && !file.endsWith('.min.js')) {
+  if (
+    extname === '.js' &&
+    !file.endsWith('.min.js') &&
+    file.includes(`${path.sep}public${path.sep}js${path.sep}`)
+  ) {
     const { compress, mangle } = minifyConfig.js;
 
     let terserArgs = '';

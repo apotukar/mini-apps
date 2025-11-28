@@ -8,9 +8,12 @@ import {
   dedupeFavs
 } from '../helpers/favorites.js';
 
+import { buildJourneyView } from '../helpers/journey-view-builder.js';
+
 export function registerJourneyRoutes(app, params) {
   const client = params.client;
   const config = params.config || {};
+  const transportLabels = config.transportLabels || {};
   const favoritesNamespace = 'journey';
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
@@ -97,7 +100,8 @@ export function registerJourneyRoutes(app, params) {
     },
     createJourneyHandler(req => ({
       fromName: req.body.from,
-      toName: req.body.to
+      toName: req.body.to,
+      transportLabels: transportLabels
     }))
   );
 
@@ -108,7 +112,8 @@ export function registerJourneyRoutes(app, params) {
       toName: req.query.to,
       departure: req.query.departure || null,
       earlierThan: (req.query.earlierThan || '').trim() || null,
-      laterThan: (req.query.laterThan || '').trim() || null
+      laterThan: (req.query.laterThan || '').trim() || null,
+      transportLabels: transportLabels
     }))
   );
 
@@ -129,7 +134,8 @@ export function registerJourneyRoutes(app, params) {
         toName: (toName || '').trim(),
         departure,
         earlierThan,
-        laterThan
+        laterThan,
+        transportLabels
       });
     };
   }
@@ -143,52 +149,6 @@ async function findStationId(client, name) {
   return list[0].id;
 }
 
-function buildJourneyView(journey, index) {
-  const legs = journey.legs || [];
-  if (!legs.length) return null;
-
-  const firstLeg = legs[0];
-  const lastLeg = legs[legs.length - 1];
-
-  const dep = new Date(firstLeg.departure);
-  const arr = new Date(lastLeg.arrival);
-
-  const durationMinutes = ((arr - dep) / 60000).toFixed(0);
-  const transfers = Math.max(0, legs.length - 1);
-
-  const legsView = legs.map((leg, idx) => {
-    const legDep = leg.departure ? new Date(leg.departure) : null;
-    const legArr = leg.arrival ? new Date(leg.arrival) : null;
-
-    const line = leg.line || {};
-    const product = line.product || line.mode || '';
-    const lineName = line.name || line.label || line.id || '';
-    const lineText = [product, lineName].filter(Boolean).join(' ');
-
-    return {
-      idx: idx + 1,
-      originName: leg.origin?.name || '',
-      destName: leg.destination?.name || '',
-      depTime: legDep
-        ? legDep.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-        : '–',
-      arrTime: legArr
-        ? legArr.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-        : '–',
-      lineText
-    };
-  });
-
-  return {
-    number: index + 1,
-    departure: dep,
-    arrival: arr,
-    duration: durationMinutes,
-    transfers,
-    legs: legsView
-  };
-}
-
 async function handleJourneySearch({
   res,
   client,
@@ -196,7 +156,8 @@ async function handleJourneySearch({
   toName: rawToName,
   departure,
   earlierThan,
-  laterThan
+  laterThan,
+  transportLabels
 }) {
   try {
     if (!rawFromName || !rawToName) {
@@ -228,7 +189,9 @@ async function handleJourneySearch({
 
     const { fromName, toName } = normalizeJourneyNames(journeys, rawFromName, rawToName);
 
-    const journeysView = journeys.map((journey, i) => buildJourneyView(journey, i)).filter(Boolean);
+    const journeysView = journeys
+      .map((journey, i) => buildJourneyView(journey.legs || [], i, transportLabels))
+      .filter(Boolean);
 
     return res.render('journey/results.njk', {
       fromName,
