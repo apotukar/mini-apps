@@ -1,4 +1,11 @@
 {
-  "watch": ["."],
-  "ignore": ["token.json", "node_modules"]
+  "watch": ["config.json", "index.js", "apps", "helpers", "views", "public"],
+  "ignore": [
+    "token.json",
+    "node_modules",
+    "public/*.min.css",
+    "public/js/*.min.js",
+    "public/icons/*.min.png"
+  ],
+  "ext": "json,js,njk,css"
 }

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "create-certs": "./scripts/create_certs.sh",
+    "init-tokens": "npm run init-tokens",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "node nodemon.js",
     "start": "node index.js",
     "fix": "npm-run-all lint:fix format",
     "check": "npm-run-all check:js check:json",
@@ -21,10 +23,14 @@
     "lint:fix": "npm-run-all lint:js:fix lint:css:fix",
     "lint:js:fix": "eslint \"**/*.js\" --fix",
     "lint:css:fix": "stylelint \"**/*.css\" \"!**/*.min.css\" --fix",
-    "minify": "npm-run-all minify:js minify:css minify:icons",
-    "minify:css": "./scripts/minify_css.sh",
-    "minify:js": "./scripts/minify_js.sh",
-    "minify:icons": "./scripts/minify_icons.sh public/icons public/icons 48"
+    "minify": "npm-run-all -p minify:css minify:js minify:icons",
+    "minify:onlygit": "npm-run-all -p minify:css:onlygit minify:js:onlygit minify:icons:onlygit",
+    "minify:css": "./scripts/minify.sh css public ./minify.config.json false",
+    "minify:css:onlygit": "./scripts/minify.sh css public ./minify.config.json true",
+    "minify:js": "./scripts/minify.sh js public/js ./minify.config.json false",
+    "minify:js:onlygit": "./scripts/minify.sh js public/js ./minify.config.json true",
+    "minify:icons": "./scripts/minify.sh icons public/icons ./minify.config.json false",
+    "minify:icons:onlygit": "./scripts/minify.sh icons public/icons ./minify.config.json true"
   },
   "keywords": [],
   "author": "",

@@ -15,11 +15,11 @@ services:
     command: >
       sh -c '
         if [ "$MODE_ENV" = "DEV" ]; then
-          npx nodemon index.js
+          npm run watch
         elif [ "$MODE_ENV" = "PROD" ]; then
-          node index.js
+          npm run start
         elif [ "$MODE_ENV" = "INIT" ]; then
-          node init-tokens.js
+          npm run init-tokens
         else
           echo "Unknown MODE_ENV: $MODE_ENV"
           exit 1

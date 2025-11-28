@@ -85,6 +85,16 @@ export function registerJourneyRoutes(app, params) {
 
   app.post(
     '/journey/search',
+    (req, res, next) => {
+      if (req.query.swap === 'true') {
+        const from = req.body.to?.trim() || '';
+        const to = req.body.from?.trim() || '';
+        return res.redirect(
+          `/journey?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+        );
+      }
+      next();
+    },
     createJourneyHandler(req => ({
       fromName: req.body.from,
       toName: req.body.to

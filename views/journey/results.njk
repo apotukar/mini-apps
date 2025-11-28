@@ -7,7 +7,8 @@
 
 {% block content %}
   <h2>{{ fromName }} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ toName }}</h2>
-  <a href="/journey{#?from={{ fromName | urlencode }}&to={{ toName | urlencode }}#}">Neue Suche</a><br><br>
+  <a href="/journey?from={{ fromName | urlencode }}&to={{ toName | urlencode }}">Zurück</a>&nbsp;
+  <a href="/journey">Neue Suche</a><br><br>
   {% for journey in journeys %}
     {% include "journey/partials/journey.njk" %}
     <br>
@@ -20,6 +21,7 @@
     {% else %}
       <span></span>
     {% endif %}
+
     {% if laterRef %}
       <a href="/journey/search?from={{ fromName | urlencode }}&to={{ toName | urlencode }}&laterThan={{ laterRef | urlencode }}">
         Spätere Verbindungen <img src="/public/icons/darrow.min.png" alt="↓" class="arrow-inline">

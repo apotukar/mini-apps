@@ -17,7 +17,13 @@
     <button type="submit" formaction="/journey/search" class="btn btn-primary">
       Suchen
     </button>
-    <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary btn-fav">
+
+    <button type="submit" formmethod="POST" formaction="/journey/search?swap=true" class="btn">
+      <img src="/public/icons/swap.min.png" alt="↔" class="btn-icon">
+      Fahrtrichtung umkehren
+    </button>
+
+    <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary">
     <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">
       Favorit speichern
     </button>
