@@ -9,7 +9,7 @@
 <h1>{{ note.title }}</h1>
 
 {% if note.updated %}
-<p><small>Zuletzt bearbeitet: {{ note.updated | formatDate }}</small></p>
+<p><small>Zuletzt bearbeitet: {{ note.updated | formatDateTime }}</small></p>
 {% endif %}
 
 <div class="note-toolbar">

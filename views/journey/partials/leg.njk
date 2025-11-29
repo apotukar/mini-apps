@@ -1,11 +1,16 @@
+<br/>
 <div class="leg">
   <div class="leg-header">
     {% if leg.isWalking %}
-      <strong><img src="/public/icons/walk.min.png" alt="🚶" class="icon-inline"> #{{ leg.idx }}: {{ leg.originName }} → {{ leg.destName }}</strong>
+      <strong><img src="/public/icons/walk.min.png" alt="🚶" class="icon-inline">
+          &nbsp;{{ leg.idx }}: {{ leg.originName }}
+          &nbsp;<img src="/public/icons/rarrow.min.png" alt="→" class="icon-inline">
+          &nbsp;{{ leg.destName }}</strong>
     {% else %}
-      <strong><img src="/public/icons/train.min.png" alt="🚆" class="icon-inline"> #{{ leg.idx }}: {{ leg.originName }}
-        <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline">
-        {{ leg.destName }}
+      <strong><img src="/public/icons/train.min.png" alt="🚆" class="icon-inline">
+          &nbsp;{{ leg.idx }}: {{ leg.originName }}
+          &nbsp;<img src="/public/icons/rarrow.min.png" alt="→" class="icon-inline">
+          &nbsp;{{ leg.destName }}
       </strong>
     {% endif %}
   </div>
@@ -20,7 +25,7 @@
           <span class="planned-time">(geplant: {{ leg.depPlannedTime | formatTime }})</span>
         {% endif %}
         {% if leg.depDelayMin and leg.depDelayMin > 0 %}
-          <span class="delay delay-bad">+{{ leg.depDelayMin }} Min</span>
+          <span class="delay delay-bad">+{{ leg.depDelayMin | formatDuration }}</span>
         {% endif %}
         {% if leg.depPlatform %}
           , Gleis {{ leg.depPlatform }}
@@ -40,7 +45,7 @@
           <span class="planned-time">(geplant: {{ leg.arrPlannedTime | formatTime }})</span>
         {% endif %}
         {% if leg.arrDelayMin and leg.arrDelayMin > 0 %}
-          <span class="delay delay-bad">+{{ leg.arrDelayMin }} Min</span>
+          <span class="delay delay-bad">+{{ leg.arrDelayMin | formatDuration }}</span>
         {% endif %}
         {% if leg.arrPlatform %}
           , Gleis {{ leg.arrPlatform }}

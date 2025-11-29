@@ -49,6 +49,7 @@ export function buildJourneyView(legs, index, transportLabels) {
       lineName,
       lineText,
       isWalking,
+      distance: leg.distance || null,
       isPublic: leg.public !== false,
       loadFactor: leg.loadFactor || null,
 

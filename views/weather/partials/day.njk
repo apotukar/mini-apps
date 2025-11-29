@@ -1,5 +1,5 @@
 <div class="weather-day" title="Weather Code: {{ day.code }}">
-  <div class="weather-day-title">{{ day.label }}</div>
+  <div class="weather-day-title">{{ day.time | formatDate }}</div>
   Min: {{ day.tMin }} °C, Max: {{ day.tMax }} °C<br />
   <span title="Weather Code: {{ day.code }}">Zustand: {{ day.description }}</span><br />
 </div>

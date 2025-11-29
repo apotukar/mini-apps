@@ -17,7 +17,7 @@
             <small> — {{ note.notebookPath }}</small>
           {% endif %}
           {% if note.updated %}
-            <small> — zuletzt geändert: {{ note.updated | formatDate }}</small>
+            <small> — zuletzt geändert: {{ note.updated | formatDateTime }}</small>
           {% endif %}
         </li>
       {% endfor %}

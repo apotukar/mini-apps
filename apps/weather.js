@@ -101,7 +101,6 @@ export function registerWeatherRoutes(app, params) {
       if (!fcResp.ok) throw new Error('Wetterdaten-Anfrage fehlgeschlagen.');
 
       const fc = await fcResp.json();
-      const tz = fc.timezone || 'Europe/Berlin';
       const cw = fc.current_weather || {};
 
       const current = {
@@ -109,12 +108,12 @@ export function registerWeatherRoutes(app, params) {
         windspeed: cw.windspeed,
         code: cw.weathercode,
         description: describeWeatherCode(cw.weathercode),
-        timeFormatted: formatDateTime(cw.time, tz)
+        time: cw.time
       };
 
       const daily = fc.daily || {};
       const days = (daily.time || []).map((dateStr, i) => ({
-        label: formatDateLabel(dateStr, tz),
+        time: dateStr,
         tMin: daily.temperature_2m_min?.[i],
         tMax: daily.temperature_2m_max?.[i],
         code: daily.weathercode?.[i],
@@ -137,32 +136,5 @@ export function registerWeatherRoutes(app, params) {
   function describeWeatherCode(code) {
     const map = config.descriptions || {};
     return map[String(code)] || `Unbekannt (${code})`;
-  }
-
-  function formatDateTime(iso, tz = 'Europe/Berlin') {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleString('de-DE', {
-      timeZone: tz,
-      weekday: 'short',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  function formatDateLabel(isoDate, tz = 'Europe/Berlin') {
-    if (!isoDate) return '';
-    const d = new Date(isoDate + 'T12:00:00');
-    if (Number.isNaN(d.getTime())) return isoDate;
-    return d.toLocaleDateString('de-DE', {
-      timeZone: tz,
-      weekday: 'short',
-      day: '2-digit',
-      month: '2-digit'
-    });
   }
 }

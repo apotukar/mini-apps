@@ -13,7 +13,7 @@
       <li class="source-{{ item.source | lower | replace(' ', '-') }}">
         <a href="{{ item.link }}">{{ item.title }}</a><br/>
         {% if item.date %}
-          <small>{{ item.date | formatDate }}</small><br/>
+          <small>{{ item.date | formatDateTime }}</small><br/>
         {% endif %}
         {% if item.description %}
           <small>{{ item.description | safe }}</small>

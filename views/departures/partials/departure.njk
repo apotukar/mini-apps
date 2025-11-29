@@ -1,5 +1,5 @@
 <div class="departure departure-{{ dep.type }}">
-  <b>{{ dep.time | formatDate }}</b>
+  <b>{{ dep.time | formatDateTime }}</b>
   {% if dep.lineText %} – {{ dep.lineText }}
   {% endif %}
   {% if dep.direction %} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ dep.direction }}

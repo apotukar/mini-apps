@@ -1,12 +1,14 @@
 <div class="journey">
-  <b>{{ journey.number }}. Verbindung</b><br>
-  Abfahrt: {{ journey.departure | formatDate }}<br>
-  Ankunft: {{ journey.arrival | formatDate }}<br>
-  Dauer: {{ journey.duration }} Min<br>
-  Umstiege: {{ journey.transfers }}<br><br>
-
-  Teilstrecken:<br>
-
+  <b>{{ journey.number }}. Verbindung am {{ journey.departure | formatDate }}</b>
+  <br>
+  {{ journey.departure | formatTime }} - {{ journey.arrival | formatTime }} | {{ journey.duration | formatDuration }}
+  {% if journey.transfers == 1 %}
+    | {{ journey.transfers }} Umstieg
+  {% endif %}
+  {% if journey.transfers > 1 %}
+    | {{ journey.transfers }} Umstiege
+  {% endif %}
+  <br/>
   {% for leg in journey.legs %}
     {% include "journey/partials/leg.njk" %}
   {% endfor %}
