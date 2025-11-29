@@ -18,10 +18,10 @@
       Suchen
     </button>
 
-    <button type="submit" formmethod="POST" formaction="/journey/search?swap=true" class="btn">
+    <a href="/journey?swap=true&from={{ from | urlencode }}&to={{ to | urlencode }}" class="btn btn-secondary">
       <img src="/public/icons/swap.min.png" alt="↔" class="btn-icon">
       Fahrtrichtung umkehren
-    </button>
+    </a>
 
     <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary">
     <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">

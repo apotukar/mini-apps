@@ -47,6 +47,10 @@ button,
   text-overflow: ellipsis;
 }
 
+.is-old-gecko a.btn {
+  width: 95%;
+}
+
 .btn-primary {
   background: #c00;
   color: #fff;
@@ -126,6 +130,11 @@ button,
   height: 1em;
   width: auto;
   vertical-align: 0.15em;
+}
+
+.is-old-gecko .icon-inline,
+.is-old-gecko .arrow-inline {
+  vertical-align: -0.18em;
 }
 
 /* modern browsers */

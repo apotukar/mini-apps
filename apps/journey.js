@@ -18,23 +18,36 @@ export function registerJourneyRoutes(app, params) {
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
 
-  app.get('/journey', (req, res) => {
-    let favorites = getFavorites(req, favoritesNamespace);
-    if (!getHideFlag(req, favoritesNamespace)) {
-      favorites = dedupeFavs([...favorites, ...configFavorites]);
-      saveFavorites(res, favorites, favoritesNamespace);
-      setHideFlag(res, favoritesNamespace);
+  app.get(
+    '/journey',
+    (req, res, next) => {
+      if (req.query.swap === 'true') {
+        const from = req.query.to?.trim() || '';
+        const to = req.query.from?.trim() || '';
+        return res.redirect(
+          `/journey?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+        );
+      }
+      next();
+    },
+    (req, res) => {
+      let favorites = getFavorites(req, favoritesNamespace);
+      if (!getHideFlag(req, favoritesNamespace)) {
+        favorites = dedupeFavs([...favorites, ...configFavorites]);
+        saveFavorites(res, favorites, favoritesNamespace);
+        setHideFlag(res, favoritesNamespace);
+      }
+
+      const from = req.query.from || '';
+      const to = req.query.to || '';
+
+      res.render('journey/index.njk', {
+        from,
+        to,
+        favs: favorites
+      });
     }
-
-    const from = req.query.from || '';
-    const to = req.query.to || '';
-
-    res.render('journey/index.njk', {
-      from,
-      to,
-      favs: favorites
-    });
-  });
+  );
 
   app.post('/journey/save-fav', async (req, res) => {
     try {
@@ -88,16 +101,6 @@ export function registerJourneyRoutes(app, params) {
 
   app.post(
     '/journey/search',
-    (req, res, next) => {
-      if (req.query.swap === 'true') {
-        const from = req.body.to?.trim() || '';
-        const to = req.body.from?.trim() || '';
-        return res.redirect(
-          `/journey?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
-        );
-      }
-      next();
-    },
     createJourneyHandler(req => ({
       fromName: req.body.from,
       toName: req.body.to,
