@@ -75,6 +75,16 @@ small {
 .icon {
   width: 18px;
   height: 18px;
-  vertical-align: -3px;
   margin-right: 4px;
+}
+
+.is-old-gecko .icon {
+  vertical-align: -0.25em;
+}
+
+/* modern browsers */
+@supports selector(:has(*)) {
+  .icon {
+    vertical-align: -0.2em;
+  }
 }

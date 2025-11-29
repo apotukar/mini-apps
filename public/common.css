@@ -18,12 +18,22 @@
 .btn-icon {
   height: 1em;
   margin-right: 0.8em;
-  vertical-align: 0.2em;
+}
+
+.is-old-gecko .btn-icon {
+  vertical-align: -0.15em;
 }
 
 /* modern browsers */
-@supports (accent-color: auto) {
+@supports selector(:has(*)) {
   .btn-icon {
     vertical-align: -0.2em;
   }
+}
+
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  opacity: 0.7;
+  display: block;
 }
