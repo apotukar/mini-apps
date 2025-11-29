@@ -6,7 +6,8 @@ services:
     volumes:
       - ./:/usr/src/app
     ports:
-      - '${PORT}:${PORT}'
+      - '${HTTP_PORT}:${HTTP_PORT}'
+      - '${HTTPS_PORT}:${HTTPS_PORT}'
     environment:
       DOTENV_OVERRIDE: 'false'
       MODE_ENV: 'PROD'

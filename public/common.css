@@ -15,6 +15,10 @@
   }
 }
 
+.is-old-gecko .page {
+  max-width: 560px;
+}
+
 .btn-icon {
   height: 1em;
   margin-right: 0.8em;

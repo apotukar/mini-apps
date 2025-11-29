@@ -4,7 +4,8 @@ export function registerHomeRoutes(app, params) {
 
   app.get('/', (_, res) => {
     res.render('home/index.njk', {
-      bookmarks: bookmarks
+      bookmarks: bookmarks,
+      isSecureContext: res.locals.isHttps
     });
   });
 }

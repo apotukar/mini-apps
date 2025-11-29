@@ -14,7 +14,7 @@ export function registerDepartureRoutes(app, params) {
   const transportLabels = config.transportLabels || {};
   const transportCssTypeAppendices = config.transportCssTypeAppendices || {};
   const favoritesNamespace = 'departures';
-  const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
+  const configFavorites = Object.values(config.favorites).flat() || [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
 
   app.get('/departures', (req, res) => {

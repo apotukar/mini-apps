@@ -42,6 +42,7 @@
       <small>Apotheken, Tankstellen & mehr ohne GPS.</small>
     </li>
 
+    {% if isSecureContext %}
     <li>
       <a href="/tasks">
         <img src="/public/icons/tasks.min.png" alt="📝" class="icon">
@@ -49,7 +50,9 @@
       </a><br/>
       <small>Alle Google-Tasks-Listen (Leseansicht).</small>
     </li>
+    {% endif %}
 
+    {% if isSecureContext %}
     <li>
       <a href="/joplin">
         <img src="/public/icons/note.min.png" alt="🗒️" class="icon">
@@ -57,6 +60,7 @@
       </a><br/>
       <small>Alle Notizen (Leseansicht).</small>
     </li>
+    {% endif %}
 
     <li>
       <a href="/news">

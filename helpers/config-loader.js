@@ -14,14 +14,13 @@ export function loadConfig(configFile = 'config.json') {
 }
 
 function applyEnvPlaceholders(obj) {
-  if (obj === null || typeof obj !== 'object') return obj;
-
   const result = Array.isArray(obj) ? [] : {};
 
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string' && value.startsWith('ENV:')) {
-      const envName = value.slice(4);
-      result[key] = process.env[envName] ?? '';
+    if (typeof value === 'string') {
+      result[key] = value.replace(/\$\{([^}]+)\}/g, (_, envName) => {
+        return process.env[envName] ?? '';
+      });
     } else if (value && typeof value === 'object') {
       result[key] = applyEnvPlaceholders(value);
     } else {

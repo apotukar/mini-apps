@@ -27,6 +27,10 @@ input[name='to'] {
   padding: 4px;
 }
 
+.is-old-gecko input {
+  width: 98%;
+}
+
 button,
 .btn {
   display: block;
@@ -48,7 +52,7 @@ button,
 }
 
 .is-old-gecko a.btn {
-  width: 95%;
+  width: 97%;
 }
 
 .btn-primary {

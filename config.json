@@ -1,50 +1,67 @@
 {
-  "modeEnv": "ENV:MODE_ENV",
-  "port": "ENV:PORT",
+  "modeEnv": "${MODE_ENV}",
+  "httpPort": "${HTTP_PORT}",
+  "httpsPort": "${HTTPS_PORT}",
   "secret": {
-    "username": "ENV:BASIC_AUTH_USER",
-    "password": "ENV:BASIC_AUTH_PASS"
+    "username": "${BASIC_AUTH_USER}",
+    "password": "${BASIC_AUTH_PASS}"
   },
   "routes": [
     {
       "path": "/journey",
       "label": "Journey App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
     },
     {
       "path": "/departures",
       "label": "Departures App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
     },
     {
       "path": "/weather",
       "label": "Weather App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
     },
     {
       "path": "/tasks",
       "label": "Tasks App",
-      "isBasicAuth": true
+      "isBasicAuth": true,
+      "scheme": ["https"],
+      "forceHttpsRedirect": true
     },
     {
       "path": "/news",
       "label": "News App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": true
     },
     {
       "path": "/pois",
       "label": "POIs App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
     },
     {
       "path": "/joplin",
       "label": "Joplin App",
-      "isBasicAuth": true
+      "isBasicAuth": true,
+      "scheme": ["https"],
+      "forceHttpsRedirect": true
     },
     {
       "path": "/browser",
       "label": "Browser App",
-      "isBasicAuth": false
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
     }
   ],
   "transport": {
@@ -95,20 +112,26 @@
     },
     "departures": {
       "saveNormalizedName": true,
-      "favorites": [
-        "Grillparzerstraße, München",
-        "Hauptbahnhof, München",
-        "Hauptbahnhof, Landhut",
-        "Hermann-Gmeiner-Weg, München",
-        "Leuchtenbergring, München",
-        "Lehel, München",
-        "Max-Weber-Platz, München",
-        "Moselstraße, München",
-        "Ostbahnhof, München",
-        "Prinzregentenplatz, München",
-        "Schwarzwaldstraße, München",
-        "Tegernseer Landstraße, München"
-      ]
+      "favorites": {
+        "München": [
+          "Grillparzerstraße, München",
+          "Prinzregentenplatz, München",
+          "Max-Weber-Platz, München",
+          "Ostbahnhof, München",
+          "München Hbf",
+          "Leuchtenbergring, München",
+          "Moselstraße, München",
+          "Hermann-Gmeiner-Weg, München",
+          "Schwarzwaldstraße, München",
+          "Vollmannstraße, München",
+          "Schwanseestraße, München",
+          "Chimegaustraße, München",
+          "Tegernseer Landstraße, München"
+        ],
+        "Landshut": ["Landshut(Bay)Hbf", "Ländtorplatz, Landshut"],
+        "Berlin": ["Berlin Hbf", "Rosa-Luxemburg-Platz (U), Berlin", "Berlin Alexanderplatz"],
+        "Essen": ["Essen Hbf"]
+      }
     }
   },
   "weather": {
@@ -148,8 +171,8 @@
     "webdavUrl": "https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin",
     "preferredNotebooks": ["Notizen"],
     "secret": {
-      "username": "ENV:JOPLIN_USER",
-      "password": "ENV:JOPLIN_PASS"
+      "username": "${JOPLIN_USER}",
+      "password": "${JOPLIN_PASS}"
     }
   },
   "news": {
@@ -174,7 +197,7 @@
   "pois": {
     "zoom": 16,
     "tiles": 3,
-    "reverseGeocodingKey": "ENV:REVERSE_GEOCODING_KEY",
+    "reverseGeocodingKey": "${REVERSE_GEOCODING_KEY}",
     "types": {
       "bank": { "label": "Bank", "query": "amenity=bank" },
       "bar": { "label": "Bar", "query": "amenity=bar" },

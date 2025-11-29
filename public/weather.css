@@ -42,6 +42,10 @@ input[name='city'] {
   padding: 4px;
 }
 
+.is-old-gecko input {
+  width: 98%;
+}
+
 button,
 .btn {
   display: block;
