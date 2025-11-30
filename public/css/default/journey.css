@@ -88,6 +88,7 @@ button,
 
 .departure {
   padding: 4px 6px;
+  padding-bottom: 8px;
   margin: 6px 0;
   border-left: 4px solid #888;
   background: #f5f5f5;
