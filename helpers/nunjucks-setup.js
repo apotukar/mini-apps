@@ -5,7 +5,7 @@ export function setupNunjucks(app, params) {
 
   app.set('view engine', 'njk');
 
-  const env = nunjucks.configure('views', {
+  const env = nunjucks.configure(['views/default', 'views/fallback'], {
     autoescape: true,
     express: app,
     watch: config.modeEnv === 'DEV',
@@ -72,30 +72,30 @@ export function setupNunjucks(app, params) {
   );
 
   env.addFilter('formatDuration', function (minutes) {
-    if (!minutes || isNaN(minutes)) return minutes;
+    if (minutes === null || isNaN(minutes)) {
+      return minutes;
+    }
 
-    const total = Number(minutes);
+    const total = Number(minutes); // kann positiv oder negativ sein
+    const sign = total < 0 ? '-' : '';
+    const abs = Math.abs(total);
 
-    const days = Math.floor(total / 1440); // 1440 = 24 * 60
-    const hours = Math.floor((total % 1440) / 60);
-    const mins = total % 60;
+    const days = Math.floor(abs / 1440); // 1440 = 24 * 60
+    const hours = Math.floor((abs % 1440) / 60);
+    const mins = abs % 60;
 
     let parts = [];
 
     if (days > 0) {
-      // parts.push(days + ' Tag' + (days !== 1 ? 'e' : ''));
       parts.push(days + 'd');
     }
     if (hours > 0) {
-      // parts.push(hours + ' Std.');
       parts.push(hours + 'h');
     }
-    if (mins > 0) {
-      // parts.push(mins + ' Min.');
-      parts.push(mins + 'min');
-    }
 
-    return parts.join(' ').trim();
+    parts.push(mins + 'min');
+
+    return sign + parts.join(' ').trim();
   });
 
   env.addFilter('split', function (str, delimiter) {
@@ -104,4 +104,10 @@ export function setupNunjucks(app, params) {
   });
 
   return env;
+}
+
+export function toEntities(str = '') {
+  return String(str).replace(/[\u00A0-\u9999<>&]/g, c => {
+    return '&#' + c.charCodeAt(0) + ';';
+  });
 }

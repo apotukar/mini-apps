@@ -7,7 +7,7 @@ CONFIG_FILE="${3:-./minify.config.json}"
 ONLY_GIT="${4:-false}"
 
 if [[ -z "$TYPE" || -z "$DIR" ]]; then
-  echo "Usage: $0 <icons|css|js> <dir> [config.json] [true|false]"
+  echo "Usage: $0 <png|png-to-gif|css|js> <dir> [config.json] [true|false]"
   exit 1
 fi
 
@@ -16,7 +16,7 @@ CHANGED_FILES=""
 if [[ "$ONLY_GIT" == "true" ]]; then
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     case "$TYPE" in
-    icons) CHANGED_FILES="$(git ls-files --modified --others --exclude-standard -- "$DIR"/*.png || true)" ;;
+    png) CHANGED_FILES="$(git ls-files --modified --others --exclude-standard -- "$DIR"/*.png || true)" ;;
     css) CHANGED_FILES="$(git ls-files --modified --others --exclude-standard -- "$DIR"/*.css || true)" ;;
     js) CHANGED_FILES="$(git ls-files --modified --others --exclude-standard -- "$DIR"/*.js || true)" ;;
     *)
@@ -38,33 +38,35 @@ should_process() {
 
 case "$TYPE" in
 
-icons)
-  FUZZ=$(jq -r '.icons.fuzz' "$CONFIG_FILE")
-  TRANSPARENT=$(jq -r '.icons.transparent' "$CONFIG_FILE")
-  QUALITY=$(jq -r '.icons.quality' "$CONFIG_FILE")
-  SIZES=$(jq -r '.icons.sizes[]' "$CONFIG_FILE")
-
+png)
   for img in "$DIR"/*.png; do
     [ -e "$img" ] || continue
     [[ "$img" == *".min.png" ]] && continue
     if ! should_process "$img"; then continue; fi
 
-    for SIZE in $SIZES; do
-      out="${img%.png}.min.png"
-      tmp="/tmp/$(basename "${img%.png}").tmp.png"
+    out="${img%.png}.min.png"
+    tmp="/tmp/$(basename "${img%.png}").tmp.png"
+    CONVERT_ARGS="-fuzz 5% -transparent white -resize 32x32"
+    convert "$img" $CONVERT_ARGS "$tmp"
+    PNGQUANT_ARGS="--force --output $out --quality=$QUALITY"
+    pngquant $PNGQUANT_ARGS "$tmp"
+    rm "$tmp"
+    echo "generated: $out"
 
-      CONVERT_ARGS="-fuzz $FUZZ -transparent $TRANSPARENT -resize $SIZE"
-      echo "convert args: $CONVERT_ARGS"
-      convert "$img" $CONVERT_ARGS "$tmp"
+  done
+  ;;
 
-      PNGQUANT_ARGS="--force --output $out --quality=$QUALITY"
-      echo "pngquant args: $PNGQUANT_ARGS"
-      pngquant $PNGQUANT_ARGS "$tmp"
+png-to-gif)
+  for img in "$DIR"/*.png; do
+    [ -e "$img" ] || continue
+    [[ "$img" == *".min.png" ]] && continue
+    [[ "$img" == *".min.gif" ]] && continue
+    if ! should_process "$img"; then continue; fi
 
-      rm "$tmp"
-      echo "generated: $out"
-    done
-
+    out="${img%.png}.min.gif"
+    CONVERT_ARGS="-alpha set -fuzz 1% -transparent white -colors 256 -dither FloydSteinberg -layers Optimize -resize 32x32"
+    convert "$img" $CONVERT_ARGS "$out"
+    echo "generated: $out"
   done
   ;;
 
@@ -91,14 +93,11 @@ js)
     if ! should_process "$f"; then continue; fi
 
     out="${f%.js}.min.js"
-
     TERSER_ARGS=""
     [[ "$COMPRESS" == "true" ]] && TERSER_ARGS="$TERSER_ARGS -c"
     [[ "$MANGLE" == "true" ]] && TERSER_ARGS="$TERSER_ARGS -m"
-
     echo "terser args: $TERSER_ARGS"
     npx terser "$f" $TERSER_ARGS -o "$out"
-
     echo "minified: $out"
   done
   ;;

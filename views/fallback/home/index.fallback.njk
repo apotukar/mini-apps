@@ -1,0 +1,88 @@
+{% extends "layout.fallback.njk" %}
+
+{% set style = "common, home" %}
+
+{% block title %}Mini-Apps{% endblock %}
+
+{% block content %}
+
+    <h1>Mini-Apps</h1>
+
+    {% set height = "22" %}
+
+    <ul>
+      <li>
+        <img src="/public/icons/clock.min.gif" alt="clock" align="absmiddle" height="{{ height }}">
+        <a href="/departures">{{ content.departures.title }}</a><br>
+        <small>{{ content.departures.desc }}</small>
+      </li>
+
+      <li>
+        <img src="/public/icons/train.min.gif" alt="train" align="absmiddle" height="{{ height }}">
+        <a href="/journey">{{ content.journey.title }}</a><br>
+        <small>{{ content.journey.desc }}</small>
+      </li>
+
+      <li>
+        <img src="/public/icons/cloud.min.gif" alt="cloud" align="absmiddle" height="{{ height }}">
+        <a href="/weather">{{ content.weather.title }}</a><br>
+        <small>{{ content.weather.desc }}</small>
+      </li>
+
+      <li>
+        <img src="/public/icons/pin.min.gif" alt="pin" align="absmiddle" height="{{ height }}">
+        <a href="/pois">{{ content.pois.title }}</a><br>
+        <small>{{ content.pois.desc }}</small>
+      </li>
+
+      {% if isSecureContext %}
+      <li>
+        <img src="/public/icons/tasks.min.gif" alt="tasks" align="absmiddle" height="{{ height }}">
+        <a href="/tasks">{{ content.tasks.title }}</a><br>
+        <small>{{ content.tasks.desc }}</small>
+      </li>
+      {% endif %}
+
+      {% if isSecureContext %}
+      <li>
+        <img src="/public/icons/note.min.gif" alt="note" align="absmiddle" height="{{ height }}">
+        <a href="/joplin">{{ content.joplin.title }}</a><br>
+        <small>{{ content.joplin.desc }}</small>
+      </li>
+      {% endif %}
+
+      <li>
+        <img src="/public/icons/news.min.gif" alt="nes" align="absmiddle" height="{{ height }}">
+        <a href="/news">{{ content.news.title }}</a><br>
+        <small>{{ content.news.desc }}</small>
+      </li>
+
+      <li>
+        <span style="font-size: 16px; font-weight: bold;">Bookmarks</span>
+        <br>
+
+        <ul>
+          {% for bookmark in bookmarks %}
+          <li>
+            <a href="{{ bookmark.url }}" target="_blank">
+            <span style="font-size: 15px;">{{ bookmark.title }}</span>
+            </a>
+            <br>
+            {% if bookmark.description %}
+              <span>{{ bookmark.description }}</span>
+            {% endif %}
+          </li>
+
+          {% endfor %}
+        </ul>
+
+      <li>
+        <img src="/public/icons/browser.min.gif" alt="browser" align="absmiddle" height="{{ height }}">
+        <a href="/browser">{{ content.browser.title }}</a><br>
+        <small>{{ content.browser.description }}</small>
+      </li>
+    </ul>
+
+    {% include "common/hint.njk" %}
+
+{% endblock %}

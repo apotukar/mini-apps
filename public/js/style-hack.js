@@ -1,4 +1,8 @@
 (function () {
+  if (document.layers) {
+    return;
+  }
+
   var ua = navigator.userAgent || '';
 
   if (ua.indexOf('SeaMonkey/1.1') !== -1 || ua.indexOf('Firefox/2.0') !== -1) {

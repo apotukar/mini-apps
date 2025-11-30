@@ -5,9 +5,13 @@ import https from 'https';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
-import { registerBasicAuth } from './helpers/security/basic-auth.js';
-import { logger } from './helpers/logging.js';
-import { markSecureRoute, forceHttpsRedirect } from './helpers/security/secure-routes.js';
+import { basicAuthRegistrator } from './helpers/routes/basic-auth.js';
+import { logger } from './helpers/routes/logging.js';
+import { secureRouteMarker, httpsRedirectEnforcer } from './helpers/routes/secure-routes.js';
+import {
+  registerStaticCssRoutes,
+  viewBaseMarker
+} from './helpers/routes/user-agent-based-routes.js';
 import { setupNunjucks } from './helpers/nunjucks-setup.js';
 import { loadConfig } from './helpers/config-loader.js';
 import { createClient } from 'db-vendo-client';
@@ -38,23 +42,28 @@ const dbClient = createClient(dbProfile, 'DB-Multi');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/public', express.static('public'));
+app.use('/public/css', registerStaticCssRoutes());
+app.use('/public/js', express.static('public/js'));
+app.use('/public/icons', express.static('public/images'));
+app.use(viewBaseMarker());
+app.use(secureRouteMarker());
 app.use(logger());
-app.use(markSecureRoute());
+
 config.routes
   .filter(route => route.isBasicAuth)
   .forEach(route => {
     app.use(
       route.path,
-      registerBasicAuth({
+      basicAuthRegistrator({
         forceHttpsRedirect: route.forceHttpsRedirect,
         expectedUser: process.env.BASIC_AUTH_USER,
         expectedPassword: process.env.BASIC_AUTH_PASS
       })
     );
   });
+
 app.use(
-  forceHttpsRedirect({
+  httpsRedirectEnforcer({
     routes: config.routes,
     httpsPort: config.httpsPort
   })

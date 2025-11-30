@@ -1,0 +1,95 @@
+{% extends "layout.njk" %}
+
+{% set style = "common, home" %}
+
+{% block title %}{{ content.title }}{% endblock %}
+
+{% block content %}
+
+  <h1>{{ content.pageTitle }}</h1>
+
+  <ul>
+
+    <li>
+      <a href="/departures">
+        <img src="/public/icons/clock.min.png" alt="🕒" class="icon">{{ content.departures.title }}
+      </a>
+      <br>
+    <small>{{ content.departures.desc }}</small>
+    </li>
+
+    <li>
+      <a href="/journey">
+        <img src="/public/icons/train.min.png" alt="🚆" class="icon">{{ content.journey.title }}
+      </a>
+      <br>
+      <small>{{ content.journey.desc }}</small>
+    </li>
+
+    <li>
+      <a href="/weather">
+        <img src="/public/icons/cloud.min.png" alt="☁️" class="icon">{{ content.weather.title }}
+      </a>
+      <br>
+      <small>{{ content.weather.desc }}</small>
+    </li>
+
+    <li>
+      <a href="/pois">
+        <img src="/public/icons/pin.min.png" alt="📍" class="icon">{{ content.pois.title }}
+      </a><br>
+      <small>{{ content.pois.desc }}</small>
+    </li>
+
+    {% if isSecureContext %}
+    <li>
+      <a href="/tasks">
+        <img src="/public/icons/tasks.min.png" alt="📝" class="icon">{{ content.tasks.title }}
+      </a>
+      <br>
+      <small>{{ content.tasks.desc }}</small>
+    </li>
+    {% endif %}
+
+    {% if isSecureContext %}
+    <li>
+      <a href="/joplin">
+        <img src="/public/icons/note.min.png" alt="🗒️" class="icon">{{ content.joplin.title }}
+      </a>
+      <br>
+      <small>{{ content.joplin.desc }}</small>
+    </li>
+    {% endif %}
+
+    <li>
+      <a href="/news">
+        <img src="/public/icons/news.min.png" alt="📰" class="icon">{{ content.news.title }}
+      </a>
+      <br>
+      <small>{{ content.news.desc }}</small>
+    </li>
+
+    <li>
+    <img src="/public/icons/star.min.png" alt="⭐" class="icon">{{ content.bookmarks.title }}
+      <br>
+
+      <ul class="favorites">
+        {% for bookmark in bookmarks %}
+          {% include "home/partials/favorite.njk" %}
+        {% endfor %}
+      </ul>
+    </li>
+
+    <li>
+      <a href="/browser">
+        <img src="/public/icons/browser.min.png" alt="📰" class="icon">{{ content.browser.title }}
+      </a>
+      <br>
+      <small>{{ content.browser.desc }}</small>
+    </li>
+
+  </ul>
+
+  {% include "common/hint.njk" %}
+
+{% endblock %}

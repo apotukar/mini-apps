@@ -1,10 +1,4 @@
 {
-  "icons": {
-    "fuzz": "5%",
-    "transparent": "white",
-    "sizes": ["32x32"],
-    "quality": "65-90"
-  },
   "js": {
     "compress": true,
     "mangle": true

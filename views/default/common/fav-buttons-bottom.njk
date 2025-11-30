@@ -1,0 +1,17 @@
+{% macro favButtons(basePath) %}
+  <br>
+
+  <form method="GET" action="{{ basePath }}/clear-favs">
+    <button type="submit" class="btn btn-danger">
+      <img src="/public/icons/delete.min.png" alt="Reload" class="btn-icon">
+      Favoriten löschen
+    </button>
+  </form>
+
+  <form method="GET" action="{{ basePath }}/show-config-favs">
+    <button type="submit" class="btn btn-secondary">
+      <img src="/public/icons/reload.min.png" alt="Reload" class="btn-icon">
+      Standard-Favoriten hinzufügen
+    </button>
+  </form>
+{% endmacro %}

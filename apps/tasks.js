@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { refreshAccessToken } from '../helpers/security/google-tokens.js';
+import { refreshAccessToken } from '../helpers/google-tokens.js';
 
 export function registerTaskRoutes(app) {
   app.get('/tasks', async (req, res) => {

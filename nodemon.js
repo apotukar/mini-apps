@@ -17,26 +17,6 @@ function minifyFile(file) {
   const extname = path.extname(file);
   const base = file.substring(0, file.length - extname.length);
 
-  if (extname === '.png' && !file.endsWith('.min.png')) {
-    const { fuzz, transparent, sizes, quality } = minifyConfig.icons;
-
-    for (const size of sizes) {
-      const out = `${base}.${size}.min.png`;
-      const tmp = `${base}.tmp.png`;
-
-      const convertArgs = `-fuzz ${fuzz} -transparent ${transparent} -resize ${size}`;
-      console.log('convert args:', convertArgs);
-      execSync(`convert "${file}" ${convertArgs} "${tmp}"`);
-
-      const pngquantArgs = `--force --output "${out}" --quality=${quality}`;
-      console.log('pngquant args:', pngquantArgs);
-      execSync(`pngquant ${pngquantArgs} "${tmp}"`);
-
-      fs.unlinkSync(tmp);
-      console.log('generated:', out);
-    }
-  }
-
   if (extname === '.css' && !file.endsWith('.min.css')) {
     const out = `${base}.min.css`;
     console.log(`cleancss args: -o ${out} ${file}`);

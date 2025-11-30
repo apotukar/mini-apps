@@ -5,7 +5,7 @@
     "node_modules",
     "public/*.min.css",
     "public/js/*.min.js",
-    "public/icons/*.min.png"
+    "public/images/*.min.png"
   ],
   "ext": "json,js,njk,css"
 }

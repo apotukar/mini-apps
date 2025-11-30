@@ -21,8 +21,6 @@ export function registerPOIRoutes(app, params) {
     const radiusInKilometers = parseFloat(req.query.r) || 1.5;
     const radiusInMeters = radiusInKilometers * 1000;
 
-    console.log('type', type);
-
     if (!query) {
       return res.render('pois/index.njk', {
         results: [],

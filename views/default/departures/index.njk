@@ -1,0 +1,42 @@
+{% extends "layout.njk" %}
+
+{% set style = "common, journey" %}
+
+{% block title %}Abfahrten{% endblock %}
+
+{% block content %}
+  <h2>Abfahrten</h2>
+
+  <form method="POST">
+    <label for="station">Station / Haltestelle:</label><br>
+    <input
+      type="text"
+      id="station"
+      name="station"
+      value="{{ station }}"
+      autocomplete="off"/>
+    <br><br>
+    <button type="submit" formaction="/departures/search" class="btn btn-primary">
+      Anzeigen
+    </button>
+    <button type="submit" formaction="/departures/save-fav" class="btn btn-secondary btn-fav">
+      <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">
+      Favorit speichern
+    </button>
+  </form>
+
+  <h3>Favoriten</h3>
+  {% if favs and favs.length %}
+    {% for fav in favs %}
+      {% include "departures/partials/favorite.njk" %}
+    {% endfor %}
+  {% else %}
+    <i>Keine Favoriten</i>
+  {% endif %}
+
+  {% from "common/fav-buttons-bottom.njk" import favButtons %}
+  {{ favButtons("/departures") }}
+
+  {% include "common/hint.njk" %}
+
+{% endblock %}

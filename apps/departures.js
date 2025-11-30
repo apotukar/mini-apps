@@ -108,10 +108,13 @@ export function registerDepartureRoutes(app, params) {
       return `${productGerman} ${cleaned}`;
     }
 
-    const items = departures.map(dep => {
-      const when = dep.when || dep.plannedWhen;
-      const d = when ? new Date(when) : null;
-      const line = dep.line || {};
+    const items = departures.map(departure => {
+      const plannedWhen = departure.plannedWhen;
+      const plannedTime = plannedWhen ? new Date(plannedWhen) : null;
+      const actualWhen = departure.when;
+      const actualTime = actualWhen ? new Date(actualWhen) : null;
+      const delay = departure.delay != null ? Math.round(departure.delay / 60) : 0;
+      const line = departure.line || {};
       const productRaw = line.product || line.mode || '';
       const productGerman = translateProduct(productRaw);
       const type = mapType(productRaw);
@@ -119,12 +122,14 @@ export function registerDepartureRoutes(app, params) {
       const lineText = formatLine(productGerman, lineName);
 
       return {
-        time: d || '–',
-        direction: dep.direction || '',
+        time: plannedTime || '–',
+        actualTime: actualTime || '–',
+        delay,
+        direction: departure.direction || '',
         lineText,
-        platform: dep.platform || dep.plannedPlatform || '',
+        platform: departure.platform || departure.plannedPlatform || '',
         type,
-        rawWhen: when
+        rawWhen: plannedWhen
       };
     });
 

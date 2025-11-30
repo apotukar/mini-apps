@@ -40,7 +40,7 @@
       "label": "News App",
       "isBasicAuth": false,
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": true
+      "forceHttpsRedirect": false
     },
     {
       "path": "/pois",

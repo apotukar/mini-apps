@@ -95,7 +95,10 @@ function normalizeUrl(input) {
 }
 
 async function fetchHtml(url, config) {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
   page.setDefaultNavigationTimeout(config.timeout);
 
