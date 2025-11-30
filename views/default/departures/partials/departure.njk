@@ -7,14 +7,13 @@
         {{ dep.actualTime | formatTime }}</span>
   {% endif %}
   {% if dep.lineText %}
-  <br>
-  {{ dep.lineText }}
+    <br>{{ dep.lineText }}
   {% endif %}
-  {% if dep.direction %} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ dep.direction }}
-  {% endif %}<br>
-
+  {% if dep.direction %}
+    <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> 
+    {{ dep.direction }}
+  {% endif %}
   {% if dep.platform %}
-    <br>Gleis/Steig: {{ dep.platform }}<br>
+    <small>Gleis/Steig: {{ dep.platform }}</small>
   {% endif %}
-  <br>
 </div>
