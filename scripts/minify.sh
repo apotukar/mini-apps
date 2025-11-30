@@ -48,7 +48,7 @@ png)
     tmp="/tmp/$(basename "${img%.png}").tmp.png"
     CONVERT_ARGS="-fuzz 5% -transparent white -resize 32x32"
     convert "$img" $CONVERT_ARGS "$tmp"
-    PNGQUANT_ARGS="--force --output $out --quality=$QUALITY"
+    PNGQUANT_ARGS="--force --output $out --quality=65-90"
     pngquant $PNGQUANT_ARGS "$tmp"
     rm "$tmp"
     echo "generated: $out"
