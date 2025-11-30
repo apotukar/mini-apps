@@ -15,7 +15,9 @@ node_modules
 
 # Generated assets
 *.min.css
-*.min.png
 *.min.js
+*.min.png
+*.min.gif
 
+# Misc
 .books/
