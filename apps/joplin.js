@@ -35,7 +35,9 @@ export function registerJoplinRoutes(app, params) {
       const filename = '/' + req.params.id;
       const files = await listAllFiles();
       const entry = files.find(f => f.filename === filename);
-      if (!entry) throw new Error('Notiz nicht gefunden');
+      if (!entry) {
+        throw new Error('Notiz nicht gefunden');
+      }
 
       const { raw, meta } = await getFileWithMeta(entry);
       const title = raw.split('\n')[0] || '(ohne Titel)';
@@ -79,12 +81,16 @@ export function registerJoplinRoutes(app, params) {
         try {
           const files = await client.getDirectoryContents(dir);
           entry = files.find(f => f.basename.startsWith(id));
-          if (entry) break;
+          if (entry) {
+            break;
+          }
         } catch (err) {
           void err;
         }
       }
-      if (!entry) return res.status(404).send('Not found');
+      if (!entry) {
+        return res.status(404).send('Not found');
+      }
       const data = await client.getFileContents(entry.filename);
       const contentType = mime.lookup(entry.basename) || 'application/octet-stream';
       res.setHeader('Content-Type', contentType);
@@ -142,7 +148,9 @@ export function registerJoplinRoutes(app, params) {
       const sameEtag = cached.etag && entry.etag && cached.etag === entry.etag;
       const sameLastmod =
         cached.lastmod && entry.lastmod && String(cached.lastmod) === String(entry.lastmod);
-      if (sameEtag || sameLastmod) return cached;
+      if (sameEtag || sameLastmod) {
+        return cached;
+      }
     } catch (err) {
       void err;
     }
@@ -170,7 +178,9 @@ export function registerJoplinRoutes(app, params) {
 
   async function getFileWithMeta(entry) {
     const cached = await readFromCache(entry);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     const raw = await client.getFileContents(entry.filename, { format: 'text' });
     const meta = entry.basename.endsWith('.json') ? await readJsonMeta(raw) : await readMeta(raw);
     await writeToCache(entry, raw, meta);
@@ -183,9 +193,13 @@ export function registerJoplinRoutes(app, params) {
     let i = lines.length - 1;
     while (i >= 0) {
       const l = lines[i].trim();
-      if (l === '') break;
+      if (l === '') {
+        break;
+      }
       const p = l.indexOf(':');
-      if (p !== -1) meta[l.slice(0, p)] = l.slice(p + 1).trim();
+      if (p !== -1) {
+        meta[l.slice(0, p)] = l.slice(p + 1).trim();
+      }
       i--;
     }
     return meta;
@@ -208,8 +222,12 @@ export function registerJoplinRoutes(app, params) {
   }
 
   function parseUpdated(time) {
-    if (!time) return null;
-    if (String(time).match(/^\d+$/)) return new Date(Number(time));
+    if (!time) {
+      return null;
+    }
+    if (String(time).match(/^\d+$/)) {
+      return new Date(Number(time));
+    }
     return new Date(time);
   }
 
@@ -234,8 +252,12 @@ export function registerJoplinRoutes(app, params) {
   function buildNotebookPathMap(notebooks) {
     const cache = new Map();
     function resolve(id) {
-      if (!id) return '';
-      if (cache.has(id)) return cache.get(id);
+      if (!id) {
+        return '';
+      }
+      if (cache.has(id)) {
+        return cache.get(id);
+      }
       const nb = notebooks.get(id);
       if (!nb) {
         cache.set(id, '');
@@ -246,7 +268,9 @@ export function registerJoplinRoutes(app, params) {
       cache.set(id, full);
       return full;
     }
-    for (const id of notebooks.keys()) resolve(id);
+    for (const id of notebooks.keys()) {
+      resolve(id);
+    }
     return cache;
   }
 
@@ -297,17 +321,31 @@ export function registerJoplinRoutes(app, params) {
       const aPref = prioA !== -1;
       const bPref = prioB !== -1;
 
-      if (aPref && !bPref) return -1;
-      if (!aPref && bPref) return 1;
-      if (aPref && bPref && prioA !== prioB) return prioA - prioB;
+      if (aPref && !bPref) {
+        return -1;
+      }
+      if (!aPref && bPref) {
+        return 1;
+      }
+      if (aPref && bPref && prioA !== prioB) {
+        return prioA - prioB;
+      }
 
-      if (pathA < pathB) return -1;
-      if (pathA > pathB) return 1;
+      if (pathA < pathB) {
+        return -1;
+      }
+      if (pathA > pathB) {
+        return 1;
+      }
 
       const titleA = (a.title || '').toLowerCase();
       const titleB = (b.title || '').toLowerCase();
-      if (titleA < titleB) return -1;
-      if (titleA > titleB) return 1;
+      if (titleA < titleB) {
+        return -1;
+      }
+      if (titleA > titleB) {
+        return 1;
+      }
 
       return 0;
     });

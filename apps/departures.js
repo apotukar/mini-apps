@@ -8,6 +8,8 @@ import {
   setHideFlag
 } from '../helpers/favorites.js';
 
+import { buildDeparturesView, findStation } from '../helpers/transport-service.js';
+
 export function registerDepartureRoutes(app, params) {
   const client = params.client;
   const config = params.config || {};
@@ -42,8 +44,8 @@ export function registerDepartureRoutes(app, params) {
     let stationName = rawStationName;
 
     if (configSaveNormalizedFavName) {
-      const station = await findStation(rawStationName);
-      stationName = station.name;
+      const station = await findStation(client, rawStationName);
+      stationName = station.normalizedName;
     }
 
     let favorites = getFavorites(req, favoritesNamespace);
@@ -76,145 +78,35 @@ export function registerDepartureRoutes(app, params) {
     handleDeparturesSearch(req => req.body.station)
   );
 
-  async function findStation(name) {
-    const list = await client.locations(name, { results: 1 });
-    if (!list || list.length === 0) throw new Error('Station nicht gefunden: ' + name);
-    const station = list[0];
-    if (!station.id) throw new Error('Station hat keine ID: ' + name);
-    return station;
-  }
-
-  function buildDeparturesView(stationName, departures) {
-    function translateProduct(product) {
-      return transportLabels[product] || product || '';
-    }
-
-    function mapType(product) {
-      return transportCssTypeAppendices[product] || 'other';
-    }
-
-    function formatLine(productGerman, raw) {
-      if (!raw) return productGerman;
-      const cleaned = raw
-        .replace(/^STR\s*/i, '')
-        .replace(/^BUS\s*/i, '')
-        .replace(/^TRAM\s*/i, '')
-        .replace(/^SUBWAY\s*/i, '')
-        .replace(/^SUBURBAN\s*/i, '');
-      const alreadyHasProduct = cleaned.toLowerCase().startsWith(productGerman.toLowerCase());
-      if (alreadyHasProduct) return cleaned;
-      if (/^\d+/.test(cleaned)) return `${productGerman} ${cleaned}`;
-      if (/^[SU]\s*\d+/i.test(cleaned)) return cleaned;
-      return `${productGerman} ${cleaned}`;
-    }
-
-    const items = departures.map(departure => {
-      const plannedWhen = departure.plannedWhen;
-      const plannedTime = plannedWhen ? new Date(plannedWhen) : null;
-      const actualWhen = departure.when;
-      const actualTime = actualWhen ? new Date(actualWhen) : null;
-      const delay = departure.delay != null ? Math.round(departure.delay / 60) : 0;
-      const line = departure.line || {};
-      const productRaw = line.product || line.mode || '';
-      const productGerman = translateProduct(productRaw);
-      const type = mapType(productRaw);
-      const lineName = line.name || line.label || line.id || '';
-      const lineText = formatLine(productGerman, lineName);
-
-      return {
-        time: plannedTime || '–',
-        actualTime: actualTime || '–',
-        delay,
-        direction: departure.direction || '',
-        lineText,
-        platform: departure.platform || departure.plannedPlatform || '',
-        type,
-        rawWhen: plannedWhen
-      };
-    });
-
-    const validTimes = items
-      .map(i => i.rawWhen)
-      .filter(Boolean)
-      .map(w => new Date(w))
-      .sort((a, b) => a - b);
-
-    let earlierIso = null;
-    let laterIso = null;
-
-    if (validTimes.length > 0) {
-      const first = validTimes[0];
-      const last = validTimes[validTimes.length - 1];
-      const halfHour = 30 * 60 * 1000;
-      earlierIso = new Date(first.getTime() - halfHour).toISOString();
-      laterIso = new Date(last.getTime() + halfHour).toISOString();
-    }
-
-    const cleanedItems = items.map(({ rawWhen: _, ...rest }) => rest);
-
-    return {
-      stationName,
-      departures: cleanedItems,
-      earlierIso,
-      laterIso
-    };
-  }
-
-  async function fetchDeparturesUntilFound(stationId, initialWhen) {
-    let whenDate = initialWhen ? new Date(initialWhen) : new Date();
-    if (Number.isNaN(whenDate.getTime())) {
-      whenDate = new Date();
-    }
-
-    const stepMinutes = 15;
-    let remainingTries = 48;
-    const baseOpts = { duration: 60, results: 10 };
-
-    while (remainingTries-- > 0) {
-      const opts = { ...baseOpts, when: whenDate };
-
-      const data = await client.departures(stationId, opts);
-
-      const departures = Array.isArray(data?.departures)
-        ? data.departures
-        : Array.isArray(data)
-          ? data
-          : [];
-
-      if (departures.length > 0) {
-        return { departures, usedWhen: whenDate };
-      }
-
-      whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
-    }
-
-    return { departures: [], usedWhen: whenDate };
-  }
-
-  async function fetchDeparturesView(stationNameInput, when) {
-    const station = await findStation(stationNameInput);
-    const stationId = station.id;
-    const displayName = station.name || stationNameInput;
-
-    const { departures } = await fetchDeparturesUntilFound(stationId, when);
-
-    return buildDeparturesView(displayName, departures);
-  }
-
   function handleDeparturesSearch(getStationName, getWhen) {
     return async (req, res) => {
       try {
         const inputName = (getStationName(req) || '').trim();
-        if (!inputName) return res.redirect('/departures');
+        if (!inputName) {
+          return res.redirect('/departures');
+        }
+
+        // TODO: render error page if there is no station
+        // const station = await findStation(client, inputName);
+        // const stationId = station.id;
+        // const displayName = station.normalizedName || station.name || stationNameInput;
 
         const when = getWhen ? getWhen(req) : undefined;
-        const view = await fetchDeparturesView(inputName, when);
+        const view = await buildDeparturesView(
+          client,
+          transportLabels,
+          transportCssTypeAppendices,
+          inputName,
+          when
+        );
 
         if (!view || !view.departures || view.departures.length === 0) {
           return res.render('departures/no-results.njk', {
             stationName: view?.stationName || inputName
           });
         }
+
+        view.departures.sort((a, b) => a.actualTime - b.actualTime);
 
         return res.render('departures/results.njk', view);
       } catch (err) {

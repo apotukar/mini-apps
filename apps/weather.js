@@ -76,7 +76,9 @@ export function registerWeatherRoutes(app, params) {
         '&count=1&language=de&format=json';
 
       const geoResp = await fetch(geoUrl);
-      if (!geoResp.ok) throw new Error('Geocoding-Anfrage fehlgeschlagen.');
+      if (!geoResp.ok) {
+        throw new Error('Geocoding-Anfrage fehlgeschlagen.');
+      }
 
       const geo = await geoResp.json();
       if (!geo.results || geo.results.length === 0) {
@@ -98,7 +100,9 @@ export function registerWeatherRoutes(app, params) {
         '&timezone=auto';
 
       const fcResp = await fetch(forecastUrl);
-      if (!fcResp.ok) throw new Error('Wetterdaten-Anfrage fehlgeschlagen.');
+      if (!fcResp.ok) {
+        throw new Error('Wetterdaten-Anfrage fehlgeschlagen.');
+      }
 
       const fc = await fcResp.json();
       const cw = fc.current_weather || {};

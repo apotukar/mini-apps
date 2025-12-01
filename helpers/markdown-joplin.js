@@ -3,9 +3,15 @@ import { marked } from 'marked';
 const renderer = new marked.Renderer();
 
 function normalizeHref(h) {
-  if (!h) return '';
-  if (typeof h === 'string') return h;
-  if (typeof h === 'object' && 'href' in h && typeof h.href === 'string') return h.href;
+  if (!h) {
+    return '';
+  }
+  if (typeof h === 'string') {
+    return h;
+  }
+  if (typeof h === 'object' && 'href' in h && typeof h.href === 'string') {
+    return h.href;
+  }
   return String(h);
 }
 
@@ -24,7 +30,9 @@ renderer.link = token => {
 
 renderer.image = token => {
   let src = normalizeHref(token.href);
-  if (src.startsWith(':/')) src = `/joplin/resource/${src.slice(2)}`;
+  if (src.startsWith(':/')) {
+    src = `/joplin/resource/${src.slice(2)}`;
+  }
   const alt = token.text || '';
   const title = token.title ? ` title="${token.title}"` : '';
   return `<img src="${src}" alt="${alt}"${title}>`;

@@ -1,16 +1,18 @@
 <div class="departure departure-{{ dep.type }}">
-  <strong>{{ dep.time | formatTime }}</strong>
-  {% if dep.delay > 0 %}
-    <span style="font-weight: bold; color: red; padding-left: 0.25em;">
-        +{{ dep.delay | formatDuration}}
-        <img src="/public/icons/rarrowred.min.png" alt="→" class="arrow-inline">
-        {{ dep.actualTime | formatTime }}</span>
-  {% endif %}
+    {% if dep.delay > 0 %}
+    <strong style="color: red;">
+    {{ dep.actualTime | formatTime }} ({{ dep.time | formatTime }} + {{ dep.delay | formatDuration }})
+    {% else %}
+    <strong>
+    {{ dep.actualTime | formatTime }}
+    {% endif %}
+    </strong>
+
   {% if dep.lineText %}
     <br>{{ dep.lineText }}
   {% endif %}
   {% if dep.direction %}
-    <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> 
+    <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline">
     {{ dep.direction }}
   {% endif %}
   {% if dep.platform %}

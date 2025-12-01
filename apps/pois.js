@@ -1,7 +1,7 @@
-import { searchPOIs } from '../helpers/geo/poi-services.js';
+import { searchPOIs } from '../helpers/geo/poi-service.js';
+import { getEmergencyPharmacies } from '../helpers/geo/poi-emergency-pharmacy-service.js';
 import { geocodePlace } from '../helpers/geo/geocode.js';
 import { generateStaticMap } from '../helpers/geo/map-generator.js';
-import { getEmergencyPharmacies } from '../helpers/geo/poi-emergency-pharmacy-service.js';
 
 export function registerPOIRoutes(app, params) {
   const config = params.config;
@@ -84,7 +84,9 @@ export function registerPOIRoutes(app, params) {
   app.get('/pois/map', async (req, res) => {
     const lat = parseFloat(req.query.lat);
     const lon = parseFloat(req.query.lon);
-    if (isNaN(lat) || isNaN(lon)) return res.status(400).send('invalid');
+    if (isNaN(lat) || isNaN(lon)) {
+      return res.status(400).send('invalid');
+    }
     try {
       const buf = await generateStaticMap(lat, lon, zoom, tiles);
       res.setHeader('Content-Type', 'image/png');

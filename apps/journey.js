@@ -8,7 +8,7 @@ import {
   dedupeFavs
 } from '../helpers/favorites.js';
 
-import { buildJourneyView } from '../helpers/journey-view-builder.js';
+import { buildJourneyView, findStation, fetchJourneys } from '../helpers/transport-service.js';
 
 export function registerJourneyRoutes(app, params) {
   const client = params.client;
@@ -61,16 +61,11 @@ export function registerJourneyRoutes(app, params) {
       let toName = rawToName;
 
       if (configSaveNormalizedFavName) {
-        const fromId = await findStationId(client, rawFromName);
-        const toId = await findStationId(client, rawToName);
-        const options = { results: 1 };
+        const fromStation = await findStation(client, rawFromName);
+        fromName = fromStation.normalizedName;
 
-        const data = await client.journeys(fromId, toId, options);
-        const journeys = data.journeys || [];
-
-        if (journeys.length > 0) {
-          ({ fromName, toName } = normalizeJourneyNames(journeys, rawFromName, rawToName));
-        }
+        const toStation = await findStation(client, rawToName);
+        toName = toStation.normalizedName;
       }
 
       const favorites = dedupeFavs([
@@ -144,14 +139,6 @@ export function registerJourneyRoutes(app, params) {
   }
 }
 
-async function findStationId(client, name) {
-  const list = await client.locations(name, { results: 1 });
-  if (!list || list.length === 0) {
-    throw new Error('Station nicht gefunden: ' + name);
-  }
-  return list[0].id;
-}
-
 async function handleJourneySearch({
   res,
   client,
@@ -167,9 +154,10 @@ async function handleJourneySearch({
       return res.redirect('/journey');
     }
 
-    const fromId = await findStationId(client, rawFromName);
-    const toId = await findStationId(client, rawToName);
-
+    const fromStation = await findStation(client, rawFromName);
+    const toStation = await findStation(client, rawToName);
+    // TODO: decline nonsensical station input names
+    // console.log('stations', fromStation, toStation);
     const options = { results: 5 };
 
     if (earlierThan) {
@@ -180,7 +168,7 @@ async function handleJourneySearch({
       options.departure = departure;
     }
 
-    const data = await client.journeys(fromId, toId, options);
+    const data = await fetchJourneys(client, fromStation, toStation, options);
     const journeys = data.journeys || [];
 
     if (!journeys.length) {
@@ -190,15 +178,13 @@ async function handleJourneySearch({
       });
     }
 
-    const { fromName, toName } = normalizeJourneyNames(journeys, rawFromName, rawToName);
-
     const journeysView = journeys
       .map((journey, i) => buildJourneyView(journey.legs || [], i, transportLabels))
       .filter(Boolean);
 
     return res.render('journey/results.njk', {
-      fromName,
-      toName,
+      fromName: fromStation.normalizedName,
+      toName: toStation.normalizedName,
       journeys: journeysView,
       earlierRef: data.earlierRef || null,
       laterRef: data.laterRef || null
@@ -208,17 +194,4 @@ async function handleJourneySearch({
       message: err.message
     });
   }
-}
-
-function normalizeJourneyNames(journeys, rawFromName, rawToName) {
-  const journey = journeys?.[0];
-  const legs = journey?.legs ?? [];
-
-  const fromName = legs?.[0]?.origin?.name ?? rawFromName;
-  const toName = legs?.[legs.length - 1]?.destination?.name ?? rawToName;
-
-  return {
-    fromName,
-    toName
-  };
 }

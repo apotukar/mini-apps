@@ -20,13 +20,15 @@
     <div class="leg-row">
       <span class="label">Ab:</span>
       <span class="value">
-        {{ leg.depTime | formatTime }}
-        {% if leg.depPlannedTime and leg.depPlannedTime != leg.depTime %}
-          <span class="planned-time">(geplant: {{ leg.depPlannedTime | formatTime }})</span>
+        <strong>
+        {{ leg.depPlannedTime | formatTime }}
+        {% if leg.depDelayMin > 0 %}
+        <span style="color: red; padding-left: 0.25em;">
+            +{{ leg.depDelayMin | formatDuration}}
+            <img src="/public/icons/rarrowred.min.png" alt="→" class="arrow-inline">
+            {{ leg.depTime | formatTime }}</span>
         {% endif %}
-        {% if leg.depDelayMin and leg.depDelayMin > 0 %}
-          <span class="delay delay-bad">+{{ leg.depDelayMin | formatDuration }}</span>
-        {% endif %}
+        </strong>
         {% if leg.depPlatform %}
           , Gleis {{ leg.depPlatform }}
           {% if leg.depPlatformPlanned and leg.depPlatformPlanned != leg.depPlatform %}
@@ -40,13 +42,15 @@
     <div class="leg-row">
       <span class="label">An:</span>
       <span class="value">
-        {{ leg.arrTime | formatTime }}
-        {% if leg.arrPlannedTime and leg.arrPlannedTime != leg.arrTime %}
-          <span class="planned-time">(geplant: {{ leg.arrPlannedTime | formatTime }})</span>
+        <strong>
+        {{ leg.arrPlannedTime | formatTime }}
+        {% if leg.arrDelayMin > 0 %}
+        <span style="color: red; padding-left: 0.25em;">
+            +{{ leg.arrDelayMin | formatDuration}}
+            <img src="/public/icons/rarrowred.min.png" alt="→" class="arrow-inline">
+            {{ leg.arrTime | formatTime }}</span>
         {% endif %}
-        {% if leg.arrDelayMin and leg.arrDelayMin > 0 %}
-          <span class="delay delay-bad">+{{ leg.arrDelayMin | formatDuration }}</span>
-        {% endif %}
+        </strong>
         {% if leg.arrPlatform %}
           , Gleis {{ leg.arrPlatform }}
           {% if leg.arrPlatformPlanned and leg.arrPlatformPlanned != leg.arrPlatform %}

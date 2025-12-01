@@ -10,7 +10,9 @@ function hideKey(namespace) {
 
 export function getFavorites(req, namespace) {
   const key = favKey(namespace);
-  if (!req.cookies?.[key]) return [];
+  if (!req.cookies?.[key]) {
+    return [];
+  }
   try {
     const parsed = JSON.parse(req.cookies[key]);
     return Array.isArray(parsed) ? parsed : [];
@@ -55,7 +57,9 @@ export function dedupeFavs(list) {
 
   return list.filter(item => {
     const key = typeof item === 'string' ? item : JSON.stringify(item);
-    if (seen.has(key)) return false;
+    if (seen.has(key)) {
+      return false;
+    }
     seen.add(key);
     return true;
   });

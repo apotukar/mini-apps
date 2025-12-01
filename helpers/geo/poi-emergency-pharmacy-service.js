@@ -1,3 +1,10 @@
+// TODO: complete class
+export class PoiEmergencyPharmacyService {
+  constructor(arg) {
+    this.arg = arg;
+  }
+}
+
 import fs from 'fs/promises';
 import path from 'path';
 import puppeteer from 'puppeteer';
@@ -84,12 +91,13 @@ async function scrape(plz) {
       if (contactP) {
         const txt = contactP.textContent || '';
         const idx = txt.indexOf('Fax:');
-        if (idx !== -1)
+        if (idx !== -1) {
           fax = txt
             .slice(idx + 4)
             .trim()
             .split('\n')[0]
             .trim();
+        }
       }
 
       const googleMapsUrl = li.querySelector('a.showapo')?.getAttribute('href') ?? null;

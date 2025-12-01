@@ -32,8 +32,12 @@ function minifyFile(file) {
     const { compress, mangle } = minifyConfig.js;
 
     let terserArgs = '';
-    if (compress) terserArgs += ' -c';
-    if (mangle) terserArgs += ' -m';
+    if (compress) {
+      terserArgs += ' -c';
+    }
+    if (mangle) {
+      terserArgs += ' -m';
+    }
 
     const out = `${base}.min.js`;
     console.log('terser args:', terserArgs);

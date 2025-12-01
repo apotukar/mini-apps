@@ -99,7 +99,9 @@ export function setupNunjucks(app, params) {
   });
 
   env.addFilter('split', function (str, delimiter) {
-    if (typeof str !== 'string') return [];
+    if (typeof str !== 'string') {
+      return [];
+    }
     return str.split(delimiter).map(s => s.trim());
   });
 

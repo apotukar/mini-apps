@@ -1,3 +1,10 @@
+// TODO: complete class
+export class PoiService {
+  constructor(arg) {
+    this.arg = arg;
+  }
+}
+
 import fetch from 'node-fetch';
 import { reverseSearch } from './reverse-search.js';
 

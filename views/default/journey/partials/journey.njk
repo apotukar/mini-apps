@@ -1,7 +1,7 @@
 <div class="journey">
   <b>{{ journey.number }}. Verbindung am {{ journey.departure | formatDate }}</b>
   <br>
-  {{ journey.departure | formatTime }} - {{ journey.arrival | formatTime }} | {{ journey.duration | formatDuration }}
+  <b>{{ journey.departure | formatTime }} - {{ journey.arrival | formatTime }} | {{ journey.duration | formatDuration }}</b>
   {% if journey.transfers == 1 %}
     | {{ journey.transfers }} Umstieg
   {% endif %}

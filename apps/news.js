@@ -28,7 +28,9 @@ export function registerNewsRoutes(app, params) {
 }
 
 function stripImages(html) {
-  if (!html) return '';
+  if (!html) {
+    return '';
+  }
   let cleaned = html.replace(/<img[^>]*>/gi, '');
   cleaned = cleaned.replace(/https?:\/\/\S+\.(jpg|jpeg|png|gif)/gi, '');
   return cleaned;
@@ -68,7 +70,9 @@ async function fetchAllFeeds(feeds, limit, totalLimit, browserProxy) {
   results.sort((a, b) => {
     const prioA = a.priority ?? 999;
     const prioB = b.priority ?? 999;
-    if (prioA !== prioB) return prioA - prioB;
+    if (prioA !== prioB) {
+      return prioA - prioB;
+    }
     return new Date(b.date) - new Date(a.date);
   });
 

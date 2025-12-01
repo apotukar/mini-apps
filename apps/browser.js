@@ -33,7 +33,9 @@ export function registerBrowserRoutes(app, params) {
 
   app.get('/browser/browse', async (req, res) => {
     const rawUrl = req.query.url;
-    if (!rawUrl) return res.redirect('/browser');
+    if (!rawUrl) {
+      return res.redirect('/browser');
+    }
 
     const url = normalizeUrl(rawUrl);
 
@@ -86,7 +88,9 @@ export function registerBrowserRoutes(app, params) {
 }
 
 function normalizeUrl(input) {
-  if (!input) return '';
+  if (!input) {
+    return '';
+  }
   let url = input.trim();
   if (!/^https?:\/\//i.test(url)) {
     url = 'https://' + url;
@@ -188,7 +192,9 @@ function simplifyHtml(html, url, config) {
     $('main, .content, #content, article').each((_, el) => candidates.push(el));
     $('div').each((_, el) => {
       const textLen = ($(el).text() || '').trim().length;
-      if (textLen > 800) candidates.push(el);
+      if (textLen > 800) {
+        candidates.push(el);
+      }
     });
 
     let best = null;

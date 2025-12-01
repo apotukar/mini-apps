@@ -25,6 +25,7 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-undef': 'error',
       'no-console': 'off',
+      curly: ['error', 'all'],
       eqeqeq: 'warn',
       semi: ['error', 'always'],
       quotes: ['error', 'single']
