@@ -8,23 +8,19 @@
   <h2>DB Mini Fahrplan</h2>
 
   <form method="POST">
-    Start:<br>
-    <input name="from" value="{{ from }}"><br><br>
-
-    Ziel:<br>
-    <input name="to" value="{{ to }}"><br><br>
-
+    <label for="from">Start:</label><br>
+    <input id="from" name="from" value="{{ from }}"><br><br>
+    <label for="to">Ziel:</label><br>
+    <input id="to" name="to" value="{{ to }}"><br><br>
     <button type="submit" formaction="/journey/search" class="btn btn-primary">
       Suchen
     </button>
-
     <a href="/journey?swap=true&from={{ from | urlencode }}&to={{ to | urlencode }}" class="btn btn-secondary">
-      <img src="/public/icons/swap.min.png" alt="↔" class="btn-icon">
+      <img src="/public/images/swap.min.png" alt="↔" class="btn-icon">
       Fahrtrichtung umkehren
     </a>
-
     <button type="submit" formaction="/journey/save-fav" class="btn btn-secondary">
-    <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">
+    <img src="/public/images/star.min.png" alt="Favorit" class="btn-icon">
       Favorit speichern
     </button>
   </form>
@@ -44,9 +40,9 @@
     <i>Keine Favoriten</i>
   {% endif %}
 
-  {% from "common/fav-buttons-bottom.njk" import favButtons %}
+  {% from "common/macros/fav-buttons-bottom.njk" import favButtons %}
   {{ favButtons("/journey") }}
 
-  {% include "common/hint.njk" %}
+  {% include "common/partials/hint.njk" %}
 
 {% endblock %}

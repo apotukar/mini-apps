@@ -1,0 +1,20 @@
+{% macro image(name, ext='njk', opts={}) %}
+{% if ext != 'njk' %}
+    <img
+        src="/public/images/{{ name }}.gif"
+        alt="{{ opts.fallback_alt or opts.alt or '' }}"
+        {% if opts.height %}height="{{ opts.height }}"{% endif %}
+        {% if opts.width %}width="{{ opts.width }}"{% endif %}
+        border="{{ opts.border or 0 }}"
+        {% if opts.class %}class="{{ opts.class }}"{% endif %}
+        {% if opts.style %}style="{{ opts.style }}"{% endif %}
+    >
+{% else %}
+    <img
+        src="/public/images/{{ name }}.png"
+        alt="{{ opts.alt or '' }}"
+        {% if opts.class %}class="{{ opts.class }}"{% endif %}
+        {% if opts.style %}style="{{ opts.style }}"{% endif %}
+    >
+{% endif %}
+{% endmacro %}

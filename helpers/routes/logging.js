@@ -5,8 +5,10 @@ export function logger() {
 
     res.on('finish', () => {
       const duration = Date.now() - start;
+      const parts = req.path.split('/').filter(Boolean);
+      const segment = parts[0] || ''; // oder beliebiger Index
       console.log(
-        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${req.url} → ${res.statusCode} (${duration}ms) - UA: ${ua}`
+        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${req.url} → ${res.statusCode} (${duration}ms) - SEG: ${segment} - UA: ${ua}`
       );
     });
 

@@ -6,21 +6,22 @@
 
 {% block content %}
 
-<h1>POIs im Umkreis</h1>
+<h2>POIs im Umkreis</h2>
 
 <form action="/pois" method="get">
-  <label>Ort oder PLZ:</label><br />
+  <label>Ort oder PLZ:</label><br>
   <input type="text" name="q" value="{{ query }}" class="input" />
 
-  {% set rValue = radius %}
-  <select name="r" class="input" {% if type == "emergency_pharmacy" %}disabled{% endif %}>
+  <label>Radius:</label><br>
+  <select name="r" class="input">
+    {% set rValue = radius %}
     {% set radiusOptions = [1, 2, 3, 5, 8, 15, 20, 30] %}
     {% for r in radiusOptions %}
       <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{{ r }} km</option>
     {% endfor %}
   </select>
 
-  <label>Art:</label><br />
+  <label>Art:</label><br>
   <select name="t" class="input">
     {% for key, label in types %}
       <option value="{{ key }}"{% if type == key %}selected{% endif %}>{{ label }}</option>
@@ -43,7 +44,5 @@
 <p class="hint">
   Komplett ohne Geolocation. Nur Ortsname oder PLZ.
 </p>
-
-<script src="public/js/geo.min.js"></script>
 
 {% endblock %}

@@ -1,3 +1,9 @@
+import path from 'path';
+import puppeteer from 'puppeteer';
+import { getRandomBrowserProfile } from '../browser-profiles.js';
+import { geocodePlace } from './geocode.js';
+import { SimpleFileCache } from '../cache.js';
+
 // TODO: complete class
 export class PoiEmergencyPharmacyService {
   constructor(arg) {
@@ -5,45 +11,10 @@ export class PoiEmergencyPharmacyService {
   }
 }
 
-import fs from 'fs/promises';
-import path from 'path';
-import puppeteer from 'puppeteer';
-import { getRandomBrowserProfile } from '../browser-profiles.js';
-import { geocodePlace } from './geocode.js';
-
-const CACHE_DIR = path.join(process.cwd(), '.cache/emergency-pharmacies');
-const TTL = 1000 * 60 * 60 * 12;
-
-async function readCache(plz) {
-  const file = path.join(CACHE_DIR, `${plz}.json`);
-
-  try {
-    const raw = await fs.readFile(file, 'utf8');
-    const data = JSON.parse(raw);
-
-    if (!data || typeof data.timestamp !== 'number' || !('payload' in data)) {
-      return null;
-    }
-
-    if (Date.now() - data.timestamp < TTL) {
-      return data.payload;
-    }
-
-    return null;
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      console.error('Failed to read cache', file, err);
-    }
-    return null;
-  }
-}
-
-async function writeCache(plz, payload) {
-  await fs.mkdir(CACHE_DIR, { recursive: true });
-  const file = path.join(CACHE_DIR, `${plz}.json`);
-  const data = { timestamp: Date.now(), payload };
-  await fs.writeFile(file, JSON.stringify(data), 'utf8');
-}
+const pharmacyCache = new SimpleFileCache({
+  cacheDir: path.join(process.cwd(), '.cache/emergency-pharmacies'),
+  ttl: 1000 * 60 * 60 * 12
+});
 
 async function scrape(plz) {
   const profile = getRandomBrowserProfile();
@@ -164,12 +135,12 @@ function sanitizeAddress(address) {
 }
 
 export async function getEmergencyPharmacies(plz = '81675') {
-  const cached = await readCache(plz);
+  const cached = await pharmacyCache.read(plz);
   if (cached) {
-    return await mapEmergencyPharmaciesToPois(cached.pharmacies);
+    return cached;
   }
 
   const fresh = await scrape(plz);
-  await writeCache(plz, fresh);
+  await pharmacyCache.write(plz, fresh);
   return await mapEmergencyPharmaciesToPois(fresh.pharmacies);
 }

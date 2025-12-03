@@ -7,18 +7,20 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script type="text/javascript" src="/public/js/style-hack.min.js"></script>
-    <link rel="icon" type="image/png" href="/public/icons/favicon.min.png?v=2">
-    {% set styles = style | split(',') %}
+    <link rel="icon" type="image/png" href="/public/images/favicon.min.png?v=2">
+    {% set styles = style | replace(', ', ',') | replace(' ,', ',') | split(',') %}
     {% for s in styles %}
-      <link rel="stylesheet" href="/public/css/{{ s }}.min.css">
+        {% if viewExt and viewExt != 'njk' %}
+        <link rel="stylesheet" href="/public/css/{{ viewExt }}/{{ s }}.min.css">
+        {% else %}
+        <link rel="stylesheet" href="/public/css/{{ s }}.min.css">
+        {% endif %}
     {% endfor %}
   </head>
   <body>
     <div class="page">
       {% block content %}{% endblock %}
     </div>
-    <footer class="footer">
-      <a href="/">Zur Startseite</a>
-    </footer>
+    {% include "common/partials/footer.njk" %}
   </body>
 </html>

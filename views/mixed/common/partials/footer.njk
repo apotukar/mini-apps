@@ -1,0 +1,11 @@
+{% if pageUrl and pageUrl != "/" %}
+    {% if ext != 'njk' %}
+    <p class="footer">
+        <a href="/">Zur Startseite</a>
+    </p>
+    {% else %}
+    <footer class="footer">
+      <a href="/">Zur Startseite</a>
+    </footer>
+    {% endif %}
+{% endif %}

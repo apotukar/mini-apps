@@ -28,8 +28,9 @@ export function registerDepartureRoutes(app, params) {
     }
 
     const station = req.query.station || '';
+    const viewExt = res.locals.viewExt || '';
 
-    res.render('departures/index.njk', {
+    res.render(`departures/index.${viewExt}`, {
       station,
       favs: favorites
     });

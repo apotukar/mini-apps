@@ -1,3 +1,5 @@
+{% from "common/macros/image.njk" import image %}
+
 {% extends "layout.njk" %}
 
 {% set style = "common, journey" %}
@@ -6,35 +8,36 @@
 {% endblock %}
 
 {% block content %}
-  <h2>{{ fromName }} <img src="/public/icons/rarrow.min.png" alt="→" class="arrow-inline"> {{ toName }}</h2>
+  <h2>{{ fromName }} {{ image("rarrow.min", viewExt, { alt: "→", class: 'arrow-inline', alt_fallback: "->", height: 10, border: 0 }) }} {{ toName }}</h2>
+
   <a href="/journey?from={{ fromName | urlencode }}&amp;to={{ toName | urlencode }}">Zurück</a>&nbsp;
   <a href="/journey">Neue Suche</a><br><br>
+
   {% for journey in journeys %}
     {% include "journey/partials/journey.njk" %}
     <br>
   {% endfor %}
+
   <div style="display:flex; justify-content:space-between; margin-top:12px;">
     {% if earlierRef %}
       <a href="/journey/search?from={{ fromName | urlencode }}&to={{ toName | urlencode }}&earlierThan={{ earlierRef | urlencode }}">
-        Frühere Verbindungen <img src="/public/icons/uarrow.min.png" alt="↑" class="arrow-inline">
+          Frühere Abfahren {{ image("uarrow.min", viewExt, { alt: "↑", class: 'arrow-inline', height: 10, border: 0 }) }}
       </a>
-    {% else %}
-      <span></span>
     {% endif %}
 
     {% if laterRef %}
       <a href="/journey/search?from={{ fromName | urlencode }}&to={{ toName | urlencode }}&laterThan={{ laterRef | urlencode }}">
-        Spätere Verbindungen <img src="/public/icons/darrow.min.png" alt="↓" class="arrow-inline">
+          Spätere Abfahrten {{ image("darrow.min", viewExt, { alt: "↓", class: 'arrow-inline', height: 10, border: 0 }) }}
       </a>
     {% endif %}
   </div>
 
   <br>
   <div style="text-align: center;">
-      <a href="https://www.bahn.de/buchung/start#?SO={{ fromName | urlencode }}&ZO={{ toName | urlencode }}"
-         target="_blank"
-         rel="noopener">
-        <img src="/public/icons/rb.min.png" alt="Bahn">
+    <a href="https://www.bahn.de/buchung/start#?SO={{ fromName | urlencode }}&ZO={{ toName | urlencode }}"
+        target="_blank"
+        rel="noopener">
+        {{ image("rb.min", viewExt, { alt: "rb", border: 0 }) }}
     </a>
   </div>
 {% endblock %}

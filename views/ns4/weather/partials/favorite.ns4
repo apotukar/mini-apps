@@ -1,0 +1,7 @@
+<tr>
+    <td>
+        <a class="fav" href="/weather/search?city={{ fav | urlencode }}">
+            {{ fav }}
+        </a>
+    </td>
+</tr>

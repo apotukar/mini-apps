@@ -1,0 +1,77 @@
+{% extends "layout.ns4" %}
+
+{% set style = "common, weather" %}
+
+{% block title %}Wetter (Ultra-Light){% endblock %}
+
+{% block content %}
+
+<h2>Wetter</h2>
+
+{% macro hr() %}
+  <hr style="width: 565px;">
+{% endmacro %}
+
+{{ hr() }}
+
+<table border="0" cellpadding="0" cellspacing="0">
+    <form method="POST" action="/weather/search">
+    <tr>
+        <td class="label">
+            <label for="city">Ort:</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="city" name="city" value="{{ city }}" size="70">
+        </td>
+    </tr>
+    <tr>
+        <td style="margin-top: 10px;margin-bottom: 5px;">
+            <input type="image" border="0" width="570"
+                src="/public/images/bttnshowyellow.gif"
+                alt="Anzeigen"
+                onclick="this.form.action='/weather/search';">
+        </td>
+    </tr>
+    </form>
+    <form method="POST" action="/weather/save-fav"
+        onsubmit="document.forms[1].elements['station'].value = document.forms[0].elements['station'].value;"
+    <tr>
+        <td>
+            <input type="hidden" name="station" value="{{ station }}" >
+            <input type="image" border="0"
+                src="/public/images/bttnsave.gif"
+                alt="Favorit speichern"
+                onclick="this.form.action='/weather/save-fav';">
+        </td>
+    </tr>
+    </form>
+</table>
+
+<br>
+
+<h3>Favoriten</h3>
+
+{{ hr() }}
+
+<table border="0" cellpadding="0" cellspacing="0" width="{{ width }}">
+  {% if favs and favs.length %}
+    {% for fav in favs %}
+      {% include "weather/partials/favorite.ns4" %}
+    {% endfor %}
+  {% else %}
+      <tr>
+        <td><i>Keine Favoriten</i></td>
+      </tr>
+  {% endif %}
+</table>
+
+<br>
+
+    {% from "common/macros/fav-buttons-bottom.ns4" import favButtons %}
+    {{ favButtons("/weather") }}
+
+    {% include "common/partials/hint.njk" %}
+
+{% endblock %}

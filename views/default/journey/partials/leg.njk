@@ -1,20 +1,18 @@
+{% from "common/macros/image.njk" import image %}
 <br>
 <div class="leg">
   <div class="leg-header">
-    {% if leg.isWalking %}
-      <strong><img src="/public/icons/walk.min.png" alt="🚶" class="icon-inline">
-          &nbsp;{{ leg.idx }}: {{ leg.originName }}
-          &nbsp;<img src="/public/icons/rarrow.min.png" alt="→" class="icon-inline">
-          &nbsp;{{ leg.destName }}</strong>
-    {% else %}
-      <strong><img src="/public/icons/train.min.png" alt="🚆" class="icon-inline">
-          &nbsp;{{ leg.idx }}: {{ leg.originName }}
-          &nbsp;<img src="/public/icons/rarrow.min.png" alt="→" class="icon-inline">
-          &nbsp;{{ leg.destName }}
+      <strong>
+          {% if leg.isWalking %}
+          {{ image("walk.min", viewExt, { alt: "🚶", class: "icon-inline", alt_fallback: "walk", height: 10, border: 0 }) }}
+          {% else %}
+          {{ image("train.min", viewExt, { alt: "🚆", class: "icon-inline", alt_fallback: "train", height: 10, border: 0 }) }}
+          {% endif %}
+          &nbsp;{{ leg.idx }}: {{ leg.originName }}&nbsp;
+          {{ image("rarrow.min", viewExt, { alt: "→", class: "arrow-inline", alt_fallback: "->", height: 10, border: 0 }) }}
+          &nbsp;{{ leg.destName }}&nbsp;
       </strong>
-    {% endif %}
   </div>
-
   <div class="leg-main">
     {# Abfahrt #}
     <div class="leg-row">
@@ -23,9 +21,9 @@
         <strong>
         {{ leg.depPlannedTime | formatTime }}
         {% if leg.depDelayMin > 0 %}
-        <span style="color: red; padding-left: 0.25em;">
+        <span class="delay">
             +{{ leg.depDelayMin | formatDuration}}
-            <img src="/public/icons/rarrowred.min.png" alt="→" class="arrow-inline">
+            {{ image("rarrowred.min", viewExt, { alt: "→", class: "arrow-inline", alt_fallback: "->", height: 10, border: 0 }) }}
             {{ leg.depTime | formatTime }}</span>
         {% endif %}
         </strong>
@@ -45,9 +43,9 @@
         <strong>
         {{ leg.arrPlannedTime | formatTime }}
         {% if leg.arrDelayMin > 0 %}
-        <span style="color: red; padding-left: 0.25em;">
+        <span class="delay">
             +{{ leg.arrDelayMin | formatDuration}}
-            <img src="/public/icons/rarrowred.min.png" alt="→" class="arrow-inline">
+            {{ image("rarrowred.min", viewExt, { alt: "→", class: "arrow-inline", alt_fallback: "->", height: 10, border: 0 }) }}
             {{ leg.arrTime | formatTime }}</span>
         {% endif %}
         </strong>
@@ -96,7 +94,7 @@
         <span class="value">
           {% for s in leg.statusRemarks %}
             <div class="status-item">
-                <img src="/public/icons/warn.min.png" alt="⚠" class="icon-inline"> {{ s }}
+                {{ image("warn.min", viewExt, { alt: "⚠", class: "icon-inline", alt_fallback: "warn", height: 10, border: 0 }) }} {{ s }}
             </div>
           {% endfor %}
         </span>
@@ -110,7 +108,7 @@
         <span class="value">
           {% for h in leg.hintRemarks %}
             <div class="hint-item">
-                <img src="/public/icons/info.min.png" alt="ℹ" class="icon-inline"> {{ s }} {{ h }}
+                {{ image("info.min", viewExt, { alt: "ℹ", class: "icon-inline", alt_fallback: "info", height: 10, border: 0 }) }} {{ h }}
             </div>
           {% endfor %}
         </span>

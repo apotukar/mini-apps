@@ -5,16 +5,16 @@
   {% endif %}
 
   {% if r.address %}
-    <small>{{ r.address }}</small><br />
+    <small>{{ r.address }}</small><br>
     {% if r.isFallbackAddress %}
-      <small class="fallback-hint">(Adresse automatisch ergänzt)</small><br />
+      <small class="fallback-hint">(Adresse automatisch ergänzt)</small><br>
     {% endif %}
   {% else %}
-    <small>(Adresse nicht verfügbar)</small><br />
+    <small>(Adresse nicht verfügbar)</small><br>
   {% endif %}
 
   {% if r.phone %}
-    <small>Telefon: {{ r.phone }}</small><br />
+    <small>Telefon: {{ r.phone }}</small><br>
   {% endif %}
 
   {% if r.mapUrl %}
@@ -22,4 +22,6 @@
   {% else %}
     <small>(keine Standortdaten)</small>
   {% endif %}
+
+  {{ quirk | default('', true) | safe }}
 </li>

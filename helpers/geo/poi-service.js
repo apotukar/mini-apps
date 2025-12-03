@@ -1,12 +1,13 @@
+import fetch from 'node-fetch';
+import { reverseSearch } from './reverse-search.js';
+import { mapAsyncFlexible } from '../map-async-flexible.js';
+
 // TODO: complete class
 export class PoiService {
   constructor(arg) {
     this.arg = arg;
   }
 }
-
-import fetch from 'node-fetch';
-import { reverseSearch } from './reverse-search.js';
 
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
@@ -46,16 +47,6 @@ export async function searchPOIs(types, type, loc, radiusInMeters, apiKey) {
 
       let address = formatAddress(tags);
       let isFallbackAddress = false;
-
-      if (!address && lat !== null && lon !== null) {
-        try {
-          address = await reverseSearch(lat, lon, apiKey);
-          isFallbackAddress = true;
-        } catch {
-          address = address || null;
-        }
-      }
-
       let speciality = null;
       if (poiType === 'amenity=doctors') {
         speciality = getDoctorSpecialty(tags);
@@ -76,7 +67,28 @@ export async function searchPOIs(types, type, loc, radiusInMeters, apiKey) {
     })
   );
 
-  return results;
+  const enriched = await mapAsyncFlexible(
+    results,
+    async result => {
+      if (!result.address && result.lat !== null && result.lon !== null) {
+        try {
+          result.address = await reverseSearch(result.lat, result.lon, apiKey);
+          result.isFallbackAddress = true;
+          return result;
+        } catch (error) {
+          console.error('Error fetching address:', error);
+          return result;
+        }
+      }
+      return result;
+    },
+    {
+      sequential: true,
+      sleepDuration: 600
+    }
+  );
+
+  return enriched;
 }
 
 function formatAddress(tags) {

@@ -20,9 +20,11 @@ export function registerPOIRoutes(app, params) {
     const type = req.query.t || 'pharmacy';
     const radiusInKilometers = parseFloat(req.query.r) || 1.5;
     const radiusInMeters = radiusInKilometers * 1000;
+    const viewExt = res.locals.viewExt || '';
+    const indexPage = `pois/index.${viewExt}`;
 
     if (!query) {
-      return res.render('pois/index.njk', {
+      return res.render(indexPage, {
         results: [],
         query: '',
         types: dropdownMap,
@@ -35,7 +37,7 @@ export function registerPOIRoutes(app, params) {
     try {
       const loc = await geocodePlace(query);
       if (!loc) {
-        return res.render('pois/index.njk', {
+        return res.render(indexPage, {
           results: [],
           query: query,
           types: dropdownMap,
@@ -60,7 +62,7 @@ export function registerPOIRoutes(app, params) {
             : null
       }));
 
-      res.render('pois/index.njk', {
+      res.render(indexPage, {
         results: resultsWithMap,
         query: query,
         types: dropdownMap,
@@ -70,7 +72,7 @@ export function registerPOIRoutes(app, params) {
       });
     } catch (err) {
       console.error(err);
-      res.render('pois/index.njk', {
+      res.render(indexPage, {
         results: [],
         query: query,
         types: dropdownMap,

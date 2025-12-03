@@ -5,7 +5,7 @@
 {% block title %}Abfahrten{% endblock %}
 
 {% block content %}
-  <h2>Abfahrten</h2>
+  <h2>Abfahrten und Haltestellen</h2>
 
   <form method="POST">
     <label for="station">Station / Haltestelle:</label><br>
@@ -14,13 +14,12 @@
       id="station"
       name="station"
       value="{{ station }}"
-      autocomplete="off"/>
-    <br><br>
+      autocomplete="off" style="margin-bottom: 15px;" />
     <button type="submit" formaction="/departures/search" class="btn btn-primary">
       Anzeigen
     </button>
     <button type="submit" formaction="/departures/save-fav" class="btn btn-secondary btn-fav">
-      <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">
+      <img src="/public/images/star.min.png" alt="Favorit" class="btn-icon">
       Favorit speichern
     </button>
   </form>
@@ -34,9 +33,9 @@
     <i>Keine Favoriten</i>
   {% endif %}
 
-  {% from "common/fav-buttons-bottom.njk" import favButtons %}
+  {% from "common/macros/fav-buttons-bottom.njk" import favButtons %}
   {{ favButtons("/departures") }}
 
-  {% include "common/hint.njk" %}
+  {% include "common/partials/hint.njk" %}
 
 {% endblock %}

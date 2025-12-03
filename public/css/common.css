@@ -1,0 +1,70 @@
+body {
+  background: #fff;
+  color: #222;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+.arrow-inline {
+  height: 1em;
+  vertical-align: -0.1em;
+}
+
+.page {
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 6px;
+}
+
+@supports (width: max-content) {
+  .page {
+    max-width: 560px;
+  }
+}
+
+.is-old-gecko .page {
+  max-width: 560px;
+}
+
+.btn-icon {
+  height: 1em;
+  margin-right: 0.8em;
+}
+
+.is-old-gecko .btn-icon {
+  vertical-align: -0.15em;
+}
+
+.is-old-opera .btn-icon {
+  vertical-align: -0.05em;
+}
+
+/* modern browsers */
+@supports selector(:has(*)) {
+  .btn-icon {
+    vertical-align: -0.2em;
+  }
+}
+
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  opacity: 0.7;
+  display: block;
+}
+
+.footer a {
+  text-decoration: none;
+  font-size: 14px;
+}
+
+img {
+  border: 0;
+}
+
+a img {
+  border: 0;
+  outline: none;
+}

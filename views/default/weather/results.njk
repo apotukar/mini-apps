@@ -7,17 +7,18 @@
 {% block content %}
   <h2>Wetter für {{ locationTitle }}</h2>
 
-  <a href="/weather{#?city={{ city | urlencode }}#}">Neue Suche</a><br /><br />
+  <a href="/weather?city={{ city | urlencode }}">Zurück</a>&nbsp;
+  <a href="/weather">Neue Suche</a><br><br>
 
   <div class="weather-current"">
-    <b>Aktuell:</b><br />
-    Temperatur: {{ current.temperature }} °C<br />
-    Wind: {{ current.windspeed }} km/h<br />
-    <span title="Weather Code: {{ current.code }}">Zustand: {{ current.description }}</span><br />
-    Zeit: {{ current.time | formatDateTime }}<br />
+    <b>Aktuell:</b><br>
+    Temperatur: {{ current.temperature }} °C<br>
+    Wind: {{ current.windspeed }} km/h<br>
+    <span title="Weather Code: {{ current.code }}">Zustand: {{ current.description }}</span><br>
+    Zeit: {{ current.time | formatDateTime }}<br>
   </div>
 
-  <b>Vorhersage (heute + 6 Tage):</b><br />
+  <b>Vorhersage (heute + 6 Tage):</b><br>
 
   {% for day in days %}
     {% include "weather/partials/day.njk" %}

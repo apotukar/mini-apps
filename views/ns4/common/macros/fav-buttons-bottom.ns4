@@ -1,0 +1,28 @@
+{% macro favButtons(basePath) %}
+<div style="margin-top: 10px;">
+    <table border="0" cellpadding="0" cellspacing="0"">
+      <form method="GET" action="{{ basePath }}/clear-favs">
+        <tr>
+            <td>
+                <input type="image" border="0"
+                        src="/public/images/bttndelete.gif"
+                        alt="Favoriten löschen"
+                        onclick="this.form.action='{{ basePath }}/clear-favs';">
+            </td>
+        </tr>
+      </form>
+    </table>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="margin-top: -10px;">
+      <form method="GET" action="{{ basePath }}/show-config-favs">
+        <tr>
+            <td>
+                <input type="image" border="0"
+                        src="/public/images/bttnrestore.gif"
+                        alt="Favoriten löschen"
+                        onclick="this.form.action='{{ basePath }}/show-config-favs';">
+            </td>
+        </tr>
+      </form>
+    </table>
+{% endmacro %}

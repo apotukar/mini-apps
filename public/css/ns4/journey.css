@@ -1,0 +1,53 @@
+body {
+  background-color: #fff;
+  color: #222;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 20px;
+}
+
+p.hint {
+  margin-top: 30px;
+  color: #777;
+  font-size: 14px;
+}
+
+.footer {
+  margin-top: 30px;
+  color: #777;
+  font-size: 14px;
+}
+
+span.delay {
+  color: red;
+}
+
+a {
+  text-decoration: none;
+  color: #00c;
+  font-size: 14px;
+  font-family: system-ui, sans-serif;
+}
+
+a.fav {
+  font-size: 15px;
+  margin-top: 2px;
+}
+
+h2 {
+  font-size: 22px;
+  color: #c00;
+  font-family: system-ui, sans-serif;
+}
+
+h3 {
+  font-size: 18px;
+  color: #c00;
+  font-family: system-ui, sans-serif;
+}
+
+.label {
+  font-size: 15px;
+  font-family: system-ui, sans-serif;
+}

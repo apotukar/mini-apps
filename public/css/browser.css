@@ -1,0 +1,134 @@
+body {
+  background: #c0c0c0;
+}
+
+.page {
+  margin: 10px;
+  border: 2px solid #808080;
+  background: #fff;
+  padding: 8px;
+}
+
+.ns-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #d4d0c8;
+  border: 2px solid #808080;
+  padding: 4px;
+  margin-bottom: 8px;
+}
+
+.ns-address {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+}
+
+.ns-input {
+  flex: 1;
+  height: 22px;
+  border: 2px inset #fff;
+  background: #fff;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.ns-btn {
+  background: #d4d0c8;
+  border: 2px outset #fff;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+}
+
+.ns-btn:active {
+  border: 2px inset #fff;
+}
+
+.ns-actions a {
+  margin-left: 4px;
+}
+
+.ns-alert {
+  background: #ffffe1;
+  border: 1px solid #808080;
+  padding: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+/* globale Links VOR .ns-nav a / :hover */
+.link a {
+  color: blue;
+  text-decoration: underline;
+}
+
+/* globale Paragraphen VOR .ns-nav p */
+p {
+  margin: 4px 0;
+}
+
+table.layout {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+td.nav {
+  background: #d4d0c8;
+  border-right: 2px solid #808080;
+  vertical-align: top;
+  font-size: 12px;
+  width: 220px;
+  overflow-y: auto;
+}
+
+td.content {
+  background: #fff;
+  padding: 8px;
+  vertical-align: top;
+  font-size: 12px;
+}
+
+.ns-nav {
+  border: 2px inset #fff;
+  background: #f0f0f0;
+  padding: 6px;
+}
+
+.ns-nav p {
+  margin: 4px 0;
+}
+
+.ns-nav a {
+  display: block;
+  padding: 2px 4px;
+  color: blue;
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+.ns-nav a:hover {
+  background: #d4d0c8;
+}
+
+.ns-content {
+  border: 2px inset #fff;
+  background: #fff;
+  padding: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  margin: 6px 0;
+}

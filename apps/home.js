@@ -3,8 +3,8 @@ export function registerHomeRoutes(app, params) {
   const { bookmarks } = config;
 
   app.get('/', (_, res) => {
-    const viewBase = res.locals.viewBase || '';
-    res.render(`home/index${viewBase}.njk`, {
+    const viewExt = res.locals.viewExt || '';
+    res.render(`home/index.${viewExt}`, {
       bookmarks: bookmarks,
       isSecureContext: res.locals.isHttps,
       content: HOME_TEXTS_DE

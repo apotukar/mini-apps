@@ -1,0 +1,83 @@
+{% extends "layout.ns4" %}
+
+{% set style = "common, pois" %}
+
+{% block title %}Wetter (Ultra-Light){% endblock %}
+
+{% block content %}
+
+<h2>POIs im Umkreis</h2>
+
+<hr style="width: 565px;">
+
+<table border="0" cellpadding="0" cellspacing="0">
+    <form method="GET" action="/pois">
+    <tr>
+        <td class="label">
+            <label for="q">Ort oder PLZ:</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="q" name="q" value="{{ query }}" size="70">
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <label for="r">Radius:</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <select name="r" id="r">
+              {% set rValue = radius %}
+              {% set radiusOptions = [1, 2, 3, 5, 8, 15, 20, 30] %}
+              {% for r in radiusOptions %}
+                <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{{ r }} km</option>
+              {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <label for="t">Art:</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <select name="t" id="t">
+            {% for key, label in types %}
+                <option value="{{ key }}"{% if type == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="image" border="0"
+                src="/public/images/bluesearch.gif"
+                alt="Suchen"
+                width="80"
+                onclick="this.form.action='/pois';">
+        </td>
+    </tr>
+    </form>
+</table>
+
+
+{% set quirk = "<hr style=\"width: 535px;\">" %}
+{% if results.length > 0 %}
+  <ul>
+    {% for r in results %}
+      {% include "pois/partials/poi-item.njk" %}
+    {% endfor %}
+  </ul>
+{% elseif query %}
+  <p>Keine Ergebnisse gefunden.</p>
+{% endif %}
+
+<br>
+
+    {% include "common/partials/hint.njk" %}
+
+{% endblock %}

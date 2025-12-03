@@ -3,14 +3,16 @@ import nunjucks from 'nunjucks';
 export function setupNunjucks(app, params) {
   const config = params.config || {};
 
-  app.set('view engine', 'njk');
+  app.set('view engine', config.defaultViewExt || 'html');
 
-  const env = nunjucks.configure(['views/default', 'views/fallback'], {
+  const env = nunjucks.configure(['views/default', 'views/ns4', 'views/mixed'], {
     autoescape: true,
     express: app,
     watch: config.modeEnv === 'DEV',
     noCache: config.modeEnv === 'DEV'
   });
+
+  app.engine(config.ns4ViewExt || 'htm', env.render.bind(env));
 
   env.addFilter(
     'formatDateTime',
@@ -105,11 +107,11 @@ export function setupNunjucks(app, params) {
     return str.split(delimiter).map(s => s.trim());
   });
 
-  return env;
-}
-
-export function toEntities(str = '') {
-  return String(str).replace(/[\u00A0-\u9999<>&]/g, c => {
-    return '&#' + c.charCodeAt(0) + ';';
+  env.addFilter('toEntities', function (str = '') {
+    return String(str).replace(/[\u00A0-\u9999<>&]/g, c => {
+      return '&#' + c.charCodeAt(0) + ';';
+    });
   });
+
+  return env;
 }

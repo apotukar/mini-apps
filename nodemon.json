@@ -7,5 +7,5 @@
     "public/js/*.min.js",
     "public/images/*.min.png"
   ],
-  "ext": "json,js,njk,css"
+  "ext": "json,js,css,njk,ns4"
 }

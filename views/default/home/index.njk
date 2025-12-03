@@ -12,7 +12,7 @@
 
     <li>
       <a href="/departures">
-        <img src="/public/icons/clock.min.png" alt="🕒" class="icon">{{ content.departures.title }}
+        <img src="/public/images/clock.min.png" alt="🕒" class="icon">{{ content.departures.title }}
       </a>
       <br>
     <small>{{ content.departures.desc }}</small>
@@ -20,7 +20,7 @@
 
     <li>
       <a href="/journey">
-        <img src="/public/icons/train.min.png" alt="🚆" class="icon">{{ content.journey.title }}
+        <img src="/public/images/train.min.png" alt="🚆" class="icon">{{ content.journey.title }}
       </a>
       <br>
       <small>{{ content.journey.desc }}</small>
@@ -28,7 +28,7 @@
 
     <li>
       <a href="/weather">
-        <img src="/public/icons/cloud.min.png" alt="☁️" class="icon">{{ content.weather.title }}
+        <img src="/public/images/cloud.min.png" alt="☁️" class="icon">{{ content.weather.title }}
       </a>
       <br>
       <small>{{ content.weather.desc }}</small>
@@ -36,7 +36,7 @@
 
     <li>
       <a href="/pois">
-        <img src="/public/icons/pin.min.png" alt="📍" class="icon">{{ content.pois.title }}
+        <img src="/public/images/pin.min.png" alt="📍" class="icon">{{ content.pois.title }}
       </a><br>
       <small>{{ content.pois.desc }}</small>
     </li>
@@ -44,7 +44,7 @@
     {% if isSecureContext %}
     <li>
       <a href="/tasks">
-        <img src="/public/icons/tasks.min.png" alt="📝" class="icon">{{ content.tasks.title }}
+        <img src="/public/images/tasks.min.png" alt="📝" class="icon">{{ content.tasks.title }}
       </a>
       <br>
       <small>{{ content.tasks.desc }}</small>
@@ -54,7 +54,7 @@
     {% if isSecureContext %}
     <li>
       <a href="/joplin">
-        <img src="/public/icons/note.min.png" alt="🗒️" class="icon">{{ content.joplin.title }}
+        <img src="/public/images/note.min.png" alt="🗒️" class="icon">{{ content.joplin.title }}
       </a>
       <br>
       <small>{{ content.joplin.desc }}</small>
@@ -63,14 +63,14 @@
 
     <li>
       <a href="/news">
-        <img src="/public/icons/news.min.png" alt="📰" class="icon">{{ content.news.title }}
+        <img src="/public/images/news.min.png" alt="📰" class="icon">{{ content.news.title }}
       </a>
       <br>
       <small>{{ content.news.desc }}</small>
     </li>
 
     <li>
-    <img src="/public/icons/star.min.png" alt="⭐" class="icon">{{ content.bookmarks.title }}
+    <img src="/public/images/star.min.png" alt="⭐" class="icon">{{ content.bookmarks.title }}
       <br>
 
       <ul class="favorites">
@@ -82,7 +82,7 @@
 
     <li>
       <a href="/browser">
-        <img src="/public/icons/browser.min.png" alt="📰" class="icon">{{ content.browser.title }}
+        <img src="/public/images/browser.min.png" alt="📰" class="icon">{{ content.browser.title }}
       </a>
       <br>
       <small>{{ content.browser.desc }}</small>
@@ -90,6 +90,6 @@
 
   </ul>
 
-  {% include "common/hint.njk" %}
+  {% include "common/partials/hint.njk" %}
 
 {% endblock %}

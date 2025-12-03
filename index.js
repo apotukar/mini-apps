@@ -8,10 +8,7 @@ import cookieParser from 'cookie-parser';
 import { basicAuthRegistrator } from './helpers/routes/basic-auth.js';
 import { logger } from './helpers/routes/logging.js';
 import { secureRouteMarker, httpsRedirectEnforcer } from './helpers/routes/secure-routes.js';
-import {
-  registerStaticCssRoutes,
-  viewBaseMarker
-} from './helpers/routes/user-agent-based-routes.js';
+import { viewBaseMarker, pageUrlMarker } from './helpers/routes/request-based-routes.js';
 import { setupNunjucks } from './helpers/nunjucks-setup.js';
 import { loadConfig } from './helpers/config-loader.js';
 import { createClient } from 'db-vendo-client';
@@ -33,7 +30,8 @@ import { registerBrowserRoutes } from './apps/browser.js';
 
 const config = loadConfig();
 const app = express();
-setupNunjucks(app, { config: { modeEnv: config.modeEnv } });
+const viewExtConfig = { defaultViewExt: 'njk', ns4ViewExt: 'ns4' };
+setupNunjucks(app, { config: { modeEnv: config.modeEnv, ...viewExtConfig } });
 const dbClient = createClient(dbProfile, 'DB-Multi');
 
 // ────────────────────────────────────────────────────────────
@@ -42,10 +40,17 @@ const dbClient = createClient(dbProfile, 'DB-Multi');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/public/css', registerStaticCssRoutes());
-app.use('/public/js', express.static('public/js'));
-app.use('/public/icons', express.static('public/images'));
-app.use(viewBaseMarker());
+app.use(
+  '/public',
+  express.static(
+    'public',
+    config.modeEnv.toUpperCase() === 'DEV'
+      ? { etag: false, lastModified: false, cacheControl: false, maxAge: 0 }
+      : { etag: true, lastModified: true, maxAge: '30d' }
+  )
+);
+app.use(viewBaseMarker(viewExtConfig));
+app.use(pageUrlMarker());
 app.use(secureRouteMarker());
 app.use(logger());
 

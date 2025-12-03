@@ -1,3 +1,5 @@
+{% from "common/macros/image.njk" import image %}
+
 {% extends "layout.njk" %}
 
 {% set style = "common, journey" %}
@@ -8,7 +10,7 @@
   <h2>Abfahrten für {{ stationName }}</h2>
 
   <a href="/departures?station={{ stationName | urlencode }}">Zurück</a>&nbsp;
-  <a href="/departures">Neue Suche</a><br /><br />
+  <a href="/departures">Neue Suche</a><br><br>
 
   {% if departures.length %}
     {% for dep in departures %}
@@ -16,18 +18,17 @@
     {% endfor %}
 
     <div style="display:flex; justify-content:space-between; margin-top:12px;">
-      {% if earlierIso %}
-        <a href="/departures/search?station={{ stationName | urlencode }}&when={{ earlierIso | urlencode }}">
-          Frühere Abfahren <img src="/public/icons/uarrow.min.png" alt="↑" class="arrow-inline">
-        </a>
-      {% else %}
-        <span></span>
-      {% endif %}
-      {% if laterIso %}
-        <a href="/departures/search?station={{ stationName | urlencode }}&when={{ laterIso | urlencode }}">
-          Spätere Abfahrten <img src="/public/icons/darrow.min.png" alt="↓" class="arrow-inline">
-        </a>
-      {% endif %}
+        {% if earlierIso %}
+          <a href="/departures/search?station={{ stationName | urlencode }}&when={{ earlierIso | urlencode }}">
+            Frühere Abfahren {{ image("uarrow.min", viewExt, { alt: "↑", class: 'arrow-inline', height: 10, border: 0 }) }}
+          </a>
+        {% endif %}
+
+        {% if laterIso %}
+          <a href="/departures/search?station={{ stationName | urlencode }}&when={{ laterIso | urlencode }}">
+            Spätere Abfahrten {{ image("darrow.min", viewExt, { alt: "↓", class: 'arrow-inline', height: 10, border: 0 }) }}
+          </a>
+        {% endif %}
     </div>
   {% else %}
     <p>Keine Abfahrten gefunden.</p>

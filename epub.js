@@ -163,7 +163,7 @@ function loadBook(callback) {
         parts[index] = '';
         remaining -= 1;
         if (remaining === 0) {
-          fullHtml = parts.join('<hr/>');
+          fullHtml = parts.join('<hr>');
           ready = true;
           callback(null);
         }
@@ -181,7 +181,7 @@ function loadBook(callback) {
         }
         remaining -= 1;
         if (remaining === 0) {
-          fullHtml = parts.join('<hr/>');
+          fullHtml = parts.join('<hr>');
           ready = true;
           callback(null);
         }

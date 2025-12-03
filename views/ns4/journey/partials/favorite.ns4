@@ -1,0 +1,7 @@
+<tr>
+    <td>
+        <a class="fav" href="/journey/search?from={{ fav.from | urlencode }}&to={{ fav.to | urlencode }}">
+            {{ fav.from }} <img src="/public/images/rarrow.min.gif" border="0" alt="→" height="10"> {{ fav.to }}
+        </a>
+    </td>
+</tr>

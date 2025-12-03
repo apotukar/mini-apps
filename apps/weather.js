@@ -22,8 +22,9 @@ export function registerWeatherRoutes(app, params) {
     }
 
     const city = (req.query.city || '').trim();
+    const viewExt = res.locals.viewExt || '';
 
-    res.render('weather/index.njk', {
+    res.render(`weather/index.${viewExt}`, {
       city,
       favs: favorites
     });

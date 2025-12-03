@@ -1,0 +1,7 @@
+<tr>
+    <td>
+        <a class="fav" href="/departures/search?station={{ fav | urlencode }}">
+            {{ fav }}
+        </a>
+    </td>
+</tr>

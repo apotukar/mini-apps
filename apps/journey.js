@@ -40,8 +40,9 @@ export function registerJourneyRoutes(app, params) {
 
       const from = req.query.from || '';
       const to = req.query.to || '';
+      const viewExt = res.locals.viewExt || '';
 
-      res.render('journey/index.njk', {
+      res.render(`journey/index.${viewExt}`, {
         from,
         to,
         favs: favorites

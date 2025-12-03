@@ -8,7 +8,7 @@
   <h2>Wetter</h2>
 
   <form method="POST">
-    <label for="city">Ort:</label><br />
+    <label for="city">Ort:</label><br>
     <input
       type="text"
       id="city"
@@ -21,7 +21,7 @@
       Anzeigen
     </button>
     <button type="submit" formaction="/weather/save-fav" class="btn btn-secondary btn-fav">
-      <img src="/public/icons/star.min.png" alt="Favorit" class="btn-icon">
+      <img src="/public/images/star.min.png" alt="Favorit" class="btn-icon">
       Favorit speichern
     </button>
   </form>
@@ -35,9 +35,9 @@
     <i>Keine Favoriten</i>
   {% endif %}
 
-  {% from "common/fav-buttons-bottom.njk" import favButtons %}
+  {% from "common/macros/fav-buttons-bottom.njk" import favButtons %}
   {{ favButtons("/weather") }}
 
-  {% include "common/hint.njk" %}
+  {% include "common/partials/hint.njk" %}
 
 {% endblock %}
