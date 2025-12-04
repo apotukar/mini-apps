@@ -1,10 +1,17 @@
 import fetch from 'node-fetch';
-import { refreshAccessToken } from '../helpers/google-tokens.js';
+import { GoogleTokenReader } from '../helpers/google/google-token-reader.js';
 
-export function registerTaskRoutes(app) {
+export function registerTaskRoutes(app, params) {
+  const userId = params.userId;
+  const tokenReader = new GoogleTokenReader({
+    clientId: params.config.clientId,
+    clientSecret: params.config.clientSecret,
+    tokensPath: params.config.tokensPath
+  });
+
   app.get('/tasks', async (req, res) => {
     try {
-      const accessToken = await refreshAccessToken();
+      const accessToken = await tokenReader.refreshAccessToken(userId);
 
       const lists = await fetchTaskLists(accessToken);
 

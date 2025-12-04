@@ -6,6 +6,12 @@
     "username": "${BASIC_AUTH_USER}",
     "password": "${BASIC_AUTH_PASS}"
   },
+  "sessionSecret": "${SESSION_SECRET}",
+  "singleUserId": "${SINGLE_USER_ID}",
+  "redis": {
+    "host": "${REDIS_HOST}",
+    "port": "${REDIS_PORT}"
+  },
   "routes": [
     {
       "path": "/journey",
@@ -235,6 +241,11 @@
       "label": "DHL",
       "apiKey": "${DHL_API_KEY}"
     }
+  },
+  "tasks": {
+    "clientId": "${GOOGLE_CLIENT_ID}",
+    "clientSecret": "${GOOGLE_CLIENT_SECRET}",
+    "tokensPath": ".tokens"
   },
   "browser": {
     "timeout": 120000,

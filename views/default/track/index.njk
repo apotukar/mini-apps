@@ -23,7 +23,7 @@
 {% if shipment %}
   <div class="shipment">
 
-    <h2>Sendung: {{ shipment.id }}</h2>
+    <h3>Sendung: {{ shipment.id }}</h3>
 
     <p><strong>Produkt:</strong> {{ shipment.product }}</p>
 
@@ -46,21 +46,26 @@
 
     <hr>
 
-    <h3>Sendungsverlauf</h3>
+    <h4>Sendungsverlauf</h4>
     <ul class="events">
       {% for ev in shipment.events %}
         {% include "track/partials/events-item.njk" %}
       {% endfor %}
     </ul>
 
-    {% from "common/macros/image.njk" import image %}
-    <h3>Suchhistorie</h3>
-    <ul class="history">
-      {% for h in history %}
-      {% include "track/partials/history-item.njk" %}
-      {% endfor %}
-    </ul>
   </div>
+{% endif %}
+
+{% if history and history.length > 0 %}
+<div class="shipment">
+  {% from "common/macros/image.njk" import image %}
+  <h3>Suchhistorie</h>
+  <ul class="history">
+    {% for h in history %}
+    {% include "track/partials/history-item.njk" %}
+    {% endfor %}
+  </ul>
+</div>
 {% endif %}
 
 <p class="hint">

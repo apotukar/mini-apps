@@ -3,7 +3,7 @@
 
 # Environment/Secrets
 .env
-token.json
+.tokens/
 certs/
 
 # Build/Cache

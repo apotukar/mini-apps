@@ -3,6 +3,9 @@ import path from 'path';
 
 export class SimpleFileCache {
   constructor(options = {}) {
+    // TODO: finish
+    this.cacheDir = options.cacheDir;
+
     const { cacheDir = path.join(process.cwd(), '.cache/default'), ttl = 1000 * 60 * 60 } = options;
 
     this.cacheDir = cacheDir;

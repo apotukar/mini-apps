@@ -11,8 +11,12 @@ services:
     environment:
       DOTENV_OVERRIDE: 'false'
       MODE_ENV: 'PROD'
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     env_file:
       - .env
+    depends_on:
+      - redis
     command: >
       sh -c '
         if [ "$MODE_ENV" = "DEV" ]; then
@@ -27,3 +31,16 @@ services:
         fi
       '
     restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    volumes:
+      - redis-data:/data
+    command: ['redis-server', '--appendonly', 'yes']
+    restart: unless-stopped
+
+volumes:
+  redis-data:

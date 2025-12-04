@@ -3,7 +3,10 @@ import path from 'path';
 import http from 'http';
 import https from 'https';
 import express from 'express';
+import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import { createClient as createDbClient } from 'db-vendo-client';
+import { profile as dbProfile } from 'db-vendo-client/p/dbnav/index.js';
 
 import { basicAuthRegistrator } from './helpers/routes/basic-auth.js';
 import { logger } from './helpers/routes/logging.js';
@@ -11,8 +14,7 @@ import { secureRouteMarker, httpsRedirectEnforcer } from './helpers/routes/secur
 import { viewBaseMarker, pageUrlMarker } from './helpers/routes/request-based-routes.js';
 import { setupNunjucks } from './helpers/nunjucks-setup.js';
 import { loadConfig } from './helpers/config-loader.js';
-import { createClient } from 'db-vendo-client';
-import { profile as dbProfile } from 'db-vendo-client/p/dbnav/index.js';
+import { RedisManager } from './helpers/redis-manager.js';
 
 import { registerHomeRoutes } from './apps/home.js';
 import { registerJourneyRoutes } from './apps/journey.js';
@@ -33,12 +35,15 @@ const config = loadConfig();
 const app = express();
 const viewExtConfig = { defaultViewExt: 'njk', ns4ViewExt: 'ns4' };
 setupNunjucks(app, { config: { modeEnv: config.modeEnv, ...viewExtConfig } });
-const dbClient = createClient(dbProfile, 'DB-Multi');
+const redisManager = new RedisManager(config);
+await redisManager.init();
+const dbClient = createDbClient(dbProfile, 'DB-Multi');
 
 // ────────────────────────────────────────────────────────────
 // Middleware
 // ────────────────────────────────────────────────────────────
 
+app.use(session(redisManager.getSessionConfig()));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
@@ -106,7 +111,7 @@ registerDepartureRoutes(app, {
 });
 
 registerWeatherRoutes(app, { config: config.weather });
-registerTaskRoutes(app);
+registerTaskRoutes(app, { config: config.tasks, userId: config.singleUserId });
 registerNewsRoutes(app, { config: config.news });
 registerPOIRoutes(app, { config: config.pois });
 registerTrackRoutes(app, { config: config.track });

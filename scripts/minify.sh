@@ -22,16 +22,16 @@ png)
     tmp="/tmp/$(basename "${img%.png}").tmp.png"
 
     convert "$img" \
-    -fuzz 5% -transparent white \
-    -filter Lanczos \
-    -resize x48 \
-    -unsharp 0x0.7 \
-    "$tmp"
+      -fuzz 5% -transparent white \
+      -filter Lanczos \
+      -resize x48 \
+      -unsharp 0x0.7 \
+      "$tmp"
 
     pngquant --output $out \
-    --force \
-    --quality=65-90 \
-    "$tmp"
+      --force \
+      --quality=65-90 \
+      "$tmp"
 
     rm "$tmp"
     echo "generated: $out"
@@ -48,10 +48,10 @@ png-to-gif)
     out="${img%.png}.min.gif"
 
     convert "$img" \
-    -filter Lanczos -resize x48 \
-    -alpha set -fuzz 1% -transparent white \
-    -colors 128 +dither \
-    "$out"
+      -filter Lanczos -resize x48 \
+      -alpha set -fuzz 1% -transparent white \
+      -colors 128 +dither \
+      "$out"
 
     echo "generated: $out"
   done

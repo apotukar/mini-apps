@@ -11,6 +11,7 @@ export function registerTrackRoutes(app, params) {
     const viewExt = res.locals.viewExt || '';
     const indexPage = `track/index.${viewExt}`;
     let trackingNumbers = getFavorites(req, favoritesNamespace) || [];
+    console.log('Tracking numbers:', trackingNumbers);
 
     if (!trackingNumber) {
       res.render(indexPage, {
@@ -48,7 +49,9 @@ export function registerTrackRoutes(app, params) {
         shipment,
         history: trackingNumbers
       });
-    } catch (_) {
+    } catch (error) {
+      console.error('Error fetching shipment:', error);
+
       res.render(indexPage, {
         query,
         error: 'Fehler beim Abruf der DHL-Daten.',
