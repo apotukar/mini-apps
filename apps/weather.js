@@ -40,17 +40,17 @@ export function registerWeatherRoutes(app, params) {
     favorites = dedupeFavs([city, ...favorites]);
     saveFavorites(res, favorites, favoritesNamespace);
 
-    res.redirect(`/weather?station=${encodeURIComponent(city)}`);
+    return res.redirect(`/weather?station=${encodeURIComponent(city)}`);
   });
 
   app.get('/weather/clear-favs', (req, res) => {
     clearFavorites(res, favoritesNamespace);
-    res.redirect('/weather');
+    return res.redirect('/weather');
   });
 
   app.get('/weather/show-config-favs', (req, res) => {
     clearHideFlag(res, favoritesNamespace);
-    res.redirect('/weather');
+    return res.redirect('/weather');
   });
 
   app.get('/weather/search', async (req, res) => {

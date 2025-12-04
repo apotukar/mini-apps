@@ -1,0 +1,7 @@
+        <li>
+            <strong>{{ ev.timestamp | formatDateTime }}</strong><br>
+          {{ ev.description }}<br>
+          {% if ev.location %}
+            <small>Ort: {{ ev.location }}</small>
+          {% endif %}
+        </li>

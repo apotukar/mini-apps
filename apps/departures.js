@@ -53,17 +53,17 @@ export function registerDepartureRoutes(app, params) {
     favorites = dedupeFavs([stationName, ...favorites]);
     saveFavorites(res, favorites, favoritesNamespace);
 
-    res.redirect(`/departures?station=${encodeURIComponent(stationName)}`);
+    return res.redirect(`/departures?station=${encodeURIComponent(stationName)}`);
   });
 
   app.get('/departures/clear-favs', (req, res) => {
     clearFavorites(res, favoritesNamespace);
-    res.redirect('/departures');
+    return res.redirect('/departures');
   });
 
   app.get('/departures/show-config-favs', (req, res) => {
     clearHideFlag(res, favoritesNamespace);
-    res.redirect('/departures');
+    return res.redirect('/departures');
   });
 
   app.get(

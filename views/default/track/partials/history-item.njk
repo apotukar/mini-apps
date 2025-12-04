@@ -1,0 +1,14 @@
+<li>
+    <a class="code" href="/track?q={{ h | urlencode }}">
+        {{ h }}
+    </a>
+
+    <a class="delete-icon"
+       href="/track/delete?d={{ h | urlencode }}{% if query %}&q={{ query | urlencode }}{% endif %}"
+       title="Item löschen">
+        <img
+            src="/public/images/delete.min.png"
+            alt="Item löschen"
+            class="arrow-inline">
+    </a>
+</li>

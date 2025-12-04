@@ -35,6 +35,12 @@
         <small>{{ content.pois.desc }}</small>
       </li>
 
+      <li>
+        <img src="/public/images/track.min.gif" alt="pin" align="absmiddle" height="{{ height }}">
+        <a href="/track">{{ content.track.title }}</a><br>
+        <small>{{ content.track.desc }}</small>
+      </li>
+
       {% if isSecureContext %}
       <li>
         <img src="/public/images/tasks.min.gif" alt="tasks" align="absmiddle" height="{{ height }}">
@@ -52,12 +58,13 @@
       {% endif %}
 
       <li>
-        <img src="/public/images/news.min.gif" alt="nes" align="absmiddle" height="{{ height }}">
+        <img src="/public/images/news.min.gif" alt="news" align="absmiddle" height="{{ height }}">
         <a href="/news">{{ content.news.title }}</a><br>
         <small>{{ content.news.desc }}</small>
       </li>
 
       <li>
+        <img src="/public/images/star.min.gif" alt="star" align="absmiddle" height="{{ height }}">
         <span style="font-size: 16px; font-weight: bold;">Bookmarks</span>
         <br>
 

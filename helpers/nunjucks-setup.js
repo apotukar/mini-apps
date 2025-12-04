@@ -5,7 +5,7 @@ export function setupNunjucks(app, params) {
 
   app.set('view engine', config.defaultViewExt || 'html');
 
-  const env = nunjucks.configure(['views/default', 'views/ns4', 'views/mixed'], {
+  const env = nunjucks.configure(['views/default', 'views/ns4'], {
     autoescape: true,
     express: app,
     watch: config.modeEnv === 'DEV',

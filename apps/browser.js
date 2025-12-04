@@ -70,7 +70,7 @@ export function registerBrowserRoutes(app, params) {
       const url = req.session.history[req.session.index];
       return res.redirect('/browser/browse?url=' + encodeURIComponent(url));
     }
-    res.redirect('/browser');
+    return res.redirect('/browser');
   });
 
   app.get('/browser/forward', (req, res) => {
@@ -79,11 +79,11 @@ export function registerBrowserRoutes(app, params) {
       const url = req.session.history[req.session.index];
       return res.redirect('/browser/browse?url=' + encodeURIComponent(url));
     }
-    res.redirect('/browser');
+    return res.redirect('/browser');
   });
 
   app.get('/browser/home', (req, res) => {
-    res.redirect('/browser');
+    return res.redirect('/browser');
   });
 }
 

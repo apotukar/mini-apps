@@ -1,0 +1,105 @@
+body {
+  line-height: 1.4;
+  padding: 20px;
+  color: #333;
+}
+
+h2,
+h3 {
+  color: #ffcc00;
+  margin-top: 0;
+}
+
+.search-form {
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 100%;
+  padding: 6px 8px;
+  margin: 6px 0 12px;
+  font-size: 16px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+input.input[type='text'] {
+  width: 100%;
+}
+
+.btn {
+  padding: 8px 12px;
+  font-size: 16px;
+  background: #d40511;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #b3040f;
+}
+
+.error {
+  padding: 10px;
+  background: #ffe5e5;
+  border: 1px solid #d40511;
+  color: #9a030c;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.shipment {
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  background: #fffdf7;
+  border-radius: 4px;
+}
+
+ul.events,
+ul.history {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.events li {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+ul.history li {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-right: 22px;
+  list-style: none;
+}
+
+ul.history li .code {
+  text-decoration: none;
+  color: #004f9f;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+ul.history li .delete-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+ul.history li .delete-icon img {
+  display: block;
+  cursor: pointer;
+}
+
+.hint {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}

@@ -1,0 +1,112 @@
+{% extends "layout.ns4" %}
+
+{% set style = "common, track" %}
+
+{% block title %}Sendungsverfolgung{% endblock %}
+
+{% block content %}
+
+<h2>Sendungsverfolgung (aktuell unterstützt: DHL)</h2>
+
+<hr style="width: 565px;">
+
+<table border="0" cellpadding="0" cellspacing="0">
+  <form method="GET" action="/track">
+    <tr>
+      <td>
+        <label for="q"><b>Paketnummer:</b></label>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <input type="text" id="q" name="q" value="{{ query }}" size="70">
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <input type="image" border="0"
+          src="/public/images/bttnsearchred.min.gif"
+          alt="Suchen"
+          width="80"
+          onclick="this.form.action='/track';">
+      </td>
+    </tr>
+  </form>
+</table>
+
+<br>
+
+{% if error %}
+  <table border="0" cellpadding="4" cellspacing="0" width="560" bgcolor="#ffdddd">
+    <tr>
+      <td>
+        <b>Fehler:</b> {{ error }}
+      </td>
+    </tr>
+  </table>
+  <br>
+{% endif %}
+
+{% if shipment %}
+  <table border="0" cellpadding="4" cellspacing="0" width="560">
+    <tr>
+      <td>
+        <b>Sendung:</b> {{ shipment.id }}<br><br>
+
+        {% if shipment.product %}
+          <b>Produkt:</b> {{ shipment.product }}<br>
+        {% endif %}
+
+        {% if shipment.weight %}
+          <b>Gewicht:</b> {{ shipment.weight.value }} {{ shipment.weight.unitText }}<br>
+        {% endif %}
+
+        <br>
+
+        <b>Aktueller Status:</b><br>
+        {{ shipment.status.description }}<br>
+        <small>{{ shipment.status.timestamp }} — {{ shipment.status.location }}</small><br><br>
+
+        <a href="{{ shipment.serviceUrl }}">Original-Tracking öffnen</a><br>
+
+        <br>
+        <hr width="535">
+        <br>
+
+        <b>Sendungsverlauf:</b><br><br>
+
+        <ul>
+        {% for ev in shipment.events %}
+          {% include "track/partials/events-item.njk" %}
+        {% endfor %}
+        </ul
+
+      </td>
+    </tr>
+  </table>
+{% endif %}
+
+{% if history and history.length > 0 %}
+{% from "common/macros/image.njk" import image %}
+<br>
+<table border="0" cellpadding="4" cellspacing="0" width="560">
+  <tr>
+    <td>
+      <b>Suchhistorie:</b><br><br>
+      <ul>
+        {% for h in history %}
+        {% include "track/partials/history-item.ns4" %}
+        {% endfor %}
+      </ul>
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+<br>
+
+{% include "common/partials/hint.njk" %}
+
+{% endblock %}

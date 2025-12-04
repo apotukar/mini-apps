@@ -1,0 +1,25 @@
+<li>
+    <table border="0" cellpadding="4" cellspacing="0" width="200">
+        <tr>
+            <td>
+                <a class="code" href="/track?q={{ h | urlencode }}">
+                    {{ h }}
+                </a>
+            </td>
+            <td>
+                <a class="delete-icon"
+                href="/track/delete?d={{ h | urlencode }}{% if query %}&q={{ query | urlencode }}{% endif %}"
+                title="Item löschen">
+                    <img
+                        src="/public/images/delete.min.gif"
+                        alt="Item löschen"
+                        class="arrow-inline"
+                        width="10"
+                        height="10"
+                        border="0"
+                        align="right">
+                </a>
+            </td>
+        </tr>
+    </table>
+</li>

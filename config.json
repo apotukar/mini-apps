@@ -50,6 +50,13 @@
       "forceHttpsRedirect": false
     },
     {
+      "path": "/track",
+      "label": "Track App",
+      "isBasicAuth": false,
+      "scheme": ["http", "https"],
+      "forceHttpsRedirect": false
+    },
+    {
       "path": "/joplin",
       "label": "Joplin App",
       "isBasicAuth": true,
@@ -221,6 +228,12 @@
       "taxi": { "label": "Taxi", "query": "amenity=taxi" },
       "train_station": { "label": "Bahnhof", "query": "railway=station" },
       "fuel_station": { "label": "Tankstelle", "query": "amenity=fuel" }
+    }
+  },
+  "track": {
+    "dhl": {
+      "label": "DHL",
+      "apiKey": "${DHL_API_KEY}"
     }
   },
   "browser": {

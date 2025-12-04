@@ -23,6 +23,7 @@ import { registerNewsRoutes } from './apps/news.js';
 import { registerPOIRoutes } from './apps/pois.js';
 import { registerJoplinRoutes } from './apps/joplin.js';
 import { registerBrowserRoutes } from './apps/browser.js';
+import { registerTrackRoutes } from './apps/track.js';
 
 // ────────────────────────────────────────────────────────────
 // Bootstrap, Templating & DB Client
@@ -108,6 +109,7 @@ registerWeatherRoutes(app, { config: config.weather });
 registerTaskRoutes(app);
 registerNewsRoutes(app, { config: config.news });
 registerPOIRoutes(app, { config: config.pois });
+registerTrackRoutes(app, { config: config.track });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
 

@@ -31,6 +31,10 @@ const HOME_TEXTS_DE = {
     title: 'POIs',
     desc: 'Apotheken, Tankstellen & mehr ohne GPS.'
   },
+  track: {
+    title: 'Sendungsverfolgung',
+    desc: 'Aktuell unterstützt: DHL.'
+  },
   tasks: {
     title: 'Aufgaben',
     desc: 'Alle Google-Tasks-Listen (Leseansicht).'

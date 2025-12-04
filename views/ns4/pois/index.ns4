@@ -55,7 +55,7 @@
     <tr>
         <td>
             <input type="image" border="0"
-                src="/public/images/bluesearch.gif"
+                src="/public/images/bttnsearchblue.min.gif"
                 alt="Suchen"
                 width="80"
                 onclick="this.form.action='/pois';">

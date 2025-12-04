@@ -1,0 +1,70 @@
+{% extends "layout.njk" %}
+
+{% set style = "common, track" %}
+
+{% block title %}Sendungsverfolgung{% endblock %}
+
+{% block content %}
+
+<h2>Sendungsverfolgung (aktuell unterstützt: DHL)</h2>
+
+<form action="/track" method="get" class="search-form">
+  <label for="q">Paketnummer:</label><br>
+  <input type="text" id="q" name="q" value="{{ query }}" class="input" placeholder="JJD000..." />
+  <button type="submit" class="btn">Suchen</button>
+</form>
+
+{% if error %}
+  <div class="error">
+    <strong>Fehler:</strong> {{ error }}
+  </div>
+{% endif %}
+
+{% if shipment %}
+  <div class="shipment">
+
+    <h2>Sendung: {{ shipment.id }}</h2>
+
+    <p><strong>Produkt:</strong> {{ shipment.product }}</p>
+
+    {% if shipment.weight %}
+    <p>
+      <strong>Gewicht:</strong>
+      {{ shipment.weight.value }} {{ shipment.weight.unitText }}
+    </p>
+    {% endif %}
+
+    <p>
+      <strong>Aktueller Status:</strong><br>
+      {{ shipment.status.description }}<br>
+      <small>{{ shipment.status.timestamp }} — {{ shipment.status.location }}</small>
+    </p>
+
+    <p>
+      <a href="{{ shipment.serviceUrl }}" target="_blank">Original DHL Tracking öffnen</a>
+    </p>
+
+    <hr>
+
+    <h3>Sendungsverlauf</h3>
+    <ul class="events">
+      {% for ev in shipment.events %}
+        {% include "track/partials/events-item.njk" %}
+      {% endfor %}
+    </ul>
+
+    {% from "common/macros/image.njk" import image %}
+    <h3>Suchhistorie</h3>
+    <ul class="history">
+      {% for h in history %}
+      {% include "track/partials/history-item.njk" %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<p class="hint">
+    Eine einfache Sendungsverfolgung mit der Paketnummer.
+</p>
+
+{% endblock %}

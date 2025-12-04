@@ -1,0 +1,42 @@
+body {
+  background-color: #fff;
+  color: #222;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  color: #ffcc00;
+  font-family: system-ui, sans-serif;
+  margin: 0 0 10px 0;
+}
+
+a {
+  text-decoration: none;
+  color: #d40511;
+  font-size: 14px;
+  font-family: system-ui, sans-serif;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+small {
+  color: #555;
+}
+
+input[type="text"] {
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.error {
+  background: #

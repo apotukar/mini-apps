@@ -76,7 +76,7 @@ export function registerJourneyRoutes(app, params) {
 
       saveFavorites(res, favorites, favoritesNamespace);
 
-      res.redirect(
+      return res.redirect(
         `/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`
       );
     } catch (err) {
@@ -87,12 +87,12 @@ export function registerJourneyRoutes(app, params) {
 
   app.get('/journey/clear-favs', (req, res) => {
     clearFavorites(res, favoritesNamespace);
-    res.redirect('/journey');
+    return res.redirect('/journey');
   });
 
   app.get('/journey/show-config-favs', (req, res) => {
     clearHideFlag(res, favoritesNamespace);
-    res.redirect('/journey');
+    return res.redirect('/journey');
   });
 
   app.post(
