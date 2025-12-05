@@ -82,7 +82,6 @@
       "isBasicAuth": false,
       "requiresLogin": true,
       "roles": ["joplin"],
-
       "scheme": ["https"],
       "forceHttpsRedirect": true
     },
@@ -229,11 +228,26 @@
       "https://taz.de/!p4608;rss/": 400,
       "https://newsfeed.zeit.de/index": 300,
       "https://www.spiegel.de/schlagzeilen/index.rss": 300,
-      "https://www.handelsblatt.com/contentexport/feed/schlagzeilen": 300
+      "https://www.handelsblatt.com/contentexport/feed/schlagzeilen": 300,
+      "https://nachrichtenfeeds.br.de/rss/nachrichten/seiten/QXAPkQJ": 400,
+      "https://rss.orf.at/news.xml": 400
     },
     "limit": 7,
     "totalLimit": 84,
-    "browserProxy": "http://frogfind.com/read.php?a="
+    "browserProxies": [
+      {
+        "link": "frogfind.com/read.php?a=",
+        "description": "Frogfind"
+      },
+      {
+        "link": "www.textise.net/showText.aspx?strURL=",
+        "description": "Textise"
+      },
+      {
+        "link": "/browser/browse?url=",
+        "description": "Lokaler textbasierter Browser"
+      }
+    ]
   },
   "pois": {
     "zoom": 16,
@@ -278,9 +292,7 @@
   "browser": {
     "timeout": 120000,
     "waitUntil": "domcontentloaded",
-    "loadImages": true,
-    "modes": ["simplify", "frogfind"],
-    "imageWidth": 200
+    "modes": ["simplify", "frogfind"]
   },
   "bookmarks": [
     {

@@ -16,7 +16,6 @@ png)
   for img in "$DIR"/*.png; do
     [ -e "$img" ] || continue
     [[ "$img" == *".min.png" ]] && continue
-    if ! should_process "$img"; then continue; fi
 
     out="${img%.png}.min.png"
     tmp="/tmp/$(basename "${img%.png}").tmp.png"

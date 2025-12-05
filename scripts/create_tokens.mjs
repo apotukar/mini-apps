@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
@@ -5,7 +7,7 @@ import dotenv from 'dotenv';
 import qrcode from 'qrcode-terminal';
 import chalk from 'chalk';
 import express from 'express';
-import { GoogleTokenWriter } from './helpers/google/google-token-writer.js';
+import { GoogleTokenWriter } from '../helpers/google/google-token-writer.js';
 
 dotenv.config({ override: process.env.DOTENV_OVERRIDE });
 

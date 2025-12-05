@@ -10,6 +10,21 @@ const hiddenForbidden = req => `
     </body>
     </html>`;
 
+const forbidden = `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Forbidden</title></head>
+<body><pre>Forbidden</pre></body>
+</html>`;
+
+export function authMarker() {
+  return function (req, res, next) {
+    res.locals.user = req.session?.user || null;
+    res.locals.isLoggedIn = Boolean(req.session.user);
+
+    next();
+  };
+}
 export function secureRouteMarker() {
   return function (req, res, next) {
     const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
@@ -65,17 +80,8 @@ export function loginEnforcer(config) {
 
     const userRoles = req.session?.user?.roles || [];
     if (!userRoles.some(role => role === 'admin' || role === 'joplin' || roles.includes(role))) {
-      return res.status(404).send(hiddenForbidden(req));
+      return res.status(403).type('text/html').send(forbidden);
     }
-
-    next();
-  };
-}
-
-export function authMarker() {
-  return function (req, res, next) {
-    res.locals.user = req.session?.user || null;
-    res.locals.isLoggedIn = Boolean(req.session.user);
 
     next();
   };

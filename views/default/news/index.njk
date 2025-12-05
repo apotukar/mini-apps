@@ -8,6 +8,28 @@
 
   <h2>News</h2>
 
+  <form method="get" action="/news">
+    <label for="proxy">Proxy:</label>
+
+    <select id="proxy" name="proxy">
+      <option value="" {% if not currentProxy %}selected{% endif %}>
+        Kein Proxy
+      </option>
+
+      {% for p in proxies %}
+        <option value="{{ p.link }}"
+          {% if p.link == currentProxy %}selected{% endif %}>
+          {{ p.description }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Links neu laden</button>
+  </form>
+
+
+  <br
+
   <ul>
     {% for item in items %}
       <li class="source-{{ item.source | lower | replace(' ', '-') }}">

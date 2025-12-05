@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "create-certs": "./scripts/create_certs.sh",
-    "init-tokens": "node init-tokens",
+    "create-tokens": "./scripts/create_tokens.mjs",
+    "create-user": "./scripts/create_user.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "node nodemon.js",
     "start": "node index.js",
@@ -37,6 +38,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "argon2": "^0.44.0",
     "chalk": "^5.6.2",
     "cheerio": "^1.1.2",
     "connect-redis": "^9.0.0",
@@ -53,6 +55,7 @@
     "puppeteer": "^24.31.0",
     "qrcode-terminal": "^0.12.0",
     "redis": "^5.10.0",
+    "rss-parser": "^3.13.0",
     "sharp": "^0.34.5",
     "webdav": "^5.8.0",
     "xml2js": "^0.6.2"

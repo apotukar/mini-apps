@@ -126,7 +126,7 @@ registerPOIRoutes(app, { config: config.pois });
 registerTrackRoutes(app, { config: config.track });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
-// TODO
+// TODO: add config
 registerAuthRoutes(app, { config: config.auth || {} });
 
 // ────────────────────────────────────────────────────────────

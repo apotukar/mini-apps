@@ -22,39 +22,46 @@ export function registerAuthRoutes(app, params = {}) {
     });
   });
 
-  app.post(`${basePath}/login`, (req, res) => {
+  app.post(`${basePath}/login`, async (req, res) => {
+    const redirectTo = getSafeRedirect(req, `${basePath}/profile`);
     const { username, password } = req.body || {};
     if (!username || !password) {
       return res.render(loginView, {
         basePath,
         title: 'Login',
         error: 'Please enter username and password.',
-        values: { username: username || '' }
+        values: { username: username || '' },
+        redirect: redirectTo
       });
     }
 
-    const user = findUser(users, username, password);
-    if (!user) {
-      return res.render(loginView, {
-        basePath,
-        title: 'Login',
-        error: 'Invalid credentials.',
-        values: { username }
-      });
+    try {
+      const user = await findUser(users, username, password);
+      if (!user) {
+        return res.status(401).render(loginView, {
+          basePath,
+          title: 'Login',
+          error: 'Invalid credentials.',
+          values: { username },
+          redirect: redirectTo
+        });
+      }
+
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+        roles: user.roles || []
+      };
+
+      if (req.session?.user) {
+        return res.redirect(redirectTo);
+      }
+
+      res.redirect(redirectTo);
+    } catch (err) {
+      console.error(err);
+      res.status(500).render('common/error.njk');
     }
-
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      roles: user.roles || []
-    };
-
-    const redirectTo = getSafeRedirect(req, `${basePath}/profile`);
-    if (req.session?.user) {
-      return res.redirect(redirectTo);
-    }
-
-    res.redirect(redirectTo);
   });
 
   app.get(`${basePath}/profile`, (req, res) => {
@@ -75,7 +82,7 @@ export function registerAuthRoutes(app, params = {}) {
     });
   });
 
-  app.post(`${basePath}/reload-users`, (req, res) => {
+  app.post(`${basePath}/reload-users`, async (req, res) => {
     users = loadUsers();
     res.redirect(`${basePath}/login`);
   });
