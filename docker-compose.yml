@@ -5,6 +5,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
+      - .git:/usr/src/app/.git:ro
     ports:
       - '${HTTP_PORT}:${HTTP_PORT}'
       - '${HTTPS_PORT}:${HTTPS_PORT}'
