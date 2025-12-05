@@ -6,7 +6,8 @@ export class SimpleFileCache {
     // TODO: finish
     this.cacheDir = options.cacheDir;
 
-    const { cacheDir = path.join(process.cwd(), '.cache/default'), ttl = 1000 * 60 * 60 } = options;
+    const { cacheDir = path.join(process.cwd(), '.data/cache/default'), ttl = 1000 * 60 * 60 } =
+      options;
 
     this.cacheDir = cacheDir;
     this.ttl = ttl;

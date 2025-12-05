@@ -19,7 +19,7 @@ export function registerJoplinRoutes(app, params) {
     headers: { Depth: '1' }
   });
 
-  const CACHE_DIR = path.join(process.cwd(), '.cache', 'joplin');
+  const CACHE_DIR = path.join(process.cwd(), '.data/cache', 'joplin');
 
   app.get('/joplin', async (req, res) => {
     try {

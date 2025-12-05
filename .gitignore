@@ -3,11 +3,10 @@
 
 # Environment/Secrets
 .env
-.tokens/
 certs/
 
-# Build/Cache
-.cache
+# Build/Data/Cache/Config
+.data
 node_modules
 
 # IDE
@@ -18,6 +17,3 @@ node_modules
 *.min.js
 *.min.png
 *.min.gif
-
-# Misc
-.books/

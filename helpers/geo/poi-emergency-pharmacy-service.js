@@ -12,7 +12,7 @@ export class PoiEmergencyPharmacyService {
 }
 
 const pharmacyCache = new SimpleFileCache({
-  cacheDir: path.join(process.cwd(), '.cache/emergency-pharmacies'),
+  cacheDir: path.join(process.cwd(), '.data/cache/emergency-pharmacies'),
   ttl: 1000 * 60 * 60 * 12
 });
 

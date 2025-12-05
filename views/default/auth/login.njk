@@ -1,0 +1,32 @@
+{% extends "layout.njk" %}
+
+{% set style = "common" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+  <h2>Login</h1>
+
+  {% if error %}
+    <p style="color:red;">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ basePath }}/login{% if redirect %}?redirect={{ redirect | urlencode }}{% endif %}">
+
+    <div>
+      <label>Benutzername:</label><br>
+      <input type="text" name="username" value="{{ values.username }}">
+    </div>
+
+    <div style="margin-top:10px;">
+      <label>Passwort:</label><br>
+      <input type="password" name="password">
+    </div>
+
+    <div style="margin-top:10px;">
+      <button type="submit">Login</button>
+    </div>
+  </form>
+
+{% endblock %}

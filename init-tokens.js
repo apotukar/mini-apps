@@ -15,12 +15,12 @@ function createConfig() {
   const PORT = Number(process.env.PORT) || 3443;
   const GOOGLE_REDIRECT_URL =
     process.env.GOOGLE_REDIRECT_URL || `https://localhost:${PORT}/oauth2callback`;
-  const TOKEN_DIR = '.tokens';
+  const TOKEN_DIR = '.data/gtokens';
 
   console.log('CLIENT_ID present:', !!CLIENT_ID);
   console.log('CLIENT_SECRET present:', !!CLIENT_SECRET);
   console.log('PORT:', PORT);
-  console.log('TOKENS_DIR:', TOKEN_DIR);
+  console.log('TOKEN_DIR:', TOKEN_DIR);
 
   if (!CLIENT_ID || !CLIENT_SECRET) {
     throw new Error('Fehler: GOOGLE_CLIENT_ID oder GOOGLE_CLIENT_SECRET fehlen.');

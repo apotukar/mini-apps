@@ -2,7 +2,6 @@ import fetch from 'node-fetch';
 import { GoogleTokenReader } from '../helpers/google/google-token-reader.js';
 
 export function registerTaskRoutes(app, params) {
-  const userId = params.userId;
   const tokenReader = new GoogleTokenReader({
     clientId: params.config.clientId,
     clientSecret: params.config.clientSecret,
@@ -11,8 +10,8 @@ export function registerTaskRoutes(app, params) {
 
   app.get('/tasks', async (req, res) => {
     try {
-      const accessToken = await tokenReader.refreshAccessToken(userId);
-
+      const userName = req.session?.user?.username;
+      const accessToken = await tokenReader.refreshAccessToken(userName);
       const lists = await fetchTaskLists(accessToken);
 
       const results = [];
@@ -30,7 +29,7 @@ export function registerTaskRoutes(app, params) {
       });
     } catch (err) {
       console.error(err);
-      res.send('Fehler: ' + err.message);
+      res.status(500).render('common/error.njk');
     }
   });
 }

@@ -4,7 +4,7 @@ import { SimpleFileCache } from '../cache.js';
 // TODO: inject api key or create class
 
 const infiniteReverseSearchCache = new SimpleFileCache({
-  cacheDir: path.join(process.cwd(), '.cache/reverse-search'),
+  cacheDir: path.join(process.cwd(), '.data/cache/reverse-search'),
   ttl: Infinity
 });
 

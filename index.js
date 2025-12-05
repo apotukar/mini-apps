@@ -8,10 +8,15 @@ import cookieParser from 'cookie-parser';
 import { createClient as createDbClient } from 'db-vendo-client';
 import { profile as dbProfile } from 'db-vendo-client/p/dbnav/index.js';
 
-import { basicAuthRegistrator } from './helpers/routes/basic-auth.js';
 import { logger } from './helpers/routes/logging.js';
-import { secureRouteMarker, httpsRedirectEnforcer } from './helpers/routes/secure-routes.js';
-import { viewBaseMarker, pageUrlMarker } from './helpers/routes/request-based-routes.js';
+import {
+  secureRouteMarker,
+  httpsRedirectEnforcer,
+  loginEnforcer,
+  authMarker,
+  basicAuthRegistrator
+} from './helpers/routes/security.js';
+import { viewBaseMarker, pageUrlMarker } from './helpers/routes/viewsupport.js';
 import { setupNunjucks } from './helpers/nunjucks-setup.js';
 import { loadConfig } from './helpers/config-loader.js';
 import { RedisManager } from './helpers/redis-manager.js';
@@ -26,6 +31,7 @@ import { registerPOIRoutes } from './apps/pois.js';
 import { registerJoplinRoutes } from './apps/joplin.js';
 import { registerBrowserRoutes } from './apps/browser.js';
 import { registerTrackRoutes } from './apps/track.js';
+import { registerAuthRoutes } from './apps/auth.js';
 
 // ────────────────────────────────────────────────────────────
 // Bootstrap, Templating & DB Client
@@ -58,6 +64,8 @@ app.use(
 app.use(viewBaseMarker(viewExtConfig));
 app.use(pageUrlMarker());
 app.use(secureRouteMarker());
+app.use(authMarker());
+app.use(loginEnforcer({ routes: config.routes }));
 app.use(logger());
 
 config.routes
@@ -110,6 +118,7 @@ registerDepartureRoutes(app, {
   }
 });
 
+// TODO: inject base path
 registerWeatherRoutes(app, { config: config.weather });
 registerTaskRoutes(app, { config: config.tasks, userId: config.singleUserId });
 registerNewsRoutes(app, { config: config.news });
@@ -117,6 +126,8 @@ registerPOIRoutes(app, { config: config.pois });
 registerTrackRoutes(app, { config: config.track });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
+// TODO
+registerAuthRoutes(app, { config: config.auth || {} });
 
 // ────────────────────────────────────────────────────────────
 // HTTPS-Server

@@ -17,6 +17,8 @@
       "path": "/journey",
       "label": "Journey App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
@@ -24,6 +26,8 @@
       "path": "/departures",
       "label": "Departures App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
@@ -31,13 +35,17 @@
       "path": "/weather",
       "label": "Weather App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
     {
       "path": "/tasks",
       "label": "Tasks App",
-      "isBasicAuth": true,
+      "isBasicAuth": false,
+      "requiresLogin": true,
+      "roles": [],
       "scheme": ["https"],
       "forceHttpsRedirect": true
     },
@@ -45,6 +53,8 @@
       "path": "/news",
       "label": "News App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
@@ -52,6 +62,8 @@
       "path": "/pois",
       "label": "POIs App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
@@ -59,13 +71,18 @@
       "path": "/track",
       "label": "Track App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
     },
     {
       "path": "/joplin",
       "label": "Joplin App",
-      "isBasicAuth": true,
+      "isBasicAuth": false,
+      "requiresLogin": true,
+      "roles": ["joplin"],
+
       "scheme": ["https"],
       "forceHttpsRedirect": true
     },
@@ -73,8 +90,19 @@
       "path": "/browser",
       "label": "Browser App",
       "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
       "scheme": ["http", "https"],
       "forceHttpsRedirect": false
+    },
+    {
+      "path": "/auth",
+      "label": "Auth App",
+      "isBasicAuth": false,
+      "requiresLogin": false,
+      "roles": [],
+      "scheme": ["https"],
+      "forceHttpsRedirect": true
     }
   ],
   "transport": {
@@ -245,7 +273,7 @@
   "tasks": {
     "clientId": "${GOOGLE_CLIENT_ID}",
     "clientSecret": "${GOOGLE_CLIENT_SECRET}",
-    "tokensPath": ".tokens"
+    "tokensPath": ".data/gtokens"
   },
   "browser": {
     "timeout": 120000,

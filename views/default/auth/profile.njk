@@ -1,0 +1,26 @@
+{% extends "layout.njk" %}
+
+{% set style = "common" %}
+
+{% block title %}Benutzerprofil{% endblock %}
+
+{% block content %}
+
+  <h2>Willkommen, {{ user.username }}!</h2>
+
+  <p>User-ID: {{ user.id }}</p>
+
+  {% if user.roles %}
+    <h3>Rollen:</h3>
+    <ul>
+      {% for r in user.roles %}
+        <li>{{ r }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <p style="margin-top:20px;">
+    <a href="{{ basePath }}/logout">Logout</a>
+  </p>
+
+{% endblock %}

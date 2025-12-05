@@ -1,11 +1,17 @@
 {% if pageUrl and pageUrl != "/" %}
-    {% if ext != 'njk' %}
+    {% if viewExt != "njk" %}
     <p class="footer">
         <a href="/">Zur Startseite</a>
     </p>
     {% else %}
     <footer class="footer">
-      <a href="/">Zur Startseite</a>
+        <a href="/">Zur Startseite</a>&nbsp;|&nbsp;
+
+        {% if isLoggedIn %}
+            <a href="/auth/logout">Logout</a>
+        {% else %}
+            <a href="/auth/login">Login</a>
+        {% endif %}
     </footer>
     {% endif %}
 {% endif %}
