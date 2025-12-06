@@ -1,90 +1,52 @@
-import session from 'express-session';
-import { Browser } from '../lib/browser/browser-logic.js';
+import { Browser } from '../lib/browser/browser.js';
+import { escapeText } from '../lib/browser/html-utils.js';
 
-export function registerBrowserRoutes(app, params) {
-  const browser = new Browser(params?.config || {});
-
-  app.use(
-    session({
-      secret: 'mini-browser-secret',
-      resave: false,
-      saveUninitialized: true
-    })
-  );
+export function registerBrowserRoutes(app, params = {}) {
+  const browser = new Browser(params.config || {});
 
   app.get('/browser', (req, res) => {
-    res.render('browser/index.njk', {
-      url: '',
-      content: null,
-      error: null,
-      canGoBack: false,
-      canGoForward: false,
-      canGoHome: false
-    });
+    const html = browser.buildLegacyHtml(
+      'Mini-Browser',
+      '',
+      '',
+      '',
+      'Verdana, Arial, Helvetica, sans-serif',
+      '#dbeafe'
+    );
+    res.type('text/html').send(html);
   });
 
   app.get('/browser/browse', async (req, res) => {
-    const rawUrl = req.query.url;
-    if (!rawUrl) {
-      return res.redirect('/browser');
+    const rawInput = req.query.url;
+    if (!rawInput) {
+      const html = browser.buildLegacyHtml(
+        'Mini-Browser',
+        '',
+        '',
+        '',
+        'Verdana, Arial, Helvetica, sans-serif',
+        '#dbeafe'
+      );
+      return res.type('text/html').send(html);
     }
 
-    const url = browser.normalizeUrl(rawUrl);
+    const normalized = browser.normalizeUrl(rawInput);
 
     try {
-      const html = await browser.fetchHtml(url);
-      const simplified = browser.simplifyHtml(html, url);
-      handleSession(req, url);
-
-      res.render('browser/index.njk', {
-        url: rawUrl,
-        content: simplified,
-        error: null,
-        canGoBack: req.session.index > 0,
-        canGoForward: req.session.index < req.session.history.length - 1,
-        canGoHome: true
-      });
+      const originalHtml = await browser.fetchHtml(normalized);
+      const simplifiedHtml = browser.simplifyHtml(originalHtml, normalized);
+      res.type('text/html').send(simplifiedHtml);
     } catch (err) {
-      res.render('browser/index.njk', {
-        url: rawUrl,
-        content: null,
-        error: err.message,
-        canGoBack: false,
-        canGoForward: false,
-        canGoHome: true
-      });
+      const msg = err?.message || String(err);
+      const html = browser.buildLegacyHtml(
+        'Fehler beim Laden',
+        normalized,
+        '',
+        `<pre>${escapeText(msg)}</pre>`,
+        'Verdana, Arial, Helvetica, sans-serif',
+        '#fecaca'
+      );
+      res.status(500).type('text/html').send(html);
     }
   });
-
-  app.get('/browser/back', (req, res) => {
-    if (req.session.index > 0) {
-      req.session.index--;
-      const url = req.session.history[req.session.index];
-      return res.redirect('/browser/browse?url=' + encodeURIComponent(url));
-    }
-    return res.redirect('/browser');
-  });
-
-  app.get('/browser/forward', (req, res) => {
-    if (req.session.index < req.session.history.length - 1) {
-      req.session.index++;
-      const url = req.session.history[req.session.index];
-      return res.redirect('/browser/browse?url=' + encodeURIComponent(url));
-    }
-    return res.redirect('/browser');
-  });
-
-  app.get('/browser/home', (req, res) => {
-    return res.redirect('/browser');
-  });
-}
-
-function handleSession(req, url) {
-  if (!req.session.history) {
-    req.session.history = [];
-    req.session.index = -1;
-  }
-  req.session.history = req.session.history.slice(0, req.session.index + 1);
-  req.session.history.push(url);
-  req.session.index = req.session.history.length - 1;
 }

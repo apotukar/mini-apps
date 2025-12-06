@@ -1,38 +1,61 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f .env ]; then
+  while IFS='=' read -r key value; do
+    key="${key%%[[:space:]]*}"
+    value="${value%%[[:space:]]*}"
+    if [[ -z "$key" ]] || [[ "$key" =~ ^# ]]; then
+      continue
+    fi
+    if [ -z "${!key+x}" ]; then
+      export "$key=$value"
+    fi
+  done <.env
+fi
+
+PORT="${PORT:-3443}"
+
 echo "Select an option:"
 echo "1) Open interactive bash in container"
-echo "2) Run 'npm run create-tokens' with port 3443 exposed"
+echo "2) Run create-tokens (npm run create-tokens)"
 echo "3) MODE_ENV=DEV  docker compose up"
 echo "4) MODE_ENV=PROD docker compose up"
+echo "5) Run backup.sh"
+echo "6) Run create-certs (npm run create-certs)"
+echo "7) Run create-user (npm run create-user)"
 echo "q) Quit"
 echo
 read -rp "Your choice: " choice
 
 case "$choice" in
 1)
-  echo "Starting interactive bash..."
   docker compose run --rm node bash
   ;;
 2)
-  echo "Running create-tokens script with port mapping..."
-  docker compose run --rm -p 3443:3443 node npm run create-tokens
+  docker compose run --rm -p "${PORT}:${PORT}" node npm run create-tokens
   ;;
 3)
-  echo "Starting docker compose with MODE_ENV=DEV..."
   MODE_ENV=DEV docker compose up
   ;;
 4)
-  echo "Starting docker compose with MODE_ENV=PROD..."
   MODE_ENV=PROD docker compose up
   ;;
+5)
+  "${SCRIPT_DIR}/backup.sh"
+  ;;
+6)
+  docker compose run --rm node npm run create-certs
+  ;;
+7)
+  docker compose run --rm node npm run create-user
+  ;;
 q | Q)
-  echo "Exiting."
   exit 0
   ;;
 *)
-  echo "Invalid selection."
   exit 1
   ;;
 esac

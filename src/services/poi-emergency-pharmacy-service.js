@@ -1,6 +1,6 @@
 import path from 'path';
 import puppeteer from 'puppeteer';
-import { getRandomBrowserProfile } from '../lib/browser/browser-profiles.js';
+import { getRandomBrowserProfile } from '../lib/user-agents.js';
 import { geocodePlace } from '../lib/geo/geocode.js';
 import { SimpleFileCache } from '../lib/cache.js';
 
