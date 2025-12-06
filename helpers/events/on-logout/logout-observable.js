@@ -3,13 +3,13 @@ class LogoutObservable {
     this.observers = [];
   }
 
-  subscribe(observer) {
+  addObserver(observer) {
     this.observers.push(observer);
   }
 
-  async notify(ctx) {
+  async notifyAll(req, res, user) {
     for (const observer of this.observers) {
-      await observer(ctx);
+      await observer(req, res, user);
     }
   }
 }

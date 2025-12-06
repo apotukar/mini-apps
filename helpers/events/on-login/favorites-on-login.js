@@ -1,9 +1,10 @@
-import { FavoritesManager } from '../favs/favorites.js';
+import { FavoritesManager } from '../../favs/favorites.js';
 
 export function createMergeFavoritesOnLogin(config = {}) {
   const { routes } = config;
 
   return async function mergeFavoritesOnLogin({ req, res }) {
+    console.log('mergeFavoritesOnLogin');
     for (const route of routes) {
       if (route.hasFavorites === false) {
         continue;

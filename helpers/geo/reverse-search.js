@@ -1,44 +1,70 @@
 import path from 'path';
 import { SimpleFileCache } from '../cache.js';
 
-// TODO: inject api key or create class
+export class ReverseGeocodeService {
+  constructor(options = {}) {
+    const {
+      cacheDir = '/tmp/cache/reverse-search',
+      ttl = Infinity,
+      apiKey = null,
+      retries = 2,
+      sleepDuration = 500
+    } = options;
 
-const infiniteReverseSearchCache = new SimpleFileCache({
-  cacheDir: path.join(process.cwd(), '.data/cache/reverse-search'),
-  ttl: Infinity
-});
+    const resolvedCacheDir = path.isAbsolute(cacheDir)
+      ? cacheDir
+      : path.join(process.cwd(), cacheDir);
 
-export async function reverseSearch(lat, lon, apiKey, retries = 2, sleepDuration = 500) {
-  const cacheKey = `lat-${lat}-long-${lon}`;
-  const cached = await infiniteReverseSearchCache.read(cacheKey);
-  if (cached) {
-    return await cached;
+    this.cache = new SimpleFileCache({
+      cacheDir: resolvedCacheDir,
+      ttl
+    });
+
+    this.apiKey = apiKey;
+    this.retries = retries;
+    this.sleepDuration = sleepDuration;
   }
 
-  const url = new URL('https://eu1.locationiq.com/v1/reverse');
-  url.searchParams.set('key', String(apiKey));
-  url.searchParams.set('lat', String(lat));
-  url.searchParams.set('lon', String(lon));
-  url.searchParams.set('format', 'json');
-
-  for (let i = 0; i <= retries; i++) {
-    console.log('Trying to reverse search...', url.toString());
-    const res = await fetch(url.toString());
-
-    if (res.ok) {
-      const data = await res.json();
-      const addr = data.address || {};
-      const line1 = [addr.road, addr.house_number].filter(Boolean).join(' ');
-      const line2 = [addr.postcode, addr.city].filter(Boolean).join(' ');
-      const result = [line1, line2].filter(Boolean).join(', ') || null;
-      await infiniteReverseSearchCache.write(cacheKey, result);
-      return result;
+  async reverseSearch(lat, lon) {
+    if (!this.apiKey) {
+      throw new Error('Missing API key for ReverseGeocodeService.');
     }
 
-    if (sleepDuration > 0) {
-      await new Promise(r => setTimeout(r, sleepDuration));
+    const cacheKey = `lat-${lat}-lon-${lon}`;
+    const cached = await this.cache.read(cacheKey);
+    if (cached) {
+      return cached;
     }
+
+    const url = new URL('https://eu1.locationiq.com/v1/reverse');
+    url.searchParams.set('key', String(this.apiKey));
+    url.searchParams.set('lat', String(lat));
+    url.searchParams.set('lon', String(lon));
+    url.searchParams.set('format', 'json');
+
+    for (let i = 0; i <= this.retries; i++) {
+      console.log('Trying reverse geocode:', url.toString());
+
+      const res = await fetch(url.toString());
+
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data.address || {};
+
+        const line1 = [addr.road, addr.house_number].filter(Boolean).join(' ');
+        const line2 = [addr.postcode, addr.city].filter(Boolean).join(' ');
+
+        const result = [line1, line2].filter(Boolean).join(', ') || null;
+
+        await this.cache.write(cacheKey, result);
+        return result;
+      }
+
+      if (this.sleepDuration > 0) {
+        await new Promise(r => setTimeout(r, this.sleepDuration));
+      }
+    }
+
+    return null;
   }
-
-  return null;
 }

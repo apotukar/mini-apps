@@ -20,7 +20,7 @@ import { viewBaseMarker, pageUrlMarker } from './helpers/routes/viewsupport.js';
 import { setupNunjucks } from './helpers/setup/nunjucks-setup.js';
 import { loadConfig } from './helpers/setup/config-loader.js';
 import { RedisManager } from './helpers/setup/redis-manager.js';
-import { initEvents } from './helpers/events/init-events.js';
+import { getObservables } from './helpers/events/create-observables.js';
 
 import { registerHomeRoutes } from './apps/home.js';
 import { registerJourneyRoutes } from './apps/journey.js';
@@ -38,6 +38,7 @@ import { registerAuthRoutes } from './apps/auth.js';
 // Bootstrap, Templating & DB Client
 // ────────────────────────────────────────────────────────────
 
+const ROOT_DIR = process.cwd();
 const config = loadConfig();
 const app = express();
 const viewExtConfig = { defaultViewExt: 'njk', ns4ViewExt: 'ns4' };
@@ -129,15 +130,16 @@ registerPOIRoutes(app, { config: config.pois });
 registerTrackRoutes(app, { config: config.track });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
-initEvents({ routes: config.routes });
-// TODO: provide configuration
-registerAuthRoutes(app, { config: config.auth || {} });
+const { onLoginObservable, onLogoutObservable } = getObservables({ routes: config.routes });
+registerAuthRoutes(app, {
+  config: config.auth || {},
+  onLoginObservable,
+  onLogoutObservable
+});
 
 // ────────────────────────────────────────────────────────────
 // HTTPS-Server
 // ────────────────────────────────────────────────────────────
-
-const ROOT_DIR = process.cwd();
 
 const httpsOptions = {
   key: fs.readFileSync(path.join(ROOT_DIR, 'certs', 'server.key')),

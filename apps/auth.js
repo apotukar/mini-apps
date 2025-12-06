@@ -1,11 +1,14 @@
 import { loadUsers, findUser } from '../helpers/users.js';
-import { loginObservable } from '../helpers/events/login-observable.js';
-import { logoutObservable } from '../helpers/events/logout-observable.js';
 
 export function registerAuthRoutes(app, params = {}) {
-  const basePath = params.basePath || '/auth';
-  const loginView = params.loginView || 'auth/login.njk';
-  const profileView = params.profileView || 'auth/profile.njk';
+  const name = params.config.name || 'auth';
+  const basePath = params.config.basePath || '/auth';
+  const loginView = `${name}/login.njk`;
+  const profileView = `${name}/profile.njk`;
+  const errorView = 'common/error.njk';
+
+  const onLoginObservable = params.onLoginObservable;
+  const onLogoutObservable = params.onLogoutObservable;
 
   let users = loadUsers();
 
@@ -55,7 +58,9 @@ export function registerAuthRoutes(app, params = {}) {
         roles: user.roles || []
       };
 
-      await loginObservable.notify({ req, res, user });
+      if (onLoginObservable) {
+        await onLoginObservable.notifyAll({ req, res, user });
+      }
 
       if (req.session?.user) {
         return res.redirect(redirectTo);
@@ -64,7 +69,7 @@ export function registerAuthRoutes(app, params = {}) {
       res.redirect(redirectTo);
     } catch (err) {
       console.error(err);
-      res.status(500).render('common/error.njk');
+      res.status(500).render(errorView);
     }
   });
 
@@ -81,7 +86,10 @@ export function registerAuthRoutes(app, params = {}) {
   });
 
   app.get(`${basePath}/logout`, async (req, res) => {
-    await logoutObservable.notify({ req, res });
+    if (onLogoutObservable) {
+      await onLogoutObservable.notifyAll({ req, res });
+    }
+
     req.session?.destroy(() => {
       res.redirect('/');
     });

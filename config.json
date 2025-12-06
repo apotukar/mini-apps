@@ -229,6 +229,7 @@
   },
   "joplin": {
     "webdavUrl": "https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin",
+    "cacheDir": "${CACHE_DIR}/joplin",
     "preferredNotebooks": ["Notizen"],
     "secret": {
       "username": "${JOPLIN_USER}",
@@ -272,6 +273,8 @@
   "pois": {
     "zoom": 16,
     "tiles": 3,
+    "emergencyPharmaciesCacheDir": "${CACHE_DIR}/emergency-pharmacies",
+    "reverseGeocodingCacheDir": "${CACHE_DIR}/reverse-search",
     "reverseGeocodingKey": "${REVERSE_GEOCODING_KEY}",
     "types": {
       "bank": { "label": "Bank", "query": "amenity=bank" },
