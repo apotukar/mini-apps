@@ -1,5 +1,5 @@
 import session from 'express-session';
-import { Browser } from '../helpers/browser-logic.js';
+import { Browser } from '../helpers/browser/browser-logic.js';
 
 export function registerBrowserRoutes(app, params) {
   const browser = new Browser(params?.config || {});

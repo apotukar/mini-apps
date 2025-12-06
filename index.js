@@ -17,9 +17,9 @@ import {
   basicAuthRegistrator
 } from './helpers/routes/security.js';
 import { viewBaseMarker, pageUrlMarker } from './helpers/routes/viewsupport.js';
-import { setupNunjucks } from './helpers/nunjucks-setup.js';
-import { loadConfig } from './helpers/config-loader.js';
-import { RedisManager } from './helpers/redis-manager.js';
+import { setupNunjucks } from './helpers/setup/nunjucks-setup.js';
+import { loadConfig } from './helpers/setup/config-loader.js';
+import { RedisManager } from './helpers/setup/redis-manager.js';
 import { initEvents } from './helpers/events/init-events.js';
 
 import { registerHomeRoutes } from './apps/home.js';

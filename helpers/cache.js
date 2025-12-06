@@ -3,7 +3,7 @@ import path from 'path';
 
 export class SimpleFileCache {
   constructor(options = {}) {
-    // TODO: finish
+    // TODO: provide 2nd implementation with Redis
     this.cacheDir = options.cacheDir;
 
     const { cacheDir = path.join(process.cwd(), '.data/cache/default'), ttl = 1000 * 60 * 60 } =
