@@ -34,7 +34,10 @@ export function registerNewsRoutes(app, params) {
         config.totalLimit,
         browserProxy
       );
-      console.log('Errors:', errors);
+
+      if (errors.length > 0) {
+        console.error('Errors occurred while fetching feeds:', errors);
+      }
 
       res.render('news/index.njk', {
         items,

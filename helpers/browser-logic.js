@@ -12,7 +12,9 @@ export class Browser {
   }
 
   normalizeUrl(input) {
-    if (!input) return '';
+    if (!input) {
+      return '';
+    }
     let url = input.trim();
     if (!/^https?:\/\//i.test(url)) {
       url = 'https://' + url;
@@ -95,7 +97,9 @@ export class Browser {
       $('main, .content, #content, article').each((_, el) => candidates.push(el));
       $('div').each((_, el) => {
         const textLen = ($(el).text() || '').trim().length;
-        if (textLen > 800) candidates.push(el);
+        if (textLen > 800) {
+          candidates.push(el);
+        }
       });
 
       let best = null;

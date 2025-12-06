@@ -5,32 +5,36 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import qrcode from 'qrcode-terminal';
-import chalk from 'chalk';
 import express from 'express';
 import { GoogleTokenWriter } from '../helpers/google/google-token-writer.js';
 
 dotenv.config({ override: process.env.DOTENV_OVERRIDE });
 
 function createConfig() {
-  const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-  const PORT = Number(process.env.PORT) || 3443;
-  const GOOGLE_REDIRECT_URL =
-    process.env.GOOGLE_REDIRECT_URL || `https://localhost:${PORT}/oauth2callback`;
+  const AUTH_TOKEN_USER_ID = process.env.AUTH_TOKEN_USER_ID;
+  console.log('AUTH_TOKEN_USER_ID:', AUTH_TOKEN_USER_ID);
+
+  const AUTH_TOKEN_KEY = process.env.AUTH_TOKEN_KEY;
+  console.log('AUTH_TOKEN_KEY:', AUTH_TOKEN_KEY);
+
   const TOKEN_DIR = '.data/gtokens';
-
-  console.log('CLIENT_ID present:', !!CLIENT_ID);
-  console.log('CLIENT_SECRET present:', !!CLIENT_SECRET);
-  console.log('PORT:', PORT);
   console.log('TOKEN_DIR:', TOKEN_DIR);
-
-  if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error('Fehler: GOOGLE_CLIENT_ID oder GOOGLE_CLIENT_SECRET fehlen.');
-  }
-
   if (!fs.existsSync(TOKEN_DIR)) {
     fs.mkdirSync(TOKEN_DIR, { recursive: true });
     console.log('Token-Verzeichnis erstellt:', TOKEN_DIR);
+  }
+
+  const PORT = Number(process.env.PORT) || 3443;
+  const GOOGLE_REDIRECT_URL =
+    process.env.GOOGLE_REDIRECT_URL || `https://localhost:${PORT}/oauth2callback`;
+  console.log('GOOGLE_REDIRECT_URL:', GOOGLE_REDIRECT_URL);
+
+  const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+  console.log('CLIENT_ID present:', !!CLIENT_ID);
+  console.log('CLIENT_SECRET present:', !!CLIENT_SECRET);
+  if (!CLIENT_ID || !CLIENT_SECRET) {
+    throw new Error('Fehler: GOOGLE_CLIENT_ID oder GOOGLE_CLIENT_SECRET fehlen.');
   }
 
   const httpsOptions = {
@@ -39,19 +43,36 @@ function createConfig() {
   };
 
   return {
-    clientId: CLIENT_ID,
+    clientId: 'foo2',
     clientSecret: CLIENT_SECRET,
     port: PORT,
     redirectUri: GOOGLE_REDIRECT_URL,
     tokensPath: TOKEN_DIR,
+    authTokenUserId: AUTH_TOKEN_USER_ID,
+    authTokenKey: AUTH_TOKEN_KEY,
     httpsOptions
   };
 }
 
-function startServer(userId) {
+function startServer() {
   const config = createConfig();
-  const { clientId, clientSecret, redirectUri, tokensPath, port, httpsOptions } = config;
-  const tokenWriter = new GoogleTokenWriter({ clientId, clientSecret, redirectUri, tokensPath });
+  const {
+    clientId,
+    clientSecret,
+    redirectUri,
+    tokensPath,
+    port,
+    httpsOptions,
+    authTokenUserId,
+    authTokenKey
+  } = config;
+  const tokenWriter = new GoogleTokenWriter({
+    clientId,
+    clientSecret,
+    redirectUri,
+    tokensPath,
+    authTokenKey
+  });
 
   const app = express();
   let server;
@@ -100,12 +121,12 @@ function startServer(userId) {
     console.log('OAuth Server läuft mit Express.');
     console.log('Callback URL:', redirectUri);
 
-    const authUrl = tokenWriter.buildAuthUrl(userId);
-    console.log('Login URL:', chalk.blue.underline(authUrl));
+    const authUrl = tokenWriter.buildAuthUrl(authTokenUserId);
+    console.log('Login URL:', authUrl);
 
     console.log('QR-Code für die Login-URL:');
     qrcode.generate(authUrl, { small: true });
   });
 }
 
-startServer('apotukar');
+startServer();

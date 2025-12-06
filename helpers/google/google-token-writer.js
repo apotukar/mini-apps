@@ -1,15 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
+import { CryptoTokenCipher } from '../crypto/crypto-token-cipher.js';
 
 export class GoogleTokenWriter {
   constructor(config = {}) {
     this.clientId = config.clientId || null;
     this.clientSecret = config.clientSecret || null;
     this.redirectUri = config.redirectUri || null;
-    this.tokensPath = path.join(process.cwd(), config.tokensPath || null);
+    this.tokensPath = path.join(process.cwd(), config.tokensPath || 'tokens/google');
 
-    // TODO: complete checks
+    if (!config.authTokenKey) {
+      throw new Error('authTokenKey (32-Byte Buffer) fehlt in der Config');
+    }
+    this.cryptoTokenCipher = new CryptoTokenCipher(config.authTokenKey);
+
     if (!this.clientId || !this.clientSecret) {
       throw new Error(
         'Client ID oder Client Secret fehlen! Setze sie entweder im Constructor {clientId, clientSecret} oder speichere sie in der token.json.'
@@ -18,7 +23,7 @@ export class GoogleTokenWriter {
 
     if (!fs.existsSync(this.tokensPath)) {
       fs.mkdirSync(this.tokensPath, { recursive: true });
-      console.log('Token-Verzeichnis erstellt:', this.tok);
+      console.log('Token-Verzeichnis erstellt:', this.tokensPath);
     }
   }
 
@@ -69,21 +74,18 @@ export class GoogleTokenWriter {
     const filePath = this._tokenFileForUser(userId, this.tokensPath);
     console.log('Token wird gespeichert unter:', filePath);
 
+    const payload = {
+      user_id: userId,
+      access_token: this.cryptoTokenCipher.encrypt(d.access_token),
+      created: Date.now()
+    };
+
+    if (d.refresh_token) {
+      payload.refresh_token = this.cryptoTokenCipher.encrypt(d.refresh_token);
+    }
+
     try {
-      fs.writeFileSync(
-        filePath,
-        JSON.stringify(
-          {
-            user_id: userId,
-            access_token: d.access_token,
-            refresh_token: d.refresh_token || null,
-            created: Date.now()
-          },
-          null,
-          2
-        ),
-        'utf8'
-      );
+      fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');
       console.log('Token erfolgreich gespeichert');
     } catch (err) {
       console.error('Fehler beim Schreiben:', err);

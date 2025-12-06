@@ -1,12 +1,4 @@
-import {
-  getFavorites,
-  saveFavorites,
-  clearFavorites,
-  getHideFlag,
-  setHideFlag,
-  clearHideFlag,
-  dedupeFavs
-} from '../helpers/favorites.js';
+import { FavoritesManager } from '../helpers/favs/favorites.js';
 
 import { buildJourneyView, findStation, fetchJourneys } from '../helpers/transport-service.js';
 
@@ -15,6 +7,7 @@ export function registerJourneyRoutes(app, params) {
   const config = params.config || {};
   const transportLabels = config.transportLabels || {};
   const favoritesNamespace = 'journey';
+  const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
 
@@ -30,12 +23,12 @@ export function registerJourneyRoutes(app, params) {
       }
       next();
     },
-    (req, res) => {
-      let favorites = getFavorites(req, favoritesNamespace);
-      if (!getHideFlag(req, favoritesNamespace)) {
-        favorites = dedupeFavs([...favorites, ...configFavorites]);
-        saveFavorites(res, favorites, favoritesNamespace);
-        setHideFlag(res, favoritesNamespace);
+    async (req, res) => {
+      let favorites = await favsManager.getFavorites(req);
+      if (!(await favsManager.getHideFlag(req))) {
+        favorites = favsManager.dedupeFavs([...favorites, ...configFavorites]);
+        await favsManager.saveFavorites(res, favorites);
+        await favsManager.setHideFlag(res);
       }
 
       const from = req.query.from || '';
@@ -69,12 +62,12 @@ export function registerJourneyRoutes(app, params) {
         toName = toStation.normalizedName;
       }
 
-      const favorites = dedupeFavs([
+      const favorites = favsManager.dedupeFavs([
         { from: fromName, to: toName },
-        ...getFavorites(req, favoritesNamespace)
+        ...(await favsManager.getFavorites(req))
       ]);
 
-      saveFavorites(res, favorites, favoritesNamespace);
+      await favsManager.saveFavorites(res, favorites);
 
       return res.redirect(
         `/journey?from=${encodeURIComponent(fromName)}&to=${encodeURIComponent(toName)}`
@@ -85,13 +78,13 @@ export function registerJourneyRoutes(app, params) {
     }
   });
 
-  app.get('/journey/clear-favs', (req, res) => {
-    clearFavorites(res, favoritesNamespace);
+  app.get('/journey/clear-favs', async (req, res) => {
+    await favsManager.clearFavorites(res);
     return res.redirect('/journey');
   });
 
-  app.get('/journey/show-config-favs', (req, res) => {
-    clearHideFlag(res, favoritesNamespace);
+  app.get('/journey/show-config-favs', async (req, res) => {
+    await favsManager.clearHideFlag(res);
     return res.redirect('/journey');
   });
 

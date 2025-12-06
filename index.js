@@ -20,6 +20,7 @@ import { viewBaseMarker, pageUrlMarker } from './helpers/routes/viewsupport.js';
 import { setupNunjucks } from './helpers/nunjucks-setup.js';
 import { loadConfig } from './helpers/config-loader.js';
 import { RedisManager } from './helpers/redis-manager.js';
+import { initEvents } from './helpers/events/init-events.js';
 
 import { registerHomeRoutes } from './apps/home.js';
 import { registerJourneyRoutes } from './apps/journey.js';
@@ -41,9 +42,10 @@ const config = loadConfig();
 const app = express();
 const viewExtConfig = { defaultViewExt: 'njk', ns4ViewExt: 'ns4' };
 setupNunjucks(app, { config: { modeEnv: config.modeEnv, ...viewExtConfig } });
+const dbClient = createDbClient(dbProfile, 'DB-Multi');
 const redisManager = new RedisManager(config);
 await redisManager.init();
-const dbClient = createDbClient(dbProfile, 'DB-Multi');
+app.locals.redis = redisManager.client;
 
 // ────────────────────────────────────────────────────────────
 // Middleware
@@ -118,15 +120,17 @@ registerDepartureRoutes(app, {
   }
 });
 
-// TODO: inject base path
 registerWeatherRoutes(app, { config: config.weather });
-registerTaskRoutes(app, { config: config.tasks, userId: config.singleUserId });
+registerTaskRoutes(app, {
+  config: { authTokenKey: config.authTokenKey, ...config.tasks }
+});
 registerNewsRoutes(app, { config: config.news });
 registerPOIRoutes(app, { config: config.pois });
 registerTrackRoutes(app, { config: config.track });
 registerJoplinRoutes(app, { config: config.joplin });
 registerBrowserRoutes(app, { config: config.browser });
-// TODO: add config
+initEvents({ routes: config.routes });
+// TODO: provide configuration
 registerAuthRoutes(app, { config: config.auth || {} });
 
 // ────────────────────────────────────────────────────────────

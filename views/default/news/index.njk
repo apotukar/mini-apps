@@ -24,11 +24,14 @@
       {% endfor %}
     </select>
 
+    {% if viewExt == 'ns4' %}
+    <input type="submit" value="Links neu laden">
+    {% else %}
     <button type="submit">Links neu laden</button>
+    {% endif %}
   </form>
 
-
-  <br
+  <br>
 
   <ul>
     {% for item in items %}

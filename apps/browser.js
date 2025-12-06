@@ -25,7 +25,9 @@ export function registerBrowserRoutes(app, params) {
 
   app.get('/browser/browse', async (req, res) => {
     const rawUrl = req.query.url;
-    if (!rawUrl) return res.redirect('/browser');
+    if (!rawUrl) {
+      return res.redirect('/browser');
+    }
 
     const url = browser.normalizeUrl(rawUrl);
 

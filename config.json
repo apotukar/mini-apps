@@ -7,101 +7,121 @@
     "password": "${BASIC_AUTH_PASS}"
   },
   "sessionSecret": "${SESSION_SECRET}",
-  "singleUserId": "${SINGLE_USER_ID}",
+  "authTokenKey": "${AUTH_TOKEN_KEY}",
   "redis": {
     "host": "${REDIS_HOST}",
     "port": "${REDIS_PORT}"
   },
   "routes": [
     {
+      "name": "journey",
       "path": "/journey",
       "label": "Journey App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": true
     },
     {
+      "name": "departures",
       "path": "/departures",
       "label": "Departures App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": true
     },
     {
+      "name": "weather",
       "path": "/weather",
       "label": "Weather App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": true
     },
     {
+      "name": "tasks",
       "path": "/tasks",
       "label": "Tasks App",
       "isBasicAuth": false,
       "requiresLogin": true,
       "roles": [],
       "scheme": ["https"],
-      "forceHttpsRedirect": true
+      "forceHttpsRedirect": true,
+      "hasFavorites": false
     },
     {
+      "name": "news",
       "path": "/news",
       "label": "News App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": false
     },
     {
+      "name": "poi",
       "path": "/pois",
       "label": "POIs App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": false
     },
     {
+      "name": "track",
       "path": "/track",
       "label": "Track App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": true
     },
     {
+      "name": "joplin",
       "path": "/joplin",
       "label": "Joplin App",
       "isBasicAuth": false,
       "requiresLogin": true,
       "roles": ["joplin"],
       "scheme": ["https"],
-      "forceHttpsRedirect": true
+      "forceHttpsRedirect": true,
+      "hasFavorites": false
     },
     {
+      "name": "browser",
       "path": "/browser",
       "label": "Browser App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["http", "https"],
-      "forceHttpsRedirect": false
+      "forceHttpsRedirect": false,
+      "hasFavorites": false
     },
     {
+      "name": "auth",
       "path": "/auth",
       "label": "Auth App",
       "isBasicAuth": false,
       "requiresLogin": false,
       "roles": [],
       "scheme": ["https"],
-      "forceHttpsRedirect": true
+      "forceHttpsRedirect": true,
+      "hasFavorites": false
     }
   ],
   "transport": {

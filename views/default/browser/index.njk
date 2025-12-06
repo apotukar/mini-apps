@@ -7,8 +7,12 @@
 {% block content %}
   <div class="ns-toolbar">
     <form class="ns-address" action="/browser/browse" method="get">
-      <input type="text" name="url" value="{{ url }}" placeholder="Adresse eingeben…" class="ns-input">
+      <input type="text" name="url" value="{{ url }}" placeholder="Adresse eingeben…" class="ns-input"  {% if viewExt == 'ns4' %}size="100%"{% endif %}>
+      {% if viewExt == 'ns4' %}
+      <input type="submit" value="Los" class="ns-btn">
+      {% else %}
       <button type="submit" class="ns-btn">Los</button>
+      {% endif %}
     </form>
     <div class="ns-actions">
       {% if canGoBack %}
@@ -20,6 +24,7 @@
       {% if canGoHome %}
         <a href="/browser/home" class="ns-btn">Home</a>
       {% endif %}
+      <a href="/" class="ns-btn">Beenden</a>
     </div>
   </div>
 

@@ -1,4 +1,6 @@
 import { loadUsers, findUser } from '../helpers/users.js';
+import { loginObservable } from '../helpers/events/login-observable.js';
+import { logoutObservable } from '../helpers/events/logout-observable.js';
 
 export function registerAuthRoutes(app, params = {}) {
   const basePath = params.basePath || '/auth';
@@ -53,6 +55,8 @@ export function registerAuthRoutes(app, params = {}) {
         roles: user.roles || []
       };
 
+      await loginObservable.notify({ req, res, user });
+
       if (req.session?.user) {
         return res.redirect(redirectTo);
       }
@@ -76,7 +80,8 @@ export function registerAuthRoutes(app, params = {}) {
     });
   });
 
-  app.get(`${basePath}/logout`, (req, res) => {
+  app.get(`${basePath}/logout`, async (req, res) => {
+    await logoutObservable.notify({ req, res });
     req.session?.destroy(() => {
       res.redirect('/');
     });

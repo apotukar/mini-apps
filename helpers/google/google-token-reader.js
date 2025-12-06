@@ -1,15 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
+import { CryptoTokenCipher } from '../crypto/crypto-token-cipher.js';
 
 export class GoogleTokenReader {
   constructor(config = {}) {
     this.clientId = config.clientId || null;
     this.clientSecret = config.clientSecret || null;
-    this.tokensPath = path.join(process.cwd(), config.tokensPath || null);
+    this.tokensPath = path.join(process.cwd(), config.tokensPath || 'tokens/google');
     this.autoLoadClientSecrets = config.autoLoadClientSecrets ?? true;
 
-    // TODO: complete checks
+    if (!config.authTokenKey) {
+      throw new Error('authTokenKey (32-Byte Buffer) fehlt in der Config');
+    }
+    this.cryptoTokenCipher = new CryptoTokenCipher(config.authTokenKey);
+
     if (!this.clientId || !this.clientSecret) {
       throw new Error(
         'Client ID oder Client Secret fehlen! Setze sie entweder im Constructor {clientId, clientSecret} oder speichere sie in der token.json.'
@@ -30,7 +35,17 @@ export class GoogleTokenReader {
       }
 
       const raw = fs.readFileSync(file, 'utf8');
-      return JSON.parse(raw);
+      const tokens = JSON.parse(raw);
+
+      if (tokens.access_token) {
+        tokens.access_token = this.cryptoTokenCipher.decrypt(tokens.access_token);
+      }
+
+      if (tokens.refresh_token) {
+        tokens.refresh_token = this.cryptoTokenCipher.decrypt(tokens.refresh_token);
+      }
+
+      return tokens;
     } catch (err) {
       throw new Error(`Fehler beim Lesen der Token-Datei für User "${userId}": ${err.message}`);
     }
@@ -39,8 +54,18 @@ export class GoogleTokenReader {
   saveTokens(userId, tokens) {
     const file = this.tokenFile(userId);
 
+    const toSave = { ...tokens };
+
+    if (toSave.access_token) {
+      toSave.access_token = this.cryptoTokenCipher.encrypt(toSave.access_token);
+    }
+
+    if (toSave.refresh_token) {
+      toSave.refresh_token = this.cryptoTokenCipher.encrypt(toSave.refresh_token);
+    }
+
     try {
-      fs.writeFileSync(file, JSON.stringify(tokens, null, 2), 'utf8');
+      fs.writeFileSync(file, JSON.stringify(toSave, null, 2), 'utf8');
       return file;
     } catch (err) {
       throw new Error(`Fehler beim Schreiben der Token-Datei für User "${userId}": ${err.message}`);

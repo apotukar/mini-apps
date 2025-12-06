@@ -5,7 +5,8 @@ export function registerTaskRoutes(app, params) {
   const tokenReader = new GoogleTokenReader({
     clientId: params.config.clientId,
     clientSecret: params.config.clientSecret,
-    tokensPath: params.config.tokensPath
+    tokensPath: params.config.tokensPath,
+    authTokenKey: params.config.authTokenKey
   });
 
   app.get('/tasks', async (req, res) => {

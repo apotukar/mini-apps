@@ -1,13 +1,4 @@
-import {
-  getFavorites,
-  saveFavorites,
-  clearFavorites,
-  getHideFlag,
-  clearHideFlag,
-  dedupeFavs,
-  setHideFlag
-} from '../helpers/favorites.js';
-
+import { FavoritesManager } from '../helpers/favs/favorites.js';
 import { buildDeparturesView, findStation } from '../helpers/transport-service.js';
 
 export function registerDepartureRoutes(app, params) {
@@ -16,15 +7,16 @@ export function registerDepartureRoutes(app, params) {
   const transportLabels = config.transportLabels || {};
   const transportCssTypeAppendices = config.transportCssTypeAppendices || {};
   const favoritesNamespace = 'departures';
+  const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Object.values(config.favorites).flat() || [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
 
-  app.get('/departures', (req, res) => {
-    let favorites = getFavorites(req, favoritesNamespace);
-    if (!getHideFlag(req, favoritesNamespace)) {
-      favorites = dedupeFavs([...favorites, ...configFavorites]);
-      saveFavorites(res, favorites, favoritesNamespace);
-      setHideFlag(res, favoritesNamespace);
+  app.get('/departures', async (req, res) => {
+    let favorites = await favsManager.getFavorites(req);
+    if (!(await favsManager.getHideFlag(req))) {
+      favorites = favsManager.dedupeFavs([...favorites, ...configFavorites]);
+      await favsManager.saveFavorites(res, favorites);
+      await favsManager.setHideFlag(res);
     }
 
     const station = req.query.station || '';
@@ -49,20 +41,20 @@ export function registerDepartureRoutes(app, params) {
       stationName = station.normalizedName;
     }
 
-    let favorites = getFavorites(req, favoritesNamespace);
-    favorites = dedupeFavs([stationName, ...favorites]);
-    saveFavorites(res, favorites, favoritesNamespace);
+    let favorites = await favsManager.getFavorites(req);
+    favorites = favsManager.dedupeFavs([stationName, ...favorites]);
+    await favsManager.saveFavorites(res, favorites);
 
     return res.redirect(`/departures?station=${encodeURIComponent(stationName)}`);
   });
 
-  app.get('/departures/clear-favs', (req, res) => {
-    clearFavorites(res, favoritesNamespace);
+  app.get('/departures/clear-favs', async (req, res) => {
+    await favsManager.clearFavorites(res);
     return res.redirect('/departures');
   });
 
-  app.get('/departures/show-config-favs', (req, res) => {
-    clearHideFlag(res, favoritesNamespace);
+  app.get('/departures/show-config-favs', async (req, res) => {
+    await favsManager.clearHideFlag(res);
     return res.redirect('/departures');
   });
 
