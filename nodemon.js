@@ -10,7 +10,7 @@ const minifyConfig = JSON.parse(fs.readFileSync(path.join(rootDir, 'minify.confi
 
 nodemon({
   ...nodemonConfig,
-  script: 'index.js'
+  script: 'app.js'
 });
 
 function minifyFile(file) {

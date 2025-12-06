@@ -45,6 +45,6 @@ RUN SHFMT_VERSION=v3.12.0 \
 
 RUN npm install -g npm@latest
 ENV PUPPETEER_CACHE_DIR=/tmp/puppeteer-cache
-RUN npx puppeteer install chrome
+RUN npx puppeteer browsers install chrome
 
-CMD ["node", "index.js"]
+CMD ["node", "app.js"]

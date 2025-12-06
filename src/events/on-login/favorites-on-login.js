@@ -1,4 +1,4 @@
-import { FavoritesManager } from '../../favs/favorites.js';
+import { FavoritesManager } from '../../lib/favs/favorites.js';
 
 export function createMergeFavoritesOnLogin(config = {}) {
   const { routes } = config;

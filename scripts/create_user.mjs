@@ -2,7 +2,7 @@
 
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createUser } from '../helpers/users.js';
+import { UserStore } from '../src/lib/user-store.js';
 
 async function main() {
   const rl = readline.createInterface({ input, output });
@@ -18,7 +18,8 @@ async function main() {
     .map(r => r.trim())
     .filter(Boolean);
 
-  const user = await createUser(username, password, roles);
+  const userStore = new UserStore();
+  const user = await userStore.createUser(username, password, roles);
 
   console.log('User angelegt:');
   console.log(JSON.stringify(user, null, 2));

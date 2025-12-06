@@ -1,4 +1,4 @@
-import { createJoplinService } from '../helpers/joplin-service.js';
+import { createJoplinService } from '../services/joplin-service.js';
 
 export function registerJoplinRoutes(app, params) {
   const joplin = createJoplinService(params.config);

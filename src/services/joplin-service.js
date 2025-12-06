@@ -3,7 +3,7 @@ import https from 'https';
 import fs from 'fs/promises';
 import path from 'path';
 import mime from 'mime-types';
-import { renderMarkdown } from '../helpers/markdown-joplin.js';
+import { renderMarkdown } from '../lib/markdown-joplin.js';
 
 export function createJoplinService(config) {
   const { webdavUrl, secret, preferredNotebooks, cacheDir } = config;

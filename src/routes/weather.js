@@ -1,4 +1,4 @@
-import { FavoritesManager } from '../helpers/favs/favorites.js';
+import { FavoritesManager } from '../lib/favs/favorites.js';
 
 export function registerWeatherRoutes(app, params) {
   const config = params.config || {};

@@ -229,7 +229,7 @@
   },
   "joplin": {
     "webdavUrl": "https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin",
-    "cacheDir": "${CACHE_DIR}/joplin",
+    "cacheDir": "${DATA_DIR}/cache/joplin",
     "preferredNotebooks": ["Notizen"],
     "secret": {
       "username": "${JOPLIN_USER}",
@@ -273,8 +273,8 @@
   "pois": {
     "zoom": 16,
     "tiles": 3,
-    "emergencyPharmaciesCacheDir": "${CACHE_DIR}/emergency-pharmacies",
-    "reverseGeocodingCacheDir": "${CACHE_DIR}/reverse-search",
+    "emergencyPharmaciesCacheDir": "${DATA_DIR}/cache/emergency-pharmacies",
+    "reverseGeocodingCacheDir": "${DATA_DIR}/cache/reverse-search",
     "reverseGeocodingKey": "${REVERSE_GEOCODING_KEY}",
     "types": {
       "bank": { "label": "Bank", "query": "amenity=bank" },
@@ -310,7 +310,7 @@
   "tasks": {
     "clientId": "${GOOGLE_CLIENT_ID}",
     "clientSecret": "${GOOGLE_CLIENT_SECRET}",
-    "tokensPath": ".data/gtokens"
+    "tokensPath": "data/gtokens"
   },
   "browser": {
     "timeout": 120000,

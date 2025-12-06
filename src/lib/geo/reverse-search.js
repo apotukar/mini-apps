@@ -1,7 +1,7 @@
 import path from 'path';
 import { SimpleFileCache } from '../cache.js';
 
-export class ReverseGeocodeService {
+export class ReverseGeocodeSearch {
   constructor(options = {}) {
     const {
       cacheDir = '/tmp/cache/reverse-search',
@@ -27,7 +27,7 @@ export class ReverseGeocodeService {
 
   async reverseSearch(lat, lon) {
     if (!this.apiKey) {
-      throw new Error('Missing API key for ReverseGeocodeService.');
+      throw new Error('Missing API key for ReverseGeocodeSearch.');
     }
 
     const cacheKey = `lat-${lat}-lon-${lon}`;

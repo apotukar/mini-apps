@@ -1,5 +1,5 @@
-import { FavoritesManager } from '../helpers/favs/favorites.js';
-import { fetchShipment } from '../helpers/tracking/dhl.js';
+import { FavoritesManager } from '../lib/favs/favorites.js';
+import { fetchShipment } from '../lib/tracking/dhl.js';
 
 export function registerTrackRoutes(app, params) {
   const config = params.config;

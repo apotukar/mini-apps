@@ -1,16 +1,17 @@
-import { loadUsers, findUser } from '../helpers/users.js';
+import { UserStore } from '../lib/user-store.js';
 
 export function registerAuthRoutes(app, params = {}) {
+  console.log(params);
   const name = params.config.name || 'auth';
   const basePath = params.config.basePath || '/auth';
   const loginView = `${name}/login.njk`;
   const profileView = `${name}/profile.njk`;
   const errorView = 'common/error.njk';
 
-  const onLoginObservable = params.onLoginObservable;
-  const onLogoutObservable = params.onLogoutObservable;
+  const onLogin = params.onLogin;
+  const onLogout = params.onLogout;
 
-  let users = loadUsers();
+  const userStore = new UserStore();
 
   app.get(`${basePath}/login`, (req, res) => {
     const redirectTo = getSafeRedirect(req, `${basePath}/profile`);
@@ -41,7 +42,9 @@ export function registerAuthRoutes(app, params = {}) {
     }
 
     try {
-      const user = await findUser(users, username, password);
+      console.log('Waiting for userStore.findUser');
+      const user = await userStore.findUser(username, password);
+      console.log('USER', user);
       if (!user) {
         return res.status(401).render(loginView, {
           basePath,
@@ -58,8 +61,8 @@ export function registerAuthRoutes(app, params = {}) {
         roles: user.roles || []
       };
 
-      if (onLoginObservable) {
-        await onLoginObservable.notifyAll({ req, res, user });
+      if (onLogin) {
+        await onLogin.notifyAll({ req, res, user });
       }
 
       if (req.session?.user) {
@@ -86,18 +89,13 @@ export function registerAuthRoutes(app, params = {}) {
   });
 
   app.get(`${basePath}/logout`, async (req, res) => {
-    if (onLogoutObservable) {
-      await onLogoutObservable.notifyAll({ req, res });
+    if (onLogout) {
+      await onLogout.notifyAll({ req, res });
     }
 
     req.session?.destroy(() => {
       res.redirect('/');
     });
-  });
-
-  app.post(`${basePath}/reload-users`, async (req, res) => {
-    users = loadUsers();
-    res.redirect(`${basePath}/login`);
   });
 }
 

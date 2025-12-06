@@ -1,9 +1,12 @@
 import fetch from 'node-fetch';
-import { ReverseGeocodeService } from './reverse-search.js';
-import { mapAsyncFlexible } from '../map-async-flexible.js';
+import { ReverseGeocodeSearch } from '../lib/geo/reverse-search.js';
+import { mapAsyncFlexible } from '../lib/map-async-flexible.js';
 
 // TODO: create class and inject reverseGeocodingCache
-const reverseGeocodeService = new ReverseGeocodeService({ cacheDir: '.data/cache/reverse-search' });
+const reverseGeocodeSearch = new ReverseGeocodeSearch({
+  cacheDir: 'data/cache/reverse-search',
+  apiKey: process.env.REVERSE_GEOCODING_KEY
+});
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 export async function searchPOIs(types, type, loc, radiusInMeters, apiKey) {
@@ -67,11 +70,7 @@ export async function searchPOIs(types, type, loc, radiusInMeters, apiKey) {
     async result => {
       if (!result.address && result.lat !== null && result.lon !== null) {
         try {
-          result.address = await reverseGeocodeService.reverseSearch(
-            result.lat,
-            result.lon,
-            apiKey
-          );
+          result.address = await reverseGeocodeSearch.reverseSearch(result.lat, result.lon, apiKey);
           result.isFallbackAddress = true;
           return result;
         } catch (error) {

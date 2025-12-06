@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { GoogleTokenReader } from '../helpers/google/google-token-reader.js';
+import { GoogleTokenReader } from '../lib/google/google-token-reader.js';
 
 export function registerTaskRoutes(app, params) {
   const tokenReader = new GoogleTokenReader({

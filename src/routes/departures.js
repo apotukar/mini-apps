@@ -1,5 +1,5 @@
-import { FavoritesManager } from '../helpers/favs/favorites.js';
-import { buildDeparturesView, findStation } from '../helpers/transport-service.js';
+import { FavoritesManager } from '../lib/favs/favorites.js';
+import { buildDeparturesView, findStation } from '../services/transport-service.js';
 
 export function registerDepartureRoutes(app, params) {
   const client = params.client;

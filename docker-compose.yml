@@ -24,8 +24,6 @@ services:
           npm run watch
         elif [ "$MODE_ENV" = "PROD" ]; then
           npm run start
-        elif [ "$MODE_ENV" = "INIT" ]; then
-          npm run create-tokens
         else
           echo "Unknown MODE_ENV: $MODE_ENV"
           exit 1

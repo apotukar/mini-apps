@@ -1,7 +1,7 @@
-import { searchPOIs } from '../helpers/geo/poi-service.js';
-import { PoiEmergencyPharmacyService } from '../helpers/geo/poi-emergency-pharmacy-service.js';
-import { geocodePlace } from '../helpers/geo/geocode.js';
-import { generateStaticMap } from '../helpers/geo/map-generator.js';
+import { searchPOIs } from '../services/poi-service.js';
+import { PoiEmergencyPharmacyService } from '../services/poi-emergency-pharmacy-service.js';
+import { geocodePlace } from '../lib/geo/geocode.js';
+import { generateStaticMap } from '../lib/geo/map-generator.js';
 
 export function registerPOIRoutes(app, params) {
   const config = params.config;

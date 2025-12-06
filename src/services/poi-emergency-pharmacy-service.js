@@ -1,8 +1,8 @@
 import path from 'path';
 import puppeteer from 'puppeteer';
-import { getRandomBrowserProfile } from '../browser/browser-profiles.js';
-import { geocodePlace } from './geocode.js';
-import { SimpleFileCache } from '../cache.js';
+import { getRandomBrowserProfile } from '../lib/browser/browser-profiles.js';
+import { geocodePlace } from '../lib/geo/geocode.js';
+import { SimpleFileCache } from '../lib/cache.js';
 
 export class PoiEmergencyPharmacyService {
   constructor(options = {}) {

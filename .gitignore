@@ -6,11 +6,13 @@
 certs/
 
 # Build/Data/Cache/Config
-.data
+data
+backup
 node_modules
 
 # IDE
 .idea
+.vscode
 
 # Generated assets
 *.min.css

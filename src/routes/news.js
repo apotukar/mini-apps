@@ -1,4 +1,4 @@
-import { fetchAllFeeds } from '../helpers/feeds-service.js';
+import { fetchAllFeeds } from '../services/feeds-service.js';
 
 export function registerNewsRoutes(app, params) {
   const config = {

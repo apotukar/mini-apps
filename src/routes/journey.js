@@ -1,6 +1,6 @@
-import { FavoritesManager } from '../helpers/favs/favorites.js';
+import { FavoritesManager } from '../lib/favs/favorites.js';
 
-import { buildJourneyView, findStation, fetchJourneys } from '../helpers/transport-service.js';
+import { buildJourneyView, findStation, fetchJourneys } from '../services/transport-service.js';
 
 export function registerJourneyRoutes(app, params) {
   const client = params.client;
