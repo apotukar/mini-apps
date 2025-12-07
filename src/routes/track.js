@@ -12,7 +12,6 @@ export function registerTrackRoutes(app, params) {
     const viewExt = res.locals.viewExt || '';
     const indexPage = `track/index.${viewExt}`;
     let trackingNumbers = (await favsManager.getFavorites(req)) || [];
-    console.log('Tracking numbers:', trackingNumbers);
 
     if (!trackingNumber) {
       res.render(indexPage, {

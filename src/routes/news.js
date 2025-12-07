@@ -1,4 +1,4 @@
-import { fetchAllFeeds } from '../services/feeds-service.js';
+import { FeedService } from '../services/feeds-service.js';
 
 export function registerNewsRoutes(app, params) {
   const config = {
@@ -10,6 +10,8 @@ export function registerNewsRoutes(app, params) {
     browserProxies: ['/browser/browse?url='],
     ...(params.config || {})
   };
+
+  const feedService = new FeedService();
 
   app.get('/news', async (req, res) => {
     const protocol = req.protocol;
@@ -28,7 +30,7 @@ export function registerNewsRoutes(app, params) {
     const browserProxy = req.query.proxy || null;
 
     try {
-      const { items, errors } = await fetchAllFeeds(
+      const { items, errors } = await feedService.fetchAllFeeds(
         config.feeds,
         config.limit,
         config.totalLimit,

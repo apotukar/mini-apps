@@ -1,6 +1,5 @@
 import { FavoritesManager } from '../lib/favs/favorites.js';
-
-import { buildJourneyView, findStation, fetchJourneys } from '../services/transport-service.js';
+import { TransportService } from '../services/transport-service.js';
 
 export function registerJourneyRoutes(app, params) {
   const client = params.client;
@@ -10,6 +9,8 @@ export function registerJourneyRoutes(app, params) {
   const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
+
+  const transportService = new TransportService(client, transportLabels, null);
 
   app.get(
     '/journey',
@@ -55,10 +56,10 @@ export function registerJourneyRoutes(app, params) {
       let toName = rawToName;
 
       if (configSaveNormalizedFavName) {
-        const fromStation = await findStation(client, rawFromName);
+        const fromStation = await transportService.findStation(client, rawFromName);
         fromName = fromStation.normalizedName;
 
-        const toStation = await findStation(client, rawToName);
+        const toStation = await transportService.findStation(client, rawToName);
         toName = toStation.normalizedName;
       }
 
@@ -131,61 +132,62 @@ export function registerJourneyRoutes(app, params) {
       });
     };
   }
-}
 
-async function handleJourneySearch({
-  res,
-  client,
-  fromName: rawFromName,
-  toName: rawToName,
-  departure,
-  earlierThan,
-  laterThan,
-  transportLabels
-}) {
-  try {
-    if (!rawFromName || !rawToName) {
-      return res.redirect('/journey');
-    }
+  async function handleJourneySearch({
+    res,
+    client,
+    fromName: rawFromName,
+    toName: rawToName,
+    departure,
+    earlierThan,
+    laterThan,
+    transportLabels
+  }) {
+    try {
+      if (!rawFromName || !rawToName) {
+        return res.redirect('/journey');
+      }
 
-    const fromStation = await findStation(client, rawFromName);
-    const toStation = await findStation(client, rawToName);
-    // TODO: decline nonsensical station input names
-    // console.log('stations', fromStation, toStation);
-    const options = { results: 5 };
+      const fromStation = await transportService.findStation(client, rawFromName);
+      const toStation = await transportService.findStation(client, rawToName);
+      // TODO: decline nonsensical station input names
+      const options = { results: 5 };
 
-    if (earlierThan) {
-      options.earlierThan = earlierThan;
-    } else if (laterThan) {
-      options.laterThan = laterThan;
-    } else if (departure) {
-      options.departure = departure;
-    }
+      if (earlierThan) {
+        options.earlierThan = earlierThan;
+      } else if (laterThan) {
+        options.laterThan = laterThan;
+      } else if (departure) {
+        options.departure = departure;
+      }
 
-    const data = await fetchJourneys(client, fromStation, toStation, options);
-    const journeys = data.journeys || [];
+      const data = await transportService.fetchJourneys(client, fromStation, toStation, options);
+      const journeys = data.journeys || [];
 
-    if (!journeys.length) {
-      return res.render('journey/no-results.njk', {
-        fromName: rawFromName,
-        toName: rawToName
+      if (!journeys.length) {
+        return res.render('journey/no-results.njk', {
+          fromName: rawFromName,
+          toName: rawToName
+        });
+      }
+
+      const journeysView = journeys
+        .map((journey, i) =>
+          transportService.buildJourneyView(journey.legs || [], i, transportLabels)
+        )
+        .filter(Boolean);
+
+      return res.render('journey/results.njk', {
+        fromName: fromStation.normalizedName,
+        toName: toStation.normalizedName,
+        journeys: journeysView,
+        earlierRef: data.earlierRef || null,
+        laterRef: data.laterRef || null
+      });
+    } catch (err) {
+      return res.render('journey/error.njk', {
+        message: err.message
       });
     }
-
-    const journeysView = journeys
-      .map((journey, i) => buildJourneyView(journey.legs || [], i, transportLabels))
-      .filter(Boolean);
-
-    return res.render('journey/results.njk', {
-      fromName: fromStation.normalizedName,
-      toName: toStation.normalizedName,
-      journeys: journeysView,
-      earlierRef: data.earlierRef || null,
-      laterRef: data.laterRef || null
-    });
-  } catch (err) {
-    return res.render('journey/error.njk', {
-      message: err.message
-    });
   }
 }

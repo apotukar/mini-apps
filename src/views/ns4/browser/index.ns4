@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title | escape }}</title>
+
+  <style type="text/css">
+    body {
+     font-size: {{ fontSize }};
+     font-family: {{ fontFamily }};
+    }
+    ul {
+      list-style-type: none;
+    }
+    @media screen and (max-width: 9000px) {
+      body {
+        margin: 0;
+        padding: 10px;
+      }
+      table {
+        width: 100%;
+        max-width: 100%;
+        border-collapse: collapse;
+      }
+      .browser-url {
+        width: 80%;
+        max-width: 600px;
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<font face="{{ fontFamily }}" si>
+
+{# ------------------------- Toolbar ------------------------- #}
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td align="left" width="100%">
+      <form action="/browser/browse" method="get">
+        <input class="browser-url"
+               type="text"
+               name="url"
+               size="120"
+               value="{{ url | default('') | escape }}">
+        <input type="submit" value="Öffnen">
+      </form>
+    </td>
+
+    <td align="left" valign="middle">
+      <form action="/browser/search" method="get"
+            onsubmit="this.url.value = document.getElementsByTagName('form')[0].elements[0].value;">
+        <input type="hidden" name="url">
+        <input type="submit" value="Suchen">
+      </form>
+    </td>
+
+    <td align="right" valign="middle">
+      <form action="/" method="get">
+        <input type="submit" value="Schließen">
+      </form>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+{# ---------------------- Page Content ----------------------- #}
+
+{% set hasUrl = url and url != '' %}
+{% set headerBg = fallbackColor %}
+{% set navBg = fallbackColor %}
+
+{% if isSearch %}
+  {% include "browser/partials/search.ns4" %}
+{% else %}
+  {% include "browser/partials/browse.ns4" %}
+{% endif %}
+
+</font>
+</body>
+</html>

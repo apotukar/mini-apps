@@ -1,5 +1,5 @@
 import { FavoritesManager } from '../lib/favs/favorites.js';
-import { buildDeparturesView, findStation } from '../services/transport-service.js';
+import { TransportService } from '../services/transport-service.js';
 
 export function registerDepartureRoutes(app, params) {
   const client = params.client;
@@ -10,6 +10,12 @@ export function registerDepartureRoutes(app, params) {
   const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Object.values(config.favorites).flat() || [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
+
+  const transportService = new TransportService(
+    client,
+    transportLabels,
+    transportCssTypeAppendices
+  );
 
   app.get('/departures', async (req, res) => {
     let favorites = await favsManager.getFavorites(req);
@@ -37,7 +43,7 @@ export function registerDepartureRoutes(app, params) {
     let stationName = rawStationName;
 
     if (configSaveNormalizedFavName) {
-      const station = await findStation(client, rawStationName);
+      const station = await transportService.findStation(client, rawStationName);
       stationName = station.normalizedName;
     }
 
@@ -85,7 +91,7 @@ export function registerDepartureRoutes(app, params) {
         // const displayName = station.normalizedName || station.name || stationNameInput;
 
         const when = getWhen ? getWhen(req) : undefined;
-        const view = await buildDeparturesView(
+        const view = await transportService.buildDeparturesView(
           client,
           transportLabels,
           transportCssTypeAppendices,
@@ -103,6 +109,7 @@ export function registerDepartureRoutes(app, params) {
 
         return res.render('departures/results.njk', view);
       } catch (err) {
+        console.error(err);
         return res.render('departures/error.njk', { message: err.message });
       }
     };

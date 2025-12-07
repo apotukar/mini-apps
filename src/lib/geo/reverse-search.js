@@ -43,8 +43,6 @@ export class ReverseGeocodeSearch {
     url.searchParams.set('format', 'json');
 
     for (let i = 0; i <= this.retries; i++) {
-      console.log('Trying reverse geocode:', url.toString());
-
       const res = await fetch(url.toString());
 
       if (res.ok) {

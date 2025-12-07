@@ -1,0 +1,27 @@
+<table width="100%" cellpadding="6" cellspacing="0" border="0">
+
+  {# Header Row #}
+  <tr>
+    <tdalign="center" bgcolor="{{ headerBg }}">
+      <h1>{{ title | escape }}</h1>
+      <small>
+        {% if hasUrl %}
+          Original: {{ url | escape }}
+        {% else %}
+          Bitte gib eine URL ein.
+        {% endif %}
+      </small>
+      <hr>
+    </td>
+  </tr>
+
+  {# Navigation + Content #}
+  {% if hasUrl %}
+  <tr>
+    <td width="78%" valign="top">
+      {{ contentHtml | safe }}
+    </td>
+  </tr>
+  {% endif %}
+
+</table>

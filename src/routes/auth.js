@@ -1,7 +1,6 @@
 import { UserStore } from '../lib/user-store.js';
 
 export function registerAuthRoutes(app, params = {}) {
-  console.log(params);
   const name = params.config.name || 'auth';
   const basePath = params.config.basePath || '/auth';
   const loginView = `${name}/login.njk`;
@@ -42,9 +41,7 @@ export function registerAuthRoutes(app, params = {}) {
     }
 
     try {
-      console.log('Waiting for userStore.findUser');
       const user = await userStore.findUser(username, password);
-      console.log('USER', user);
       if (!user) {
         return res.status(401).render(loginView, {
           basePath,

@@ -5,12 +5,12 @@ import { geocodePlace } from '../lib/geo/geocode.js';
 import { SimpleFileCache } from '../lib/cache.js';
 
 export class PoiEmergencyPharmacyService {
-  constructor(options = {}) {
+  constructor(config = {}) {
     const {
       cacheDir = '/tmp/cache/emergency-pharmacies',
       ttl = 1000 * 60 * 60 * 12,
       geocodeFn = geocodePlace
-    } = options;
+    } = config;
 
     const resolvedCacheDir = path.isAbsolute(cacheDir)
       ? cacheDir
@@ -27,15 +27,15 @@ export class PoiEmergencyPharmacyService {
   async getEmergencyPharmacies(plz = '81675') {
     const cached = await this.cache.read(plz);
     if (cached) {
-      return this.mapEmergencyPharmaciesToPois(cached.pharmacies);
+      return this.#mapEmergencyPharmaciesToPois(cached.pharmacies);
     }
 
-    const fresh = await this.scrape(plz);
+    const fresh = await this.#scrape(plz);
     await this.cache.write(plz, fresh);
-    return this.mapEmergencyPharmaciesToPois(fresh.pharmacies);
+    return this.#mapEmergencyPharmaciesToPois(fresh.pharmacies);
   }
 
-  async scrape(plz) {
+  async #scrape(plz) {
     const profile = getRandomBrowserProfile();
     const url = `https://www.aponet.de/apotheke/notdienstsuche/${plz}`;
     const browser = await puppeteer.launch({
@@ -111,7 +111,7 @@ export class PoiEmergencyPharmacyService {
     return result;
   }
 
-  async mapEmergencyPharmaciesToPois(pharmacies) {
+  async #mapEmergencyPharmaciesToPois(pharmacies) {
     const result = [];
     for (const p of pharmacies) {
       const street = p?.address?.street ?? null;
@@ -123,7 +123,7 @@ export class PoiEmergencyPharmacyService {
       let lat = null;
       let lon = null;
       if (address) {
-        const cleanAddress = this.sanitizeAddress(address);
+        const cleanAddress = this.#sanitizeAddress(address);
         const geo = await this.geocodeFn(cleanAddress);
 
         if (geo?.lat && geo?.lon) {
@@ -145,7 +145,7 @@ export class PoiEmergencyPharmacyService {
     return result;
   }
 
-  sanitizeAddress(address) {
+  #sanitizeAddress(address) {
     return address
       .replace(/\b\d+\.*\s*UG\b/gi, '')
       .replace(/im\s+Ostbahnhof/gi, '')

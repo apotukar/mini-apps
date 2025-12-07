@@ -1,78 +1,82 @@
 import Parser from 'rss-parser';
-const parser = new Parser();
 
-function stripImages(html) {
-  if (!html) {
-    return '';
-  }
-  let cleaned = html.replace(/<img[^>]*>/gi, '');
-  cleaned = cleaned.replace(/https?:\/\/\S+\.(jpg|jpeg|png|gif)/gi, '');
-  return cleaned;
-}
-
-export async function fetchAllFeeds(feeds, limit, totalLimit, browserProxy) {
-  const results = [];
-  const errors = [];
-
-  const feedList = [];
-
-  if (Array.isArray(feeds)) {
-    for (const url of feeds) {
-      feedList.push({ url, priority: 999 });
-    }
-  } else if (feeds && typeof feeds === 'object') {
-    for (const [url, priority] of Object.entries(feeds)) {
-      feedList.push({ url, priority: Number(priority) || 999 });
-    }
+export class FeedService {
+  constructor() {
+    this.parser = new Parser();
   }
 
-  const promises = feedList.map(({ url, priority }) =>
-    fetchFeed(url, limit, browserProxy, priority)
-      .then(items => items)
-      .catch(err => {
-        errors.push({ url, message: err.message });
-        return [];
-      })
-  );
+  async fetchAllFeeds(feeds, limit, totalLimit, browserProxy) {
+    const results = [];
+    const errors = [];
+    const feedList = [];
 
-  const allItems = await Promise.all(promises);
-
-  for (const items of allItems) {
-    results.push(...items);
-  }
-
-  results.sort((a, b) => {
-    const prioA = a.priority ?? 999;
-    const prioB = b.priority ?? 999;
-    if (prioA !== prioB) {
-      return prioA - prioB;
+    if (Array.isArray(feeds)) {
+      for (const url of feeds) {
+        feedList.push({ url, priority: 999 });
+      }
+    } else if (feeds && typeof feeds === 'object') {
+      for (const [url, priority] of Object.entries(feeds)) {
+        feedList.push({ url, priority: Number(priority) || 999 });
+      }
     }
-    return new Date(b.date) - new Date(a.date);
-  });
 
-  return {
-    items: totalLimit ? results.slice(0, totalLimit) : results,
-    errors
-  };
-}
+    const promises = feedList.map(({ url, priority }) =>
+      this.#fetchFeed(url, limit, browserProxy, priority)
+        .then(items => items)
+        .catch(err => {
+          errors.push({ url, message: err.message });
+          return [];
+        })
+    );
 
-async function fetchFeed(url, limit = 10, browserProxy, priority = 999) {
-  const feed = await parser.parseURL(url);
+    const allItems = await Promise.all(promises);
 
-  return feed.items.slice(0, limit).map(item => {
-    const originalLink = item.link;
-    const link =
-      browserProxy && originalLink
-        ? `${browserProxy}${encodeURIComponent(originalLink)}`
-        : originalLink;
+    for (const items of allItems) {
+      results.push(...items);
+    }
+
+    results.sort((a, b) => {
+      const prioA = a.priority ?? 999;
+      const prioB = b.priority ?? 999;
+      if (prioA !== prioB) {
+        return prioA - prioB;
+      }
+      return new Date(b.date) - new Date(a.date);
+    });
 
     return {
-      title: item.title,
-      link,
-      date: item.pubDate || item.isoDate,
-      description: stripImages(item.contentSnippet || item.content || ''),
-      source: feed.title || url,
-      priority
+      items: totalLimit ? results.slice(0, totalLimit) : results,
+      errors
     };
-  });
+  }
+
+  async #fetchFeed(url, limit = 10, browserProxy, priority = 999) {
+    const feed = await this.parser.parseURL(url);
+
+    return feed.items.slice(0, limit).map(item => {
+      const originalLink = item.link;
+      const link =
+        browserProxy && originalLink
+          ? `${browserProxy}${encodeURIComponent(originalLink)}`
+          : originalLink;
+
+      return {
+        title: item.title,
+        link,
+        date: item.pubDate || item.isoDate,
+        description: this.#stripImages(item.contentSnippet || item.content || ''),
+        source: feed.title || url,
+        priority
+      };
+    });
+  }
+
+  #stripImages(html) {
+    if (!html) {
+      return '';
+    }
+    let cleaned = html.replace(/<img[^>]*>/gi, '');
+    cleaned = cleaned.replace(/https?:\/\/\S+\.(jpg|jpeg|png|gif)/gi, '');
+    return cleaned;
+  }
 }

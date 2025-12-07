@@ -1,4 +1,4 @@
-import { searchPOIs } from '../services/poi-service.js';
+import { PoiService } from '../services/poi-service.js';
 import { PoiEmergencyPharmacyService } from '../services/poi-emergency-pharmacy-service.js';
 import { geocodePlace } from '../lib/geo/geocode.js';
 import { generateStaticMap } from '../lib/geo/map-generator.js';
@@ -14,6 +14,9 @@ export function registerPOIRoutes(app, params) {
       .map(([key, value]) => [key, value.label])
       .sort((a, b) => a[1].localeCompare(b[1]))
   );
+
+  // TODO: pass on values
+  const poiService = new PoiService({});
 
   const emergencyPharmacyService = new PoiEmergencyPharmacyService({
     cacheDir: config.emergencyPharmaciesCacheDir
@@ -55,7 +58,13 @@ export function registerPOIRoutes(app, params) {
       if (type === 'emergency_pharmacy') {
         results = await emergencyPharmacyService.getEmergencyPharmacies(loc.postcode);
       } else {
-        results = await searchPOIs(types, type, loc, radiusInMeters, reverseGeocodingKey);
+        results = await poiService.searchPOIs(
+          types,
+          type,
+          loc,
+          radiusInMeters,
+          reverseGeocodingKey
+        );
       }
 
       const resultsWithMap = results.map(result => ({

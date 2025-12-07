@@ -1,20 +1,20 @@
 export class ContentStructureDetector {
   detectNavAndContent($) {
-    const navBlocks = this.collectNavBlocks($);
-    const contentBlocks = this.collectContentBlocks($);
+    const navBlocks = this.#collectNavBlocks($);
+    const contentBlocks = this.#collectContentBlocks($);
 
-    let navBlock = this.chooseNavBlock(navBlocks);
-    let contentBlock = this.chooseContentBlock(contentBlocks, navBlock);
+    let navBlock = this.#chooseNavBlock(navBlocks);
+    let contentBlock = this.#chooseContentBlock(contentBlocks, navBlock);
 
     if (!contentBlock) {
       const fallbackBlocks = [];
       $('main, article, section, div').each((_, el) => {
-        const info = this.measureBlock($, el);
+        const info = this.#measureBlock($, el);
         if (info) {
           fallbackBlocks.push(info);
         }
       });
-      contentBlock = this.chooseContentBlock(fallbackBlocks, navBlock);
+      contentBlock = this.#chooseContentBlock(fallbackBlocks, navBlock);
     }
 
     const navRoot = navBlock ? navBlock.$el : null;
@@ -30,11 +30,11 @@ export class ContentStructureDetector {
     return { navRoot, contentRoot };
   }
 
-  collectNavBlocks($) {
+  #collectNavBlocks($) {
     const blocks = [];
     $('nav, [role="navigation"], [class*="nav"], [class*="menu"], [id*="nav"], [id*="menu"]').each(
       (_, el) => {
-        const info = this.measureBlock($, el);
+        const info = this.#measureBlock($, el);
         if (info) {
           blocks.push(info);
         }
@@ -43,12 +43,12 @@ export class ContentStructureDetector {
     return blocks;
   }
 
-  collectContentBlocks($) {
+  #collectContentBlocks($) {
     const blocks = [];
     $(
       'main, article, [id*="content"], [class*="content"], [class*="post"], [class*="entry"], [id*="main"]'
     ).each((_, el) => {
-      const info = this.measureBlock($, el);
+      const info = this.#measureBlock($, el);
       if (info) {
         blocks.push(info);
       }
@@ -56,7 +56,7 @@ export class ContentStructureDetector {
     return blocks;
   }
 
-  measureBlock($, el) {
+  #measureBlock($, el) {
     const $el = $(el);
     const text = $el.text().replace(/\s+/g, ' ').trim();
     if (!text) {
@@ -73,7 +73,7 @@ export class ContentStructureDetector {
     return { $el, len, linkDensity, pCount, linkCount };
   }
 
-  chooseContentBlock(blocks, navBlock) {
+  #chooseContentBlock(blocks, navBlock) {
     let best = null;
     let bestScore = 0;
 
@@ -109,7 +109,7 @@ export class ContentStructureDetector {
     return best;
   }
 
-  chooseNavBlock(blocks) {
+  #chooseNavBlock(blocks) {
     let best = null;
     let bestScore = 0;
 

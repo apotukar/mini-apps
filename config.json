@@ -314,8 +314,7 @@
   },
   "browser": {
     "timeout": 120000,
-    "waitUntil": "domcontentloaded",
-    "modes": ["simplify", "frogfind"]
+    "waitUntil": "domcontentloaded"
   },
   "bookmarks": [
     {

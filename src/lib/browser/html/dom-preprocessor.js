@@ -1,5 +1,4 @@
 export class DomPreprocessor {
-  // converts relative urls to absolute urls based on the page's base url
   absolutizeUrls($, baseUrl) {
     if (!baseUrl) {
       return;
@@ -31,7 +30,6 @@ export class DomPreprocessor {
     });
   }
 
-  // removes scripts, styles, media and other unwanted elements
   removeUnwanted($) {
     const selectors = [
       'script',
