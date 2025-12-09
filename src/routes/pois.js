@@ -1,8 +1,3 @@
-import { PoiService } from '../services/poi-service.js';
-import { PoiEmergencyPharmacyService } from '../services/poi-emergency-pharmacy-service.js';
-import { geocodePlace } from '../lib/geo/geocode.js';
-import { generateStaticMap } from '../lib/geo/map-generator.js';
-
 export function registerPOIRoutes(app, params) {
   const config = params.config;
   const zoom = config.zoom || 15;
@@ -14,13 +9,6 @@ export function registerPOIRoutes(app, params) {
       .map(([key, value]) => [key, value.label])
       .sort((a, b) => a[1].localeCompare(b[1]))
   );
-
-  // TODO: pass on values
-  const poiService = new PoiService({});
-
-  const emergencyPharmacyService = new PoiEmergencyPharmacyService({
-    cacheDir: config.emergencyPharmaciesCacheDir
-  });
 
   app.get('/pois', async (req, res) => {
     const query = req.query.q || '';
@@ -42,6 +30,7 @@ export function registerPOIRoutes(app, params) {
     }
 
     try {
+      const geocodePlace = req.services.get('geocodePlace');
       const loc = await geocodePlace(query);
       if (!loc) {
         return res.render(indexPage, {
@@ -56,8 +45,10 @@ export function registerPOIRoutes(app, params) {
 
       let results = [];
       if (type === 'emergency_pharmacy') {
+        const emergencyPharmacyService = req.services.get('poiEmergencyPharmacyService');
         results = await emergencyPharmacyService.getEmergencyPharmacies(loc.postcode);
       } else {
+        const poiService = req.services.get('poiService');
         results = await poiService.searchPOIs(
           types,
           type,
@@ -103,6 +94,7 @@ export function registerPOIRoutes(app, params) {
       return res.status(400).send('invalid');
     }
     try {
+      const generateStaticMap = req.services.get('generateStaticMap');
       const buf = await generateStaticMap(lat, lon, zoom, tiles);
       res.setHeader('Content-Type', 'image/png');
       res.send(buf);

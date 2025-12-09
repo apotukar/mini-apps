@@ -1,0 +1,7 @@
+{% macro hr(width=568) %}
+  <hr
+    style="width: {{ width }}px; vertical-align: left;"
+    width="{{ width }}"
+    align="left"
+  >
+{% endmacro %}

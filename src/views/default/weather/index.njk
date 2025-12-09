@@ -2,10 +2,10 @@
 
 {% set style = "common, weather" %}
 
-{% block title %}Wetter (Ultra-Light){% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h2>Wetter</h2>
+  <h2>{{ headline }}</h2>
 
   <form method="POST">
     <label for="city">Ort:</label><br>

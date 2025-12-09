@@ -1,0 +1,11 @@
+<input
+  type="text"
+  id="{{ inputFieldId }}"
+  name="{{ inputFieldName }}"
+  value="{{ inputFieldValue }}"
+  {% if isMSIE6 %}
+    style="width: 571px;"
+  {% elif isNS4 %}
+    size="70"
+  {% endif %}
+>

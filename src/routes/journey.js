@@ -1,16 +1,13 @@
 import { FavoritesManager } from '../lib/favs/favorites.js';
-import { TransportService } from '../services/transport-service.js';
 
 export function registerJourneyRoutes(app, params) {
-  const client = params.client;
   const config = params.config || {};
+  const route = params.route || {};
   const transportLabels = config.transportLabels || {};
   const favoritesNamespace = 'journey';
   const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
-
-  const transportService = new TransportService(client, transportLabels, null);
 
   app.get(
     '/journey',
@@ -39,7 +36,9 @@ export function registerJourneyRoutes(app, params) {
       res.render(`journey/index.${viewExt}`, {
         from,
         to,
-        favs: favorites
+        favs: favorites,
+        title: route.title,
+        headline: route.headline
       });
     }
   );
@@ -56,10 +55,12 @@ export function registerJourneyRoutes(app, params) {
       let toName = rawToName;
 
       if (configSaveNormalizedFavName) {
-        const fromStation = await transportService.findStation(client, rawFromName);
+        const transportService = req.services.get('transportService');
+
+        const fromStation = await transportService.findStation(rawFromName);
         fromName = fromStation.normalizedName;
 
-        const toStation = await transportService.findStation(client, rawToName);
+        const toStation = await transportService.findStation(rawToName);
         toName = toStation.normalizedName;
       }
 
@@ -121,8 +122,8 @@ export function registerJourneyRoutes(app, params) {
       } = params(req);
 
       await handleJourneySearch({
+        req,
         res,
-        client,
         fromName: (fromName || '').trim(),
         toName: (toName || '').trim(),
         departure,
@@ -134,8 +135,8 @@ export function registerJourneyRoutes(app, params) {
   }
 
   async function handleJourneySearch({
+    req,
     res,
-    client,
     fromName: rawFromName,
     toName: rawToName,
     departure,
@@ -148,9 +149,9 @@ export function registerJourneyRoutes(app, params) {
         return res.redirect('/journey');
       }
 
-      const fromStation = await transportService.findStation(client, rawFromName);
-      const toStation = await transportService.findStation(client, rawToName);
-      // TODO: decline nonsensical station input names
+      const transportService = req.services.get('transportService');
+      const fromStation = await transportService.findStation(rawFromName);
+      const toStation = await transportService.findStation(rawToName);
       const options = { results: 5 };
 
       if (earlierThan) {
@@ -161,13 +162,15 @@ export function registerJourneyRoutes(app, params) {
         options.departure = departure;
       }
 
-      const data = await transportService.fetchJourneys(client, fromStation, toStation, options);
+      const data = await transportService.fetchJourneys(fromStation, toStation, options);
       const journeys = data.journeys || [];
 
       if (!journeys.length) {
         return res.render('journey/no-results.njk', {
           fromName: rawFromName,
-          toName: rawToName
+          toName: rawToName,
+          title: route.title,
+          headline: route.headline
         });
       }
 
@@ -182,11 +185,15 @@ export function registerJourneyRoutes(app, params) {
         toName: toStation.normalizedName,
         journeys: journeysView,
         earlierRef: data.earlierRef || null,
-        laterRef: data.laterRef || null
+        laterRef: data.laterRef || null,
+        title: route.title,
+        headline: route.headline
       });
     } catch (err) {
       return res.render('journey/error.njk', {
-        message: err.message
+        message: err.message,
+        title: route.title,
+        headline: route.headline
       });
     }
   }

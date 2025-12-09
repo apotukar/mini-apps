@@ -1,3 +1,5 @@
+{% from "common/macros/hr-separator.ns4" import hr %}
+
 {% extends "layout.ns4" %}
 
 {% set style = "common, pois" %}
@@ -8,7 +10,7 @@
 
 <h2>POIs im Umkreis</h2>
 
-<hr style="width: 565px;">
+{{ hr() }}
 
 <table border="0" cellpadding="0" cellspacing="0">
     <form method="GET" action="/pois">
@@ -19,7 +21,10 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="q" name="q" value="{{ query }}" size="70">
+            {% set inputFieldId = "q" %}
+            {% set inputFieldName = "q" %}
+            {% set inputFieldValue = query %}
+            {% include "common/partials/input-field-text.ns4" %}
         </td>
     </tr>
     <tr>

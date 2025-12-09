@@ -4,10 +4,10 @@
 
 {% set style = "common, journey" %}
 
-{% block title %}Abfahrten – {{ stationName }}{% endblock %}
+{% block title %}{{title}} – {{ stationName }}{% endblock %}
 
 {% block content %}
-  <h2>Abfahrten für {{ stationName }}</h2>
+  <h2>{{title}} für {{ stationName }}</h2>
 
   <a href="/departures?station={{ stationName | urlencode }}">Zurück</a>&nbsp;
   <a href="/departures">Neue Suche</a><br><br>

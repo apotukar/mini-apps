@@ -2,10 +2,11 @@
 
 {% set style = "common, journey" %}
 
-{% block title %}DB Mini{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h2>DB Mini Fahrplan</h2>
+
+  <h2>{{ headline }}</h2>
 
   <form method="POST">
     <label for="from">Start:</label><br>

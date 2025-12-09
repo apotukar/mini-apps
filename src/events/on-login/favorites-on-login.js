@@ -15,7 +15,6 @@ export function createMergeFavoritesOnLogin(config = {}) {
       const redisFavs = await mgr.redisManager.getFavorites(req);
       const merged = mgr.dedupeFavs([...redisFavs, ...cookieFavs]);
       await mgr.redisManager.saveFavorites(res, merged);
-      mgr.cookieManager.clearFavorites(res);
     }
   };
 }

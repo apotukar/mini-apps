@@ -2,11 +2,10 @@
 
 {% set style = "common, weather" %}
 
-{% block title %}Fehler – Wetter{% endblock %}
+{% block title %}Fehler – {{ title }}{% endblock %}
 
 {% block content %}
-  <h1>Wetter</h1>
   <h2>Fehler</h2>
-           <p>Fehler: {{ message }}</p>
+  <p>Fehler: {{ message }}</p>
   <p><a href="/weather">Zurück</a></p>
 {% endblock %}

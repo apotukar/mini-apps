@@ -3,13 +3,12 @@ import { ReverseGeocodeSearch } from '../lib/geo/reverse-search.js';
 import { mapAsyncFlexible } from '../lib/map-async-flexible.js';
 
 export class PoiService {
-  constructor(params) {
-    // TODO: inject values
-    this.config = {
-      cacheDir: 'data/cache/reverse-search',
-      apiKey: process.env.REVERSE_GEOCODING_KEY,
-      ...(params.config || {})
-    };
+  constructor(config) {
+    this.config = config;
+    if (!this.config.cacheDir || !this.config.apiKey) {
+      throw new Error('Missing required configuration');
+    }
+
     this.reverseGeocodeSearch = new ReverseGeocodeSearch({
       cacheDir: this.config.cacheDir,
       apiKey: this.config.apiKey
@@ -17,7 +16,7 @@ export class PoiService {
     this.overpassUrl = 'https://overpass-api.de/api/interpreter';
   }
 
-  async searchPOIs(types, type, loc, radiusInMeters, apiKey) {
+  async searchPOIs(types, type, loc, radiusInMeters) {
     if (!loc) {
       return [];
     }
@@ -73,30 +72,32 @@ export class PoiService {
       })
     );
 
-    const enriched = await mapAsyncFlexible(
-      results,
-      async result => {
-        if (!result.address && result.lat !== null && result.lon !== null) {
-          try {
-            result.address = await this.reverseGeocodeSearch.reverseSearch(
-              result.lat,
-              result.lon,
-              apiKey
-            );
-            result.isFallbackAddress = true;
-            return result;
-          } catch (error) {
-            console.error('Error fetching address:', error);
-            return result;
-          }
-        }
-        return result;
-      },
-      {
-        sequential: true,
-        sleepDuration: 600
-      }
-    );
+    const enriched =
+      (this.config.addMissingAddresses ?? false)
+        ? await mapAsyncFlexible(
+            results,
+            async result => {
+              if (!result.address && result.lat !== null && result.lon !== null) {
+                try {
+                  result.address = await this.reverseGeocodeSearch.reverseSearch(
+                    result.lat,
+                    result.lon
+                  );
+                  result.isFallbackAddress = true;
+                  return result;
+                } catch (error) {
+                  console.error('Error fetching address:', error);
+                  return result;
+                }
+              }
+              return result;
+            },
+            {
+              sequential: true,
+              sleepDuration: 600
+            }
+          )
+        : results;
 
     return enriched;
   }

@@ -1,16 +1,15 @@
+{% from "common/macros/fav-buttons-bottom.ns4" import favButtons %}
+{% from "common/macros/hr-separator.ns4" import hr %}
+
 {% extends "layout.ns4" %}
 
 {% set style = "common, journey" %}
 
-{% block title %}Abfahrten{% endblock %}
+{% block title %}{{ title}}{% endblock %}
 
 {% block content %}
 
-<h2>Abfahrten und Haltestellen</h2>
-
-{% macro hr() %}
-  <hr style="width: 565px;">
-{% endmacro %}
+<h2>{{ headline }}</h2>
 
 {{ hr() }}
 
@@ -23,7 +22,10 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="station" name="station" value="{{ station }}" size="70">
+            {% set inputFieldId = "station" %}
+            {% set inputFieldName = "station" %}
+            {% set inputFieldValue = station %}
+            {% include "common/partials/input-field-text.ns4" %}
         </td>
     </tr>
     <tr>
@@ -53,7 +55,7 @@
 
 <h3>Favoriten</h3>
 
-{{ hr() }}
+{{ hr(567) }}
 
 <table border="0" cellpadding="0" cellspacing="0" width="{{ width }}">
   {% if favs and favs.length %}
@@ -69,9 +71,8 @@
 
 <br>
 
-    {% from "common/macros/fav-buttons-bottom.ns4" import favButtons %}
-    {{ favButtons("/departures") }}
+{{ favButtons("/departures") }}
 
-    {% include "common/partials/hint.njk" %}
+{% include "common/partials/hint.njk" %}
 
 {% endblock %}

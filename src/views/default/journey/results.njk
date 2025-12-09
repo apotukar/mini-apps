@@ -4,10 +4,12 @@
 
 {% set style = "common, journey" %}
 
-{% block title %}Verbindungen – {{ fromName }} → {{ toName }}
+{% block title %}{{ fromName }} → {{ toName }}
+
 {% endblock %}
 
 {% block content %}
+
   <h2>{{ fromName }} {{ image("rarrow.min", viewExt, { alt: "→", class: 'arrow-inline', alt_fallback: "->", height: 10, border: 0 }) }} {{ toName }}</h2>
 
   <a href="/journey?from={{ fromName | urlencode }}&amp;to={{ toName | urlencode }}">Zurück</a>&nbsp;

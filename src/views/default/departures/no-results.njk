@@ -2,10 +2,10 @@
 
 {% set style = "common, journey" %}
 
-{% block title %}Keine Abfahrten{% endblock %}
+{% block title %}Keine {{title}}{% endblock %}
 
 {% block content %}
-  <h2>Keine Abfahrten gefunden</h2>
+  <h2>Keine {{title}} gefunden</h2>
   <p>Für {{ stationName }} wurden keine Abfahrten gefunden.</p>
   <p><a href="/departures?station={{ stationName | urlencode }}">Zurück</a></p>
 {% endblock %}

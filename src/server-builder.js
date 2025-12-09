@@ -3,7 +3,7 @@ import path from 'path';
 import http from 'http';
 import https from 'https';
 
-export class AppServerBuilder {
+export class ServerBuilder {
   constructor(params) {
     this.config = params.config;
 
@@ -24,7 +24,9 @@ export class AppServerBuilder {
       this.config.routes
         .filter(route => Array.isArray(route.scheme) && route.scheme.includes('https'))
         .forEach(route => {
-          console.log(`${route.label}: https://localhost:${this.config.httpsPort}${route.path}`);
+          console.log(
+            `path: ${(route.path + ',').padEnd(20)} uri: http://localhost:${this.config.httpsPort}${route.path}`
+          );
         });
     });
 
@@ -34,7 +36,9 @@ export class AppServerBuilder {
       this.config.routes
         .filter(route => Array.isArray(route.scheme) && route.scheme.includes('http'))
         .forEach(route => {
-          console.log(`${route.label}: http://localhost:${this.config.httpPort}${route.path}`);
+          console.log(
+            `path: ${(route.path + ',').padEnd(20)} uri: http://localhost:${this.config.httpPort}${route.path}`
+          );
         });
     });
   }

@@ -5,6 +5,78 @@ export class TransportService {
     this.transportCssTypeAppendices = transportCssTypeAppendices;
   }
 
+  async findStation(name) {
+    const list = await this.client.locations(name, { results: 1 });
+    if (!list || list.length === 0) {
+      throw new Error('Station nicht gefunden: ' + name);
+    }
+
+    const station = list[0];
+    if (!station.id) {
+      throw new Error('Station hat keine ID: ' + name);
+    }
+
+    const enrichedStation = {
+      ...station,
+      normalizedName: this.#normalizeIfUpper(station.name || '')
+    };
+
+    return enrichedStation;
+  }
+
+  async fetchDeparturesUntilFound(stationId, initialWhen, minResults = 5) {
+    let whenDate = initialWhen ? new Date(initialWhen) : new Date();
+    if (Number.isNaN(whenDate.getTime())) {
+      whenDate = new Date();
+    }
+
+    const stepMinutes = 15;
+    let remainingTries = 48;
+    const baseOpts = { duration: 60, results: 10 };
+
+    const collected = [];
+    const firstWhen = whenDate;
+
+    while (remainingTries-- > 0 && collected.length < minResults) {
+      const opts = { ...baseOpts, when: whenDate };
+      const data = await this.client.departures(stationId, opts);
+
+      const departures = Array.isArray(data?.departures)
+        ? data.departures
+        : Array.isArray(data)
+          ? data
+          : [];
+
+      if (departures.length > 0) {
+        collected.push(...departures);
+        const last = departures[departures.length - 1];
+        const lastWhen = last?.when || last?.plannedWhen;
+        if (lastWhen) {
+          const lastDate = new Date(lastWhen);
+          whenDate = new Date(lastDate.getTime() + 60_000);
+        } else {
+          whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
+        }
+      } else {
+        whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
+      }
+    }
+
+    return { departures: collected, usedWhen: firstWhen };
+  }
+
+  async fetchJourneys(fromId, toId, options) {
+    const journeys = await this.client.journeys(fromId, toId, options);
+    return journeys;
+  }
+
+  #normalizeIfUpper(word) {
+    if (word === word.toUpperCase()) {
+      return word.charAt(0) + word.slice(1).toLowerCase();
+    }
+    return word;
+  }
+
   buildJourneyView(legs, index, transportLabels) {
     if (!legs.length) {
       return null;
@@ -86,11 +158,11 @@ export class TransportService {
 
     return {
       number: index + 1,
-      departure: dep,
-      plannedDeparture: depPlanned,
+      departure: dep ?? depPlanned,
+      plannedDeparture: depPlanned ?? dep,
       departureDelayMin: depDelayMin,
-      arrival: arr,
-      plannedArrival: arrPlanned,
+      arrival: arr ?? arrPlanned,
+      plannedArrival: arrPlanned ?? arr,
       arrivalDelayMin: arrDelayMin,
       duration: durationMinutes,
       transfers,
@@ -98,33 +170,7 @@ export class TransportService {
     };
   }
 
-  #normalizeIfUpper(word) {
-    if (word === word.toUpperCase()) {
-      return word.charAt(0) + word.slice(1).toLowerCase();
-    }
-    return word;
-  }
-
-  async findStation(client, name) {
-    const list = await client.locations(name, { results: 1 });
-    if (!list || list.length === 0) {
-      throw new Error('Station nicht gefunden: ' + name);
-    }
-
-    const station = list[0];
-    if (!station.id) {
-      throw new Error('Station hat keine ID: ' + name);
-    }
-
-    const enrichedStation = {
-      ...station,
-      normalizedName: this.#normalizeIfUpper(station.name || '')
-    };
-
-    return enrichedStation;
-  }
-
-  #doBuildDeparturesView(transportLabels, transportCssTypeAppendices, stationName, departures) {
+  buildDeparturesView(transportLabels, transportCssTypeAppendices, stationName, departures) {
     function translateProduct(product) {
       return transportLabels[product] || product || '';
     }
@@ -170,8 +216,8 @@ export class TransportService {
       const lineText = formatLine(productGerman, lineName);
 
       return {
-        time: plannedTime || '–',
-        actualTime: actualTime || '–',
+        time: plannedTime ?? actualTime,
+        actualTime: actualTime ?? plannedTime,
         delay,
         direction: departure.direction || '',
         lineText,
@@ -206,72 +252,5 @@ export class TransportService {
       earlierIso,
       laterIso
     };
-  }
-
-  async #fetchDeparturesUntilFound(client, stationId, initialWhen, minResults = 5) {
-    let whenDate = initialWhen ? new Date(initialWhen) : new Date();
-    if (Number.isNaN(whenDate.getTime())) {
-      whenDate = new Date();
-    }
-
-    const stepMinutes = 15;
-    let remainingTries = 48;
-    const baseOpts = { duration: 60, results: 10 };
-
-    const collected = [];
-    const firstWhen = whenDate;
-
-    while (remainingTries-- > 0 && collected.length < minResults) {
-      const opts = { ...baseOpts, when: whenDate };
-      const data = await client.departures(stationId, opts);
-
-      const departures = Array.isArray(data?.departures)
-        ? data.departures
-        : Array.isArray(data)
-          ? data
-          : [];
-
-      if (departures.length > 0) {
-        collected.push(...departures);
-        const last = departures[departures.length - 1];
-        const lastWhen = last?.when || last?.plannedWhen;
-        if (lastWhen) {
-          const lastDate = new Date(lastWhen);
-          whenDate = new Date(lastDate.getTime() + 60_000);
-        } else {
-          whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
-        }
-      } else {
-        whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
-      }
-    }
-
-    return { departures: collected, usedWhen: firstWhen };
-  }
-
-  async buildDeparturesView(
-    client,
-    transportLabels,
-    transportCssTypeAppendices,
-    stationNameInput,
-    when
-  ) {
-    const station = await this.findStation(client, stationNameInput);
-    const stationId = station.id;
-    const displayName = station.normalizedName || station.name || stationNameInput;
-
-    const { departures } = await this.#fetchDeparturesUntilFound(client, stationId, when);
-
-    return this.#doBuildDeparturesView(
-      transportLabels,
-      transportCssTypeAppendices,
-      displayName,
-      departures
-    );
-  }
-
-  async fetchJourneys(client, fromId, toId, options) {
-    const journeys = await client.journeys(fromId, toId, options);
-    return journeys;
   }
 }

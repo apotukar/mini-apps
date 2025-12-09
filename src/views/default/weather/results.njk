@@ -2,10 +2,10 @@
 
 {% set style = "common, weather" %}
 
-{% block title %}Wetter – {{ locationTitle }}{% endblock %}
+{% block title %}{{ title }} – {{ locationTitle }}{% endblock %}
 
 {% block content %}
-  <h2>Wetter für {{ locationTitle }}</h2>
+  <h2>{{ headline }} für {{ locationTitle }}</h2>
 
   <a href="/weather?city={{ city | urlencode }}">Zurück</a>&nbsp;
   <a href="/weather">Neue Suche</a><br><br>

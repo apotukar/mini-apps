@@ -2,6 +2,7 @@ import { FavoritesManager } from '../lib/favs/favorites.js';
 
 export function registerWeatherRoutes(app, params) {
   const config = params.config || {};
+  const route = params.route || {};
   const favoritesNamespace = 'weather';
   const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
@@ -19,7 +20,9 @@ export function registerWeatherRoutes(app, params) {
 
     res.render(`weather/index.${viewExt}`, {
       city,
-      favs: favorites
+      favs: favorites,
+      title: route.title,
+      headline: route.headline
     });
   });
 
@@ -60,79 +63,29 @@ export function registerWeatherRoutes(app, params) {
     try {
       if (!city) {
         return res.render('weather/error.njk', {
-          message: 'Bitte einen Ort eingeben.'
+          message: 'Bitte einen Ort eingeben.',
+          title: route.title,
+          headline: route.headline
         });
       }
 
-      const geoUrl =
-        'https://geocoding-api.open-meteo.com/v1/search' +
-        `?name=${encodeURIComponent(city)}` +
-        '&count=1&language=de&format=json';
-
-      const geoResp = await fetch(geoUrl);
-      if (!geoResp.ok) {
-        throw new Error('Geocoding-Anfrage fehlgeschlagen.');
-      }
-
-      const geo = await geoResp.json();
-      if (!geo.results || geo.results.length === 0) {
-        return res.render('weather/error.njk', {
-          message: `Kein Ort gefunden für: "${city}".`
-        });
-      }
-
-      const place = geo.results[0];
-      const lat = place.latitude;
-      const lon = place.longitude;
-      const locationTitle = [place.name, place.admin1, place.country].filter(Boolean).join(', ');
-
-      const forecastUrl =
-        'https://api.open-meteo.com/v1/forecast' +
-        `?latitude=${lat}&longitude=${lon}` +
-        '&current_weather=true' +
-        '&daily=weathercode,temperature_2m_max,temperature_2m_min' +
-        '&timezone=auto';
-
-      const fcResp = await fetch(forecastUrl);
-      if (!fcResp.ok) {
-        throw new Error('Wetterdaten-Anfrage fehlgeschlagen.');
-      }
-
-      const fc = await fcResp.json();
-      const cw = fc.current_weather || {};
-
-      const current = {
-        temperature: cw.temperature,
-        windspeed: cw.windspeed,
-        code: cw.weathercode,
-        description: describeWeatherCode(cw.weathercode),
-        time: cw.time
-      };
-
-      const daily = fc.daily || {};
-      const days = (daily.time || []).map((dateStr, i) => ({
-        time: dateStr,
-        tMin: daily.temperature_2m_min?.[i],
-        tMax: daily.temperature_2m_max?.[i],
-        code: daily.weathercode?.[i],
-        description: describeWeatherCode(daily.weathercode?.[i])
-      }));
+      const weatherService = req.services.get('weatherService');
+      const { locationTitle, current, days } = await weatherService.fetchWeather(city);
 
       res.render('weather/results.njk', {
         locationTitle,
         city,
         current,
-        days
+        days,
+        title: route.title,
+        headline: route.headline
       });
     } catch (err) {
       res.render('weather/error.njk', {
-        message: err.message || 'Fehler.'
+        message: err.isKnown ? err.message : 'Ein unbekannter Fehler ist aufgetreten.',
+        title: route.title,
+        headline: route.headline
       });
     }
-  }
-
-  function describeWeatherCode(code) {
-    const map = config.descriptions || {};
-    return map[String(code)] || `Unbekannt (${code})`;
   }
 }

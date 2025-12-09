@@ -1,12 +1,18 @@
 {% extends "layout.njk" %}
 
 {% set style = "common" %}
+{% set backLink = href | default("/") %}
 
-{% block title %}Error{% endblock %}
+{% block title %}
+  Fehler - {{ message }}
+{% endblock %}
 
 {% block content %}
+  <h2>Fehler</h2>
 
-  <h1>An error has occurred</h1>
-  <p>Please try again later.</p>
+  {% if message %}
+    <p>{{ message }}</p>
+  {% endif %}
 
+  <p><a href="{{ backLink }}">Zurück</a></p>
 {% endblock %}

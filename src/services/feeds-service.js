@@ -1,6 +1,6 @@
 import Parser from 'rss-parser';
 
-export class FeedService {
+export class FeedsService {
   constructor() {
     this.parser = new Parser();
   }

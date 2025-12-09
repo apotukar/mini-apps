@@ -1,30 +1,34 @@
-import { createJoplinService } from '../services/joplin-service.js';
-
-export function registerJoplinRoutes(app, params) {
-  const joplin = createJoplinService(params.config);
+export function registerJoplinRoutes(app, _) {
+  // TODO: route
+  // const route = params.route || {};
 
   app.get('/joplin', async (req, res) => {
     try {
-      const notes = await joplin.listNotes();
+      const joplinService = req.services.get('joplinService');
+      const notes = await joplinService.listNotes();
       res.render('joplin/index.njk', { notes });
-    } catch (err) {
-      res.render('joplin/error.njk', { message: err.message });
+    } catch (error) {
+      console.log(error);
+      res.render('joplin/error.njk', { message: error.message });
     }
   });
 
   app.get('/joplin/note/:id', async (req, res) => {
     try {
-      const note = await joplin.getNoteById(req.params.id);
+      const joplinService = req.services.get('joplinService');
+      const note = await joplinService.getNoteById(req.params.id);
       res.render('joplin/note.njk', { note });
-    } catch (err) {
-      res.render('joplin/error.njk', { message: err.message });
+    } catch (error) {
+      console.log(error);
+      res.render('joplin/error.njk', { message: error.message });
     }
   });
 
   app.get('/joplin/resource/:id', async (req, res) => {
     const downloadName = req.query.name || null;
     try {
-      const resource = await joplin.getResourceById(req.params.id);
+      const joplinService = req.services.get('joplinService');
+      const resource = await joplinService.getResourceById(req.params.id);
       if (!resource) {
         return res.status(404).send('Not found');
       }
@@ -33,7 +37,8 @@ export function registerJoplinRoutes(app, params) {
         res.setHeader('Content-Disposition', `attachment; filename="${downloadName}"`);
       }
       res.send(resource.data);
-    } catch {
+    } catch (error) {
+      console.log(error);
       res.status(500).send('Error loading resource');
     }
   });

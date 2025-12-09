@@ -23,9 +23,10 @@ echo "1) Open interactive bash in container"
 echo "2) Run create-tokens (npm run create-tokens)"
 echo "3) MODE_ENV=DEV  docker compose up"
 echo "4) MODE_ENV=PROD docker compose up"
-echo "5) Run backup.sh"
-echo "6) Run create-certs (npm run create-certs)"
-echo "7) Run create-user (npm run create-user)"
+echo "5) docker compose down"
+echo "6) Run backup.sh"
+echo "7) Run create-certs (npm run create-certs)"
+echo "8) Run create-user (npm run create-user)"
 echo "q) Quit"
 echo
 read -rp "Your choice: " choice
@@ -44,12 +45,15 @@ case "$choice" in
   MODE_ENV=PROD docker compose up
   ;;
 5)
-  "${SCRIPT_DIR}/backup.sh"
+  docker compose down
   ;;
 6)
-  docker compose run --rm node npm run create-certs
+  "${SCRIPT_DIR}/backup.sh"
   ;;
 7)
+  docker compose run --rm node npm run create-certs
+  ;;
+8)
   docker compose run --rm node npm run create-user
   ;;
 q | Q)

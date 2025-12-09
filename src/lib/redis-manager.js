@@ -7,15 +7,22 @@ export class RedisManager {
     this.client = null;
   }
 
-  async init() {
+  async #init() {
     this.client = createRedisClient({
       socket: {
-        host: this.config.redis.host,
-        port: this.config.redis.port
+        host: this.config.host,
+        port: this.config.port
       }
     });
 
     await this.client.connect();
+  }
+
+  async ensureReady() {
+    if (!this._initPromise) {
+      this._initPromise = this.#init();
+    }
+    return this._initPromise;
   }
 
   getSessionConfig() {

@@ -1,21 +1,14 @@
 import { FavoritesManager } from '../lib/favs/favorites.js';
-import { TransportService } from '../services/transport-service.js';
 
-export function registerDepartureRoutes(app, params) {
-  const client = params.client;
+export function registerDeparturesRoutes(app, params = {}) {
   const config = params.config || {};
+  const route = params.route || {};
   const transportLabels = config.transportLabels || {};
   const transportCssTypeAppendices = config.transportCssTypeAppendices || {};
   const favoritesNamespace = 'departures';
   const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Object.values(config.favorites).flat() || [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
-
-  const transportService = new TransportService(
-    client,
-    transportLabels,
-    transportCssTypeAppendices
-  );
 
   app.get('/departures', async (req, res) => {
     let favorites = await favsManager.getFavorites(req);
@@ -30,7 +23,9 @@ export function registerDepartureRoutes(app, params) {
 
     res.render(`departures/index.${viewExt}`, {
       station,
-      favs: favorites
+      favs: favorites,
+      title: route.title,
+      headline: route.headline
     });
   });
 
@@ -43,7 +38,8 @@ export function registerDepartureRoutes(app, params) {
     let stationName = rawStationName;
 
     if (configSaveNormalizedFavName) {
-      const station = await transportService.findStation(client, rawStationName);
+      const transportService = req.services.get('transportService');
+      const station = await transportService.findStation(rawStationName);
       stationName = station.normalizedName;
     }
 
@@ -85,32 +81,43 @@ export function registerDepartureRoutes(app, params) {
           return res.redirect('/departures');
         }
 
-        // TODO: render error page if there is no station
-        // const station = await findStation(client, inputName);
-        // const stationId = station.id;
-        // const displayName = station.normalizedName || station.name || stationNameInput;
-
         const when = getWhen ? getWhen(req) : undefined;
-        const view = await transportService.buildDeparturesView(
-          client,
+        const transportService = req.services.get('transportService');
+        const station = await transportService.findStation(inputName);
+        const stationId = station.id;
+        const displayName = station.normalizedName || station.name || inputName;
+        const { departures } = await transportService.fetchDeparturesUntilFound(stationId, when);
+
+        const view = transportService.buildDeparturesView(
           transportLabels,
           transportCssTypeAppendices,
-          inputName,
-          when
+          displayName,
+          departures
         );
 
         if (!view || !view.departures || view.departures.length === 0) {
           return res.render('departures/no-results.njk', {
-            stationName: view?.stationName || inputName
+            stationName: view?.stationName || inputName,
+            title: route.title,
+            headline: route.headline
           });
         }
 
         view.departures.sort((a, b) => a.actualTime - b.actualTime);
+        const actualView = {
+          title: route.title,
+          headline: route.headline,
+          ...view
+        };
 
-        return res.render('departures/results.njk', view);
+        return res.render('departures/results.njk', actualView);
       } catch (err) {
         console.error(err);
-        return res.render('departures/error.njk', { message: err.message });
+        return res.render('departures/error.njk', {
+          message: err.message,
+          title: route.title,
+          headline: route.headline
+        });
       }
     };
   }

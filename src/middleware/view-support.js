@@ -4,9 +4,12 @@ export function viewBaseMarker(config) {
 
   return function (req, res, next) {
     const ua = req.headers['user-agent'] || '';
-    const isNs4 = ua.includes('Mozilla/4.');
+    const isNS4 = ua.includes('Mozilla/4.');
+    const isMSIE6 = ua.includes('MSIE 6.');
 
-    res.locals.viewExt = isNs4 ? ns4Ext : defaultExt;
+    res.locals.isNS4 = isNS4;
+    res.locals.isMSIE6 = isMSIE6;
+    res.locals.viewExt = isNS4 ? ns4Ext : defaultExt;
 
     next();
   };

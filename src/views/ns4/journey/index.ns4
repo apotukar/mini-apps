@@ -1,16 +1,15 @@
+{% from "common/macros/fav-buttons-bottom.ns4" import favButtons %}
+{% from "common/macros/hr-separator.ns4" import hr %}
+
 {% extends "layout.ns4" %}
 
 {% set style = "common, journey" %}
 
-{% block title %}DB Mini{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 
-<h2>DB Mini Fahrplan</h2>
-
-{% macro hr() %}
-  <hr style="width: 565px;">
-{% endmacro %}
+<h2>{{ headline }}</h2>
 
 {{ hr() }}
 
@@ -23,7 +22,10 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="from" name="from" value="{{ from }}" size="70">
+            {% set inputFieldId = "from" %}
+            {% set inputFieldName = "from" %}
+            {% set inputFieldValue = from %}
+            {% include "common/partials/input-field-text.ns4" %}
         </td>
     </tr>
     <tr>
@@ -33,7 +35,10 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="to" name="to" value="{{ to }}" size="70">
+            {% set inputFieldId = "to" %}
+            {% set inputFieldName = "to" %}
+            {% set inputFieldValue = to %}
+            {% include "common/partials/input-field-text.ns4" %}
         </td>
     </tr>
     <tr>
@@ -87,9 +92,8 @@
 
 <br>
 
-    {% from "common/macros/fav-buttons-bottom.ns4" import favButtons %}
-    {{ favButtons("/journey") }}
+{{ favButtons("/journey") }}
 
-    {% include "common/partials/hint.njk" %}
+{% include "common/partials/hint.njk" %}
 
 {% endblock %}
