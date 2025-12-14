@@ -63,16 +63,32 @@ export class Bootstrap {
 
   #view(app) {
     setupNunjucks(app, { config: { modeEnv: this.config.modeEnv, ...this.viewExtConfig } });
+    app.use(viewBaseMarker(this.viewExtConfig));
+    app.use(pageUrlMarker());
     app.use(
       '/public',
       express.static(
         path.join(this.config.rootDir, 'src/public'),
-        this.config.modeEnv.toUpperCase() === 'DEV'
-          ? { etag: false, lastModified: false, cacheControl: false, maxAge: 0 }
-          : { etag: true, lastModified: true, maxAge: '30d' }
+        this.config.modeEnv === 'DEV'
+          ? {
+              etag: false,
+              lastModified: false,
+              setHeaders: res => {
+                res.setHeader('Cache-Control', 'no-store');
+              }
+            }
+          : {
+              etag: true,
+              lastModified: true,
+              setHeaders: (res, path) => {
+                const oneYear = 60 * 60 * 24 * 365;
+                res.setHeader('Cache-Control', `public, max-age=${oneYear}`);
+                if (/\.[a-f0-9]{8,}\./.test(path)) {
+                  res.setHeader('Cache-Control', `public, max-age=${oneYear}, immutable`);
+                }
+              }
+            }
       )
     );
-    app.use(viewBaseMarker(this.viewExtConfig));
-    app.use(pageUrlMarker());
   }
 }

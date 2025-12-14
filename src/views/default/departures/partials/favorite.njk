@@ -1,5 +1,5 @@
 <div class="fav">
-  <a href="/departures/search?station={{ fav | urlencode }}">
+  <a href="/departures/search?station={{ fav | urlencode }}}&radius={{ radius | default(1) }}">
     {{ fav }}
   </a>
 </div>

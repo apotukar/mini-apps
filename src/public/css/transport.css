@@ -20,6 +20,12 @@ input[name='to'] {
   padding: 4px;
 }
 
+input[name='station'],
+select[name='radius'] {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
 .is-old-gecko input {
   width: 98%;
 }

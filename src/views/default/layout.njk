@@ -7,6 +7,14 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script type="text/javascript" src="/public/js/style-hack.min.js"></script>
+    {% set scripts = script | replace(', ', ',') | replace(' ,', ',') | split(',') %}
+    {% for s in scripts %}
+        {% if viewExt and viewExt != 'njk' %}
+            <script src="/public/js/{{ viewExt }}/{{ s }}.min.js"></script>
+        {% else %}
+            <script src="/public/js/{{ s }}.min.js"></script>
+      {% endif %}
+    {% endfor %}
     <link rel="icon" type="image/png" href="/public/images/favicon.min.png?v=2">
     {% set styles = style | replace(', ', ',') | replace(' ,', ',') | split(',') %}
     {% for s in styles %}

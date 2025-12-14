@@ -77,6 +77,14 @@
     </li>
 
     <li>
+      <a href="/browser">
+        <img src="/public/images/browser.min.png" alt="📰" class="icon">{{ content.browser.title }}
+      </a>
+      <br>
+      <small>{{ content.browser.desc }}</small>
+    </li>
+
+    <li>
     <img src="/public/images/star.min.png" alt="⭐" class="icon"><span style="font-size: 18px;">{{ content.bookmarks.title }}</span>
       <br>
 
@@ -85,14 +93,6 @@
           {% include "home/partials/favorite.njk" %}
         {% endfor %}
       </ul>
-    </li>
-
-    <li>
-      <a href="/browser">
-        <img src="/public/images/browser.min.png" alt="📰" class="icon">{{ content.browser.title }}
-      </a>
-      <br>
-      <small>{{ content.browser.desc }}</small>
     </li>
 
   </ul>

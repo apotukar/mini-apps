@@ -1,0 +1,369 @@
+modeEnv: ${MODE_ENV}
+httpPort: ${HTTP_PORT}
+httpsPort: ${HTTPS_PORT}
+secret:
+  username: ${BASIC_AUTH_USER}
+  password: ${BASIC_AUTH_PASS}
+sessionSecret: ${SESSION_SECRET}
+authTokenKey: ${AUTH_TOKEN_KEY}
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+routes:
+  - name: journey
+    path: /journey
+    title: Verbindungen
+    headline: Verbindungen und Fahrpläne
+    description: Fahrten suchen, extrem leicht.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: true
+  - name: departures
+    path: /departures
+    title: Abfahrten
+    headline: Abfahrten und Haltestellen
+    description: Nächste Abfahrten an einer Station.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: true
+  - name: weather
+    path: /weather
+    title: Wetter
+    headline: Das Wetter
+    description: Aktuelles Wetter und Vorhersage.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: true
+  - name: tasks
+    path: /tasks
+    title: Tasks
+    headline: Google Tasks
+    description: Alle Google-Tasks-Listen (Leseansicht).
+    requiresLogin: true
+    roles: []
+    scheme:
+      - https
+    forceHttpsRedirect: true
+    hasFavorites: false
+  - name: news
+    path: /news
+    title: Nachrichten
+    headline: Aktuelle Nachrichten
+    description: Aktuelle Nachrichten aus verschiedenen Quellen.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: false
+  - name: pois
+    path: /pois
+    title: POIs
+    headline: Points of Interest
+    description: Finden in der Umgebung.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: false
+  - name: track
+    path: /track
+    title: Sendungsverfolgung
+    headline: 'Sendungsverfolgung (aktuell unterstützt: DHL)'
+    description: 'Aktuell unterstützt: DHL.'
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: true
+  - name: joplin
+    path: /joplin
+    title: Joplin
+    headline: Joplin-Notizen
+    description: Alle Notizen (Leseansicht).
+    requiresLogin: true
+    roles:
+      - joplin
+    scheme:
+      - https
+    forceHttpsRedirect: true
+    hasFavorites: false
+  - name: browser
+    path: /browser
+    title: RetroFit
+    headline: RetroFit Browser
+    description: >-
+      Ein textbasierter Webbrowser, der innerhalb eines älteren grafischen
+      Browsers läuft und modernes Web vereinfacht darstellt.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - http
+      - https
+    forceHttpsRedirect: false
+    hasFavorites: false
+  - name: auth
+    path: /auth
+    title: Authentifizierung
+    headline: Login/Logout
+    description: Authentifizierung.
+    requiresLogin: false
+    roles: []
+    scheme:
+      - https
+    forceHttpsRedirect: true
+    hasFavorites: false
+transport:
+  saveNormalizedFavName: true
+  labels:
+    bus: Bus
+    ferry: Fähre
+    national: Fernzug (IC)
+    nationalExpress: Fernzug (ICE))
+    regional: Regionalzug
+    regionalExpress: Regional-Express
+    suburban: S-Bahn
+    subway: U-Bahn
+    taxi: Anruf-Sammel-Taxi
+    tram: Straßenbahn (Tram)
+    unknown: ''
+  cssTypeAppendices:
+    bus: bus
+    longDistance: long-distance
+    national: long-distance
+    nationalExpress: long-distance
+    regional: regional
+    regionalExpress: regional
+    suburban: sbahn
+    subway: ubahn
+    tram: tram
+  journey:
+    saveNormalizedName: true
+    favorites:
+      - from: München Hbf
+        to: Landshut Hbf
+        bidirectional: true
+      - from: München Hbf
+        to: Berlin Hbf
+        bidirectional: true
+      - from: München Hbf
+        to: Essen Hbf
+        bidirectional: true
+  departures:
+    saveNormalizedName: true
+    favorites:
+      München:
+        - Grillparzerstraße, München
+        - Prinzregentenplatz, München
+        - Max-Weber-Platz, München
+        - Ostbahnhof, München
+        - München Hbf
+        - Leuchtenbergring, München
+        - Moselstraße, München
+        - Hermann-Gmeiner-Weg, München
+        - Schwarzwaldstraße, München
+        - Vollmannstraße, München
+        - Schwanseestraße, München
+        - Chiemgaustraße, München
+        - Tegernseer Landstraße, München
+      Landshut:
+        - Landshut(Bay)Hbf
+        - Ländtorplatz, Landshut
+      Berlin:
+        - Berlin Hbf
+        - Rosa-Luxemburg-Platz (U), Berlin
+        - Berlin Alexanderplatz
+      Essen:
+        - Essen Hbf
+weather:
+  favorites:
+    - München
+    - Berlin
+    - Essen
+    - Landshut
+  descriptions:
+    '0': Klarer Himmel
+    '1': Überwiegend klar
+    '2': Teilweise bewölkt
+    '3': Bedeckt
+    '45': Nebel
+    '48': Reifnebel
+    '51': Leichter Nieselregen
+    '53': Mäßiger Nieselregen
+    '55': Starker Nieselregen
+    '56': Leichter gefrierender Nieselregen
+    '57': Starker gefrierender Nieselregen
+    '61': Leichter Regen
+    '63': Mäßiger Regen
+    '65': Starker Regen
+    '66': Leichter gefrierender Regen
+    '67': Starker gefrierender Regen
+    '71': Leichter Schneefall
+    '73': Mäßiger Schneefall
+    '75': Starker Schneefall
+    '77': Schneekörner
+    '80': Leichte Regenschauer
+    '81': Mäßige Regenschauer
+    '82': Heftige Regenschauer
+    '85': Leichte Schneeschauer
+    '86': Heftige Schneeschauer
+    '95': Gewitter
+    '96': Gewitter mit leichtem Hagel
+    '99': Gewitter mit starkem Hagel
+joplin:
+  webdavUrl: https://apnc.portmap.io/remote.php/dav/files/apotukar/Misc/Joplin
+  cacheDir: ${DATA_DIR}/cache/joplin
+  preferredNotebooks:
+    - Notizen
+  secret:
+    username: ${JOPLIN_USER}
+    password: ${JOPLIN_PASS}
+news:
+  feeds:
+    https://www.jungewelt.de/aktuell/newsticker.rss: 100
+    https://www.freitag.de/@@RSS: 100
+    https://www.nd-aktuell.de/rss/aktuell.php: 100
+    https://jacobin.com/rss/: 100
+    https://www.wsws.org/de/rss.xml: 100
+    https://www.tagesschau.de/xml/rss2/: 50
+    https://www.heise.de/newsticker/heise.rdf: 200
+    https://rss.dw.com/xml/rss-de-all: 50
+    https://taz.de/!p4608;rss/: 400
+    https://newsfeed.zeit.de/index: 300
+    https://www.spiegel.de/schlagzeilen/index.rss: 300
+    https://www.handelsblatt.com/contentexport/feed/schlagzeilen: 300
+    https://nachrichtenfeeds.br.de/rss/nachrichten/seiten/QXAPkQJ: 400
+    https://rss.orf.at/news.xml: 400
+  limit: 7
+  totalLimit: 84
+  browserProxies:
+    - link: frogfind.com/read.php?a=
+      description: Frogfind
+    - link: www.textise.net/showText.aspx?strURL=
+      description: Textise
+    - link: /browser/browse?url=
+      description: Lokaler textbasierter Browser
+pois:
+  zoom: 16
+  tiles: 3
+  emergencyPharmaciesCacheDir: ${DATA_DIR}/cache/emergency-pharmacies
+  addMissingAddresses: false
+  reverseGeocodingCacheDir: ${DATA_DIR}/cache/reverse-search
+  reverseGeocodingKey: ${REVERSE_GEOCODING_KEY}
+  types:
+    bank:
+      label: Bank
+      query: amenity=bank
+    bar:
+      label: Bar
+      query: amenity=bar
+    bookstore:
+      label: Buchhandlung
+      query: shop=books
+    bus_stop:
+      label: Bushaltestelle
+      query: highway=bus_stop
+    cafe:
+      label: Café
+      query: amenity=cafe
+    chemist:
+      label: Drogerie
+      query: shop=chemist
+    cinema:
+      label: Kino
+      query: amenity=cinema
+    doctor:
+      label: Arzt
+      query: amenity=doctors
+    emergency_pharmacy:
+      label: Apotheken-Notdienst
+      query: null
+    fitness_center:
+      label: Fitnessstudio
+      query: leisure=fitness_centre
+    hotel:
+      label: Hotel
+      query: tourism=hotel
+    hospital:
+      label: Krankenhaus
+      query: amenity=hospital
+    library:
+      label: Bibliothek
+      query: amenity=library
+    optician:
+      label: Optiker
+      query: shop=optician
+    pharmacy:
+      label: Apotheke
+      query: amenity=pharmacy
+    post_office:
+      label: Post
+      query: amenity=post_office
+    pub:
+      label: Biergarten
+      query: amenity=pub
+    restaurant:
+      label: Restaurant
+      query: amenity=restaurant
+    supermarket:
+      label: Supermarkt
+      query: shop=supermarket
+    taxi:
+      label: Taxi
+      query: amenity=taxi
+    train_station:
+      label: Bahnhof
+      query: railway=station
+    fuel_station:
+      label: Tankstelle
+      query: amenity=fuel
+track:
+  dhl:
+    label: DHL
+    apiKey: ${DHL_API_KEY}
+tasks:
+  clientId: ${GOOGLE_CLIENT_ID}
+  clientSecret: ${GOOGLE_CLIENT_SECRET}
+  tokensPath: data/gtokens
+browser:
+  timeout: 120000
+  waitUntil: domcontentloaded
+bookmarks:
+  - title: FrogFind!
+    url: http://frogfind.com
+    description: Suchmaschine und Webseiten-Textvereinfacher für alte Browser.
+  - title: Textise
+    url: https://www.textise.net/
+    description: Wandelt moderne Websites in reinen Text um.
+  - title: DuckDuckGo Lite
+    url: https://duckduckgo.com/lite
+    description: Datenschutzfreundliche Suchmaschine ohne Tracking.
+  - title: Wiby
+    url: https://wiby.me/
+    description: Suchmaschine speziell für kleine, alte und persönliche Webseiten.
+  - title: Marginalia Search
+    url: https://search.marginalia.nu/
+    description: Fokussiert auf kleine, nicht SEO-optimierte Websites.
+  - title: Wayback Machine
+    url: https://archive.org/web/
+    description: Durchsucht archivierte Versionen alter Websites.
+  - title: OldWeb.today
+    url: https://oldweb.today/
+    description: Zeigt Websites in emulierten alten Browsern wie Netscape oder Mosaic.

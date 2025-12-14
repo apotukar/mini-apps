@@ -1,8 +1,6 @@
-import Parser from 'rss-parser';
-
 export class FeedsService {
-  constructor() {
-    this.parser = new Parser();
+  constructor(parser) {
+    this.parser = parser;
   }
 
   async fetchAllFeeds(feeds, limit, totalLimit, browserProxy) {

@@ -1,55 +1,84 @@
+import { filterByRadius } from '../lib/geo/geo-radius.js';
+
 export class TransportService {
-  constructor(client, transportLabels = {}, transportCssTypeAppendices = {}) {
+  constructor(client, config) {
     this.client = client;
-    this.transportLabels = transportLabels;
-    this.transportCssTypeAppendices = transportCssTypeAppendices;
+
+    this.config = {
+      journey: {
+        duration: 60
+      },
+      departures: {
+        duration: 60,
+        minResults: 5
+      },
+      ...config
+    };
+
+    if (this.config.transportCssTypeAppendices === null) {
+      throw new Error('config.transportCssTypeAppendices is required');
+    }
+
+    if (this.config.transportLabels === null) {
+      throw new Error('config.transportLabels is required');
+    }
   }
 
   async findStation(name) {
-    const list = await this.client.locations(name, { results: 1 });
-    if (!list || list.length === 0) {
+    const stations = await this.client.locations(name, { results: 1 });
+    if (!stations || stations.length === 0) {
       throw new Error('Station nicht gefunden: ' + name);
     }
 
-    const station = list[0];
+    const station = stations[0];
     if (!station.id) {
       throw new Error('Station hat keine ID: ' + name);
     }
 
-    const enrichedStation = {
+    return {
       ...station,
       normalizedName: this.#normalizeIfUpper(station.name || '')
     };
-
-    return enrichedStation;
   }
 
-  async fetchDeparturesUntilFound(stationId, initialWhen, minResults = 5) {
+  // TODO: configure duration and stepMinutes
+  async fetchDeparturesUntilFound(station, initialWhen, minResults = 5, radius = 1) {
     let whenDate = initialWhen ? new Date(initialWhen) : new Date();
     if (Number.isNaN(whenDate.getTime())) {
       whenDate = new Date();
     }
 
-    const stepMinutes = 15;
-    let remainingTries = 48;
-    const baseOpts = { duration: 60, results: 10 };
+    const duration = 60;
+    const stepMinutes = duration - 1;
+    let remainingTries = 12;
+    const baseOpts = {
+      duration,
+      results: 10
+    };
 
-    const collected = [];
+    const departures = [];
     const firstWhen = whenDate;
 
-    while (remainingTries-- > 0 && collected.length < minResults) {
+    const center =
+      station.type === 'location'
+        ? {
+            lat: station.location?.latitude || station.latitude,
+            lon: station.location?.longitude || station.longitude
+          }
+        : null;
+
+    while (remainingTries-- > 0 && departures.length < minResults) {
       const opts = { ...baseOpts, when: whenDate };
-      const data = await this.client.departures(stationId, opts);
+      const data = await this.client.departures(station.id, opts);
+      let batch = Array.isArray(data?.departures) ? data.departures : [];
 
-      const departures = Array.isArray(data?.departures)
-        ? data.departures
-        : Array.isArray(data)
-          ? data
-          : [];
+      if (center) {
+        batch = this.#filterDeparturesByRadius(batch, center, radius);
+      }
 
-      if (departures.length > 0) {
-        collected.push(...departures);
-        const last = departures[departures.length - 1];
+      if (batch.length > 0) {
+        departures.push(...batch);
+        const last = batch[batch.length - 1];
         const lastWhen = last?.when || last?.plannedWhen;
         if (lastWhen) {
           const lastDate = new Date(lastWhen);
@@ -62,7 +91,21 @@ export class TransportService {
       }
     }
 
-    return { departures: collected, usedWhen: firstWhen };
+    const stationsStats = departures.reduce((acc, station) => {
+      const id = station.stop.name;
+      if (!acc[id]) {
+        acc[id] = 0;
+      }
+      acc[id] += 1;
+
+      return acc;
+    }, {});
+
+    return {
+      departures,
+      usedWhen: firstWhen,
+      stationNames: Object.keys(stationsStats)
+    };
   }
 
   async fetchJourneys(fromId, toId, options) {
@@ -70,14 +113,113 @@ export class TransportService {
     return journeys;
   }
 
-  #normalizeIfUpper(word) {
-    if (word === word.toUpperCase()) {
-      return word.charAt(0) + word.slice(1).toLowerCase();
-    }
-    return word;
+  #filterDeparturesByRadius(departures, center, radiusKm) {
+    const points = departures
+      .map(departure => {
+        const loc = departure?.stop?.location;
+        if (!loc) {
+          return null;
+        }
+
+        return {
+          lat: loc.latitude,
+          lon: loc.longitude,
+          item: departure
+        };
+      })
+      .filter(Boolean);
+
+    return filterByRadius(center, points, radiusKm).map(p => p.item);
   }
 
-  buildJourneyView(legs, index, transportLabels) {
+  buildDeparturesView(departures) {
+    const that = this;
+
+    function translateProduct(product) {
+      return that.config.transportLabels[product] || product || '';
+    }
+
+    function mapType(transportCssTypeAppendices, product) {
+      return that.config.transportCssTypeAppendices[product] || 'other';
+    }
+
+    function formatLine(productGerman, raw) {
+      if (!raw) {
+        return productGerman;
+      }
+      const cleaned = raw
+        .replace(/^STR\s*/i, '')
+        .replace(/^BUS\s*/i, '')
+        .replace(/^TRAM\s*/i, '')
+        .replace(/^SUBWAY\s*/i, '')
+        .replace(/^SUBURBAN\s*/i, '');
+      const alreadyHasProduct = cleaned.toLowerCase().startsWith(productGerman.toLowerCase());
+      if (alreadyHasProduct) {
+        return cleaned;
+      }
+      if (/^\d+/.test(cleaned)) {
+        return `${productGerman} ${cleaned}`;
+      }
+      if (/^[SU]\s*\d+/i.test(cleaned)) {
+        return cleaned;
+      }
+      return `${productGerman} ${cleaned}`;
+    }
+
+    const items = departures.map(departure => {
+      const plannedWhen = departure.plannedWhen;
+      const plannedTime = plannedWhen ? new Date(plannedWhen) : null;
+      const actualWhen = departure.when;
+      const actualTime = actualWhen ? new Date(actualWhen) : null;
+      const delay = departure.delay !== null ? Math.round(departure.delay / 60) : 0;
+      const line = departure.line || {};
+      const productRaw = line.product || line.mode || '';
+      const productGerman = translateProduct(productRaw);
+      const type = mapType(that.config.transportCssTypeAppendices, productRaw);
+      const lineName = line.name || line.label || line.id || '';
+      const lineText = formatLine(productGerman, lineName);
+      const stationName = departure.stop?.name || '';
+
+      return {
+        time: plannedTime ?? actualTime,
+        actualTime: actualTime ?? plannedTime,
+        delay,
+        direction: departure.direction || '',
+        lineText,
+        platform: departure.platform || departure.plannedPlatform || '',
+        type,
+        rawWhen: actualWhen || plannedWhen,
+        stationName
+      };
+    });
+
+    const validTimes = items
+      .map(i => i.rawWhen)
+      .filter(Boolean)
+      .map(w => new Date(w))
+      .sort((a, b) => a - b);
+
+    let earlierIso = null;
+    let laterIso = null;
+
+    if (validTimes.length > 0) {
+      const first = validTimes[0];
+      const last = validTimes[validTimes.length - 1];
+      const halfHour = 30 * 60 * 1000;
+      earlierIso = new Date(first.getTime() - halfHour).toISOString();
+      laterIso = new Date(last.getTime() + halfHour).toISOString();
+    }
+
+    const cleanedItems = items.map(({ rawWhen: _, ...rest }) => rest);
+
+    return {
+      departures: cleanedItems,
+      earlierIso,
+      laterIso
+    };
+  }
+
+  buildJourneyView(legs, index) {
     if (!legs.length) {
       return null;
     }
@@ -110,7 +252,7 @@ export class TransportService {
       const arrDelayMin = leg.arrivalDelay !== null ? Math.round(leg.arrivalDelay / 60) : 0;
       const line = leg.line || {};
       const productKey = line.product || line.mode || '';
-      const product = transportLabels[productKey] || productKey;
+      const product = this.config.transportLabels[productKey] || productKey;
       const lineName = line.name || line.label || line.id || '';
       const lineText = [product, lineName].filter(Boolean).join(' ');
 
@@ -170,87 +312,10 @@ export class TransportService {
     };
   }
 
-  buildDeparturesView(transportLabels, transportCssTypeAppendices, stationName, departures) {
-    function translateProduct(product) {
-      return transportLabels[product] || product || '';
+  #normalizeIfUpper(word) {
+    if (word === word.toUpperCase()) {
+      return word.charAt(0) + word.slice(1).toLowerCase();
     }
-
-    function mapType(transportCssTypeAppendices, product) {
-      return transportCssTypeAppendices[product] || 'other';
-    }
-
-    function formatLine(productGerman, raw) {
-      if (!raw) {
-        return productGerman;
-      }
-      const cleaned = raw
-        .replace(/^STR\s*/i, '')
-        .replace(/^BUS\s*/i, '')
-        .replace(/^TRAM\s*/i, '')
-        .replace(/^SUBWAY\s*/i, '')
-        .replace(/^SUBURBAN\s*/i, '');
-      const alreadyHasProduct = cleaned.toLowerCase().startsWith(productGerman.toLowerCase());
-      if (alreadyHasProduct) {
-        return cleaned;
-      }
-      if (/^\d+/.test(cleaned)) {
-        return `${productGerman} ${cleaned}`;
-      }
-      if (/^[SU]\s*\d+/i.test(cleaned)) {
-        return cleaned;
-      }
-      return `${productGerman} ${cleaned}`;
-    }
-
-    const items = departures.map(departure => {
-      const plannedWhen = departure.plannedWhen;
-      const plannedTime = plannedWhen ? new Date(plannedWhen) : null;
-      const actualWhen = departure.when;
-      const actualTime = actualWhen ? new Date(actualWhen) : null;
-      const delay = departure.delay !== null ? Math.round(departure.delay / 60) : 0;
-      const line = departure.line || {};
-      const productRaw = line.product || line.mode || '';
-      const productGerman = translateProduct(productRaw);
-      const type = mapType(transportCssTypeAppendices, productRaw);
-      const lineName = line.name || line.label || line.id || '';
-      const lineText = formatLine(productGerman, lineName);
-
-      return {
-        time: plannedTime ?? actualTime,
-        actualTime: actualTime ?? plannedTime,
-        delay,
-        direction: departure.direction || '',
-        lineText,
-        platform: departure.platform || departure.plannedPlatform || '',
-        type,
-        rawWhen: actualWhen || plannedWhen
-      };
-    });
-
-    const validTimes = items
-      .map(i => i.rawWhen)
-      .filter(Boolean)
-      .map(w => new Date(w))
-      .sort((a, b) => a - b);
-
-    let earlierIso = null;
-    let laterIso = null;
-
-    if (validTimes.length > 0) {
-      const first = validTimes[0];
-      const last = validTimes[validTimes.length - 1];
-      const halfHour = 30 * 60 * 1000;
-      earlierIso = new Date(first.getTime() - halfHour).toISOString();
-      laterIso = new Date(last.getTime() + halfHour).toISOString();
-    }
-
-    const cleanedItems = items.map(({ rawWhen: _, ...rest }) => rest);
-
-    return {
-      stationName,
-      departures: cleanedItems,
-      earlierIso,
-      laterIso
-    };
+    return word;
   }
 }

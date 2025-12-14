@@ -1,6 +1,7 @@
 {% extends "layout.njk" %}
 
-{% set style = "common, journey" %}
+{% set style = "common, transport" %}
+{% set script = "favs" %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -15,7 +16,12 @@
       id="station"
       name="station"
       value="{{ station }}"
-      autocomplete="off" style="margin-bottom: 15px;" />
+      autocomplete="off" />
+    {% set radiusLabel = "Max. Entfernung:" %}
+    {% set radiusName = "radius" %}
+    {% set radiusOptions = [1, 2, 3, 5, 10] %}
+    {% set radiusOnChange = "updateRadius(this)" %}
+    {% include "common/partials/radius.njk" %}
     <button type="submit" formaction="/departures/search" class="btn btn-primary">
       Anzeigen
     </button>

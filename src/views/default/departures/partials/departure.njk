@@ -2,21 +2,29 @@
 <div class="departure departure-{{ dep.type }}">
     {% if dep.delay > 0 %}
     <strong style="color: red;">
-    {{ dep.actualTime | formatTime }} ({{ dep.time | formatTime }} + {{ dep.delay | formatDuration }})
+        {{ dep.actualTime | formatTime }} ({{ dep.time | formatTime }} + {{ dep.delay | formatDuration }})
     {% else %}
     <strong>
-    {{ dep.actualTime | formatTime }}
+        {{ dep.actualTime | formatTime }}
     {% endif %}
     </strong>
-
-  {% if dep.lineText %}
-    <br>{{ dep.lineText }}
-  {% endif %}
-  {% if dep.direction %}
-    {{ image("rarrow.min", viewExt, { alt: "->", class: "arrow-inline", alt_fallback: "->", height: 10, border: 0 }) }}
-    {{ dep.direction }}
-  {% endif %}
-  {% if dep.platform %}
-    <small>Gleis/Steig: {{ dep.platform }}</small>
-  {% endif %}
+    {% if stationCount > 1 %}
+    <strong>
+        {{ image("station.min", viewExt, { alt: "Haltestelle", class: 'icon-inline', height: 10, border: 0 })}}
+        {{ dep.stationName }}
+    </strong>
+    {% endif %}
+    {% if dep.lineText %}
+        <br>{{ dep.lineText }}
+    {% endif %}
+    {% if dep.direction %}
+        {{ image("rarrow.min", viewExt, { alt: "->", class: "arrow-inline", alt_fallback: "->", height: 10, border: 0 }) }}
+        {{ dep.direction }}
+    {% endif %}
+    {% if dep.platform %}
+        <small>Gleis/Steig: {{ dep.platform }}</small>
+    {% endif %}
+    {% if viewExt == 'ns4' %}
+        <div class="ns4-padding-fix">&nbsp;</div>
+    {% endif %}
 </div>

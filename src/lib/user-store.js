@@ -4,14 +4,11 @@ import crypto from 'crypto';
 import argon2 from 'argon2';
 
 export class UserStore {
-  // TODO: inject user data dir
   constructor(options = {}) {
     const { userDir = 'data/users', hashing = {} } = options;
 
-    // Directory handling
     this.userDir = path.isAbsolute(userDir) ? userDir : path.join(process.cwd(), userDir);
 
-    // Argon2 parameter config
     this.hashOptions = {
       type: argon2.argon2id,
       memoryCost: hashing.memoryCost ?? 19456,

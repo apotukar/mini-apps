@@ -75,7 +75,6 @@ export class BrowserService {
         }
       });
 
-    console.log(results);
     const simpleHtml = this.#createSimpleHTML(results, normalizedLocalUrl);
     return simpleHtml;
   }

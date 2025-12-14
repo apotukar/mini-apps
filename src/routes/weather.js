@@ -1,13 +1,10 @@
-import { FavoritesManager } from '../lib/favs/favorites.js';
-
 export function registerWeatherRoutes(app, params) {
   const config = params.config || {};
   const route = params.route || {};
-  const favoritesNamespace = 'weather';
-  const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
 
   app.get('/weather', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     let favorites = await favsManager.getFavorites(req);
     if (!(await favsManager.getHideFlag(req))) {
       favorites = favsManager.dedupeFavs([...favorites, ...configFavorites]);
@@ -32,6 +29,7 @@ export function registerWeatherRoutes(app, params) {
       return res.redirect('/weather');
     }
 
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     let favorites = await favsManager.getFavorites(req);
     favorites = favsManager.dedupeFavs([city, ...favorites]);
     await favsManager.saveFavorites(res, favorites);
@@ -40,11 +38,13 @@ export function registerWeatherRoutes(app, params) {
   });
 
   app.get('/weather/clear-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearFavorites(res);
     return res.redirect('/weather');
   });
 
   app.get('/weather/show-config-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearHideFlag(res);
     return res.redirect('/weather');
   });

@@ -12,7 +12,6 @@ export class WeatherService {
       error.isKnown = true;
       throw error;
     }
-    console.log('Geocoding-Anfrage erfolgreich.', geoResp);
 
     const geo = await geoResp.json();
     if (!geo.results || geo.results.length === 0) {

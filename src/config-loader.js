@@ -1,14 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import yaml from 'js-yaml';
 
-export function loadConfig(configFile = 'config.json') {
-  const rootDir = process.cwd();
+export function loadConfig(rootDir = process.cwd(), configFile = 'config.yml') {
   dotenv.config({ path: path.join(rootDir, '.env'), override: process.env.DOTENV_OVERRIDE });
   const configPath = path.join(rootDir, configFile);
   const raw = fs.readFileSync(configPath, 'utf8');
-  const rawConfig = JSON.parse(raw);
-
+  const rawConfig = yaml.load(raw);
   const config = applyEnvPlaceholders(rawConfig);
   return config;
 }

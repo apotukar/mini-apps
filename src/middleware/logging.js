@@ -6,14 +6,31 @@ export function logger() {
     res.on('finish', () => {
       const duration = Date.now() - start;
       const parts = req.path.split('/').filter(Boolean);
-      const segment = parts[0] || ''; // oder beliebiger Index
+      const segment = parts[0] || '';
+      const caller = getCallerInfo(); //  <<<<< HIER
+
       console.log(
-        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${req.url} → ${res.statusCode} (${duration}ms) - SEG: ${segment} - UA: ${ua}`
+        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${req.originalUrl}` +
+          ` → ${res.statusCode} (${duration}ms)` +
+          ` - SEG: ${segment} - UA: ${ua} - CALLER: ${caller}`
       );
     });
 
     next();
   };
+}
+
+function getCallerInfo() {
+  const err = new Error();
+  const stack = err.stack.split('\n');
+  const callerLine = stack[2] || '';
+  const match = callerLine.match(/\((.*):(\d+):(\d+)\)/);
+  if (!match) {
+    return '';
+  }
+
+  const [, file, line] = match;
+  return `${file}:${line}`;
 }
 
 function humanTimestamp(config = {}) {

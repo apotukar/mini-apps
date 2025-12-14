@@ -34,8 +34,6 @@ export class RoutesBuilder {
     });
 
     const sharedTransportConfig = {
-      transportLabels: this.config.transport.labels,
-      transportCssTypeAppendices: this.config.transport.cssTypeAppendices,
       saveNormalizedFavName: this.config.transport.saveNormalizedFavName
     };
 

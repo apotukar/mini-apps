@@ -1,11 +1,6 @@
-import { FavoritesManager } from '../lib/favs/favorites.js';
-
 export function registerJourneyRoutes(app, params) {
   const config = params.config || {};
   const route = params.route || {};
-  const transportLabels = config.transportLabels || {};
-  const favoritesNamespace = 'journey';
-  const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Array.isArray(config.favorites) ? config.favorites : [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || false;
 
@@ -22,6 +17,7 @@ export function registerJourneyRoutes(app, params) {
       next();
     },
     async (req, res) => {
+      const favsManager = req.services.get(`favoritesManager.${route.name}`);
       let favorites = await favsManager.getFavorites(req);
       if (!(await favsManager.getHideFlag(req))) {
         favorites = favsManager.dedupeFavs([...favorites, ...configFavorites]);
@@ -64,6 +60,7 @@ export function registerJourneyRoutes(app, params) {
         toName = toStation.normalizedName;
       }
 
+      const favsManager = req.services.get(`favoritesManager.${route.name}`);
       const favorites = favsManager.dedupeFavs([
         { from: fromName, to: toName },
         ...(await favsManager.getFavorites(req))
@@ -81,11 +78,13 @@ export function registerJourneyRoutes(app, params) {
   });
 
   app.get('/journey/clear-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearFavorites(res);
     return res.redirect('/journey');
   });
 
   app.get('/journey/show-config-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearHideFlag(res);
     return res.redirect('/journey');
   });
@@ -94,8 +93,7 @@ export function registerJourneyRoutes(app, params) {
     '/journey/search',
     createJourneyHandler(req => ({
       fromName: req.body.from,
-      toName: req.body.to,
-      transportLabels: transportLabels
+      toName: req.body.to
     }))
   );
 
@@ -106,8 +104,7 @@ export function registerJourneyRoutes(app, params) {
       toName: req.query.to,
       departure: req.query.departure || null,
       earlierThan: (req.query.earlierThan || '').trim() || null,
-      laterThan: (req.query.laterThan || '').trim() || null,
-      transportLabels: transportLabels
+      laterThan: (req.query.laterThan || '').trim() || null
     }))
   );
 
@@ -128,8 +125,7 @@ export function registerJourneyRoutes(app, params) {
         toName: (toName || '').trim(),
         departure,
         earlierThan,
-        laterThan,
-        transportLabels
+        laterThan
       });
     };
   }
@@ -141,8 +137,7 @@ export function registerJourneyRoutes(app, params) {
     toName: rawToName,
     departure,
     earlierThan,
-    laterThan,
-    transportLabels
+    laterThan
   }) {
     try {
       if (!rawFromName || !rawToName) {
@@ -175,9 +170,7 @@ export function registerJourneyRoutes(app, params) {
       }
 
       const journeysView = journeys
-        .map((journey, i) =>
-          transportService.buildJourneyView(journey.legs || [], i, transportLabels)
-        )
+        .map((journey, i) => transportService.buildJourneyView(journey.legs || [], i))
         .filter(Boolean);
 
       return res.render('journey/results.njk', {

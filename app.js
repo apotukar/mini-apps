@@ -8,7 +8,7 @@ import { RoutesBuilder } from './src/routes-builder.js';
 import { ServerBuilder } from './src/server-builder.js';
 
 const ROOT_DIR = process.cwd();
-const config = loadConfig();
+const config = loadConfig(ROOT_DIR, 'config.yml');
 const app = express();
 
 const bootstrap = new Bootstrap({

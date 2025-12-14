@@ -1,16 +1,12 @@
-import { FavoritesManager } from '../lib/favs/favorites.js';
-import { fetchShipment } from '../lib/tracking/dhl.js';
-
 export function registerTrackRoutes(app, params) {
-  const config = params.config;
-  const favoritesNamespace = 'track';
-  const favsManager = new FavoritesManager(favoritesNamespace);
+  const route = params.route;
 
   app.get('/track', async (req, res) => {
     const query = req.query.q || '';
     const trackingNumber = query.trim();
     const viewExt = res.locals.viewExt || '';
     const indexPage = `track/index.${viewExt}`;
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     let trackingNumbers = (await favsManager.getFavorites(req)) || [];
 
     if (!trackingNumber) {
@@ -24,12 +20,8 @@ export function registerTrackRoutes(app, params) {
     }
 
     try {
-      const shipment = await fetchShipment(trackingNumber, {
-        apiKey: config.dhl.apiKey,
-        service: 'parcel-de',
-        requesterCountryCode: 'DE',
-        language: 'de'
-      });
+      const trackService = req.services.get('trackService');
+      const shipment = await trackService.dhlFetchShipment(trackingNumber);
 
       if (!shipment) {
         res.render(indexPage, {
@@ -70,6 +62,7 @@ export function registerTrackRoutes(app, params) {
       return res.redirect(redirectPage);
     }
 
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     const trackingNumbers = ((await favsManager.getFavorites(req)) || []).filter(
       item => item !== del
     );

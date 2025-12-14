@@ -1,16 +1,11 @@
-import { FavoritesManager } from '../lib/favs/favorites.js';
-
 export function registerDeparturesRoutes(app, params = {}) {
   const config = params.config || {};
   const route = params.route || {};
-  const transportLabels = config.transportLabels || {};
-  const transportCssTypeAppendices = config.transportCssTypeAppendices || {};
-  const favoritesNamespace = 'departures';
-  const favsManager = new FavoritesManager(favoritesNamespace);
   const configFavorites = Object.values(config.favorites).flat() || [];
   const configSaveNormalizedFavName = config.saveNormalizedFavName || true;
 
   app.get('/departures', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     let favorites = await favsManager.getFavorites(req);
     if (!(await favsManager.getHideFlag(req))) {
       favorites = favsManager.dedupeFavs([...favorites, ...configFavorites]);
@@ -19,10 +14,12 @@ export function registerDeparturesRoutes(app, params = {}) {
     }
 
     const station = req.query.station || '';
+    const radius = getRadiusSafe(req.query.radius);
     const viewExt = res.locals.viewExt || '';
 
     res.render(`departures/index.${viewExt}`, {
       station,
+      radius,
       favs: favorites,
       title: route.title,
       headline: route.headline
@@ -43,6 +40,7 @@ export function registerDeparturesRoutes(app, params = {}) {
       stationName = station.normalizedName;
     }
 
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     let favorites = await favsManager.getFavorites(req);
     favorites = favsManager.dedupeFavs([stationName, ...favorites]);
     await favsManager.saveFavorites(res, favorites);
@@ -51,11 +49,13 @@ export function registerDeparturesRoutes(app, params = {}) {
   });
 
   app.get('/departures/clear-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearFavorites(res);
     return res.redirect('/departures');
   });
 
   app.get('/departures/show-config-favs', async (req, res) => {
+    const favsManager = req.services.get(`favoritesManager.${route.name}`);
     await favsManager.clearHideFlag(res);
     return res.redirect('/departures');
   });
@@ -64,16 +64,20 @@ export function registerDeparturesRoutes(app, params = {}) {
     '/departures/search',
     handleDeparturesSearch(
       req => req.query.station,
+      req => req.query.radius,
       req => req.query.when
     )
   );
 
   app.post(
     '/departures/search',
-    handleDeparturesSearch(req => req.body.station)
+    handleDeparturesSearch(
+      req => req.body.station,
+      req => req.body.radius
+    )
   );
 
-  function handleDeparturesSearch(getStationName, getWhen) {
+  function handleDeparturesSearch(getStationName, getRadius, getWhen) {
     return async (req, res) => {
       try {
         const inputName = (getStationName(req) || '').trim();
@@ -81,23 +85,25 @@ export function registerDeparturesRoutes(app, params = {}) {
           return res.redirect('/departures');
         }
 
+        const radius = getRadiusSafe(getRadius(req));
+
         const when = getWhen ? getWhen(req) : undefined;
+
         const transportService = req.services.get('transportService');
         const station = await transportService.findStation(inputName);
-        const stationId = station.id;
         const displayName = station.normalizedName || station.name || inputName;
-        const { departures } = await transportService.fetchDeparturesUntilFound(stationId, when);
-
-        const view = transportService.buildDeparturesView(
-          transportLabels,
-          transportCssTypeAppendices,
-          displayName,
-          departures
+        const { departures, stationNames } = await transportService.fetchDeparturesUntilFound(
+          station,
+          when,
+          5,
+          radius
         );
+
+        const view = transportService.buildDeparturesView(departures);
 
         if (!view || !view.departures || view.departures.length === 0) {
           return res.render('departures/no-results.njk', {
-            stationName: view?.stationName || inputName,
+            stationName: inputName,
             title: route.title,
             headline: route.headline
           });
@@ -105,8 +111,11 @@ export function registerDeparturesRoutes(app, params = {}) {
 
         view.departures.sort((a, b) => a.actualTime - b.actualTime);
         const actualView = {
+          stationName: displayName,
+          radius,
           title: route.title,
           headline: route.headline,
+          stationCount: stationNames.length,
           ...view
         };
 
@@ -114,11 +123,17 @@ export function registerDeparturesRoutes(app, params = {}) {
       } catch (err) {
         console.error(err);
         return res.render('departures/error.njk', {
-          message: err.message,
           title: route.title,
-          headline: route.headline
+          headline: route.headline,
+          message: err.message
         });
       }
     };
+  }
+
+  function getRadiusSafe(radiusRaw, defaultRadius = 1) {
+    const radiusNum = Number((radiusRaw || '').trim());
+
+    return Number.isInteger(radiusNum) && radiusNum > 0 ? radiusNum : defaultRadius;
   }
 }
