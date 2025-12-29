@@ -1,5 +1,5 @@
 import path from 'path';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 import { getRandomBrowserProfile } from '../lib/user-agents.js';
 import { geocodePlace } from '../lib/geo/geocode.js';
 import { SimpleFileCache } from '../lib/cache.js';
@@ -39,8 +39,9 @@ export class PoiEmergencyPharmacyService {
     const profile = getRandomBrowserProfile();
     const url = `https://www.aponet.de/apotheke/notdienstsuche/${plz}`;
     const browser = await puppeteer.launch({
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     });
 
     const page = await browser.newPage();

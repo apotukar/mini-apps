@@ -1,9 +1,6 @@
 modeEnv: ${MODE_ENV}
 httpPort: ${HTTP_PORT}
 httpsPort: ${HTTPS_PORT}
-secret:
-  username: ${BASIC_AUTH_USER}
-  password: ${BASIC_AUTH_PASS}
 sessionSecret: ${SESSION_SECRET}
 authTokenKey: ${AUTH_TOKEN_KEY}
 redis:

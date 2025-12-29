@@ -11,13 +11,11 @@
       {{title}}
       {% if stationCount > 1 %}
       {{ image("nearbyred.min", viewExt, { alt: "nahe bei", class: 'icon-inline', height: 20, border: 0 })}}
+      <sup style="position: relative; left: -3px; top: 3px;"><small>{{ radius }} km</small></sup>
       {% else %}
       {{ image("stationred.min", viewExt, { alt: "Haltestelle", class: 'icon-inline', height: 20, border: 0 })}}
       {% endif %}
       {{ stationName }}
-      {% if stationCount > 1 and radius %}
-      (max. {{ radius }} km)
-      {% endif %}
   </h2>
 
   <a href="/departures?station={{ stationName | urlencode }}&radius={{ radius | default(1) }}">

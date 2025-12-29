@@ -5,6 +5,7 @@ ARG TARGETARCH
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y \
+    chromium \
     imagemagick \
     pngquant \
     ca-certificates \
@@ -44,7 +45,9 @@ RUN SHFMT_VERSION=v3.12.0 \
     && chmod +x /usr/local/bin/shfmt
 
 RUN npm install -g npm@latest
+
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PUPPETEER_CACHE_DIR=/tmp/puppeteer-cache
-RUN npx puppeteer browsers install chrome
 
 CMD ["node", "app.js"]

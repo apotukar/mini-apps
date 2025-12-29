@@ -3,6 +3,8 @@ import path from 'path';
 import dotenv from 'dotenv';
 import yaml from 'js-yaml';
 
+import { CryptoTokenCipher } from './lib/crypto/crypto-token-cipher.js';
+
 export function loadConfig(rootDir = process.cwd(), configFile = 'config.yml') {
   dotenv.config({ path: path.join(rootDir, '.env'), override: process.env.DOTENV_OVERRIDE });
   const configPath = path.join(rootDir, configFile);
