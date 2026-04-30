@@ -216,19 +216,32 @@ export class JoplinService {
 
   async #readFromCache(entry) {
     const f = this.#cacheFilePathFor(entry);
+
     try {
       const str = await fs.readFile(f, 'utf8');
       const cached = JSON.parse(str);
-      const sameEtag = cached.etag && entry.etag && cached.etag === entry.etag;
+
+      const sameEtag =
+        cached.etag && entry.etag && cached.etag === entry.etag;
+
       const sameLastmod =
-        cached.lastmod && entry.lastmod && String(cached.lastmod) === String(entry.lastmod);
+        cached.lastmod &&
+        entry.lastmod &&
+        String(cached.lastmod) === String(entry.lastmod);
+
       if (sameEtag || sameLastmod) {
         return cached;
       }
+
+      // Cache exists but is stale
+      return null;
     } catch (error) {
-      console.error('Failed to read cache file:', error);
+      if (error.code !== 'ENOENT') {
+        console.error('Cache read error:', error);
+      }
+      // ENOENT = cache miss → normal
+      return null;
     }
-    return null;
   }
 
   async #writeToCache(entry, raw, meta) {
