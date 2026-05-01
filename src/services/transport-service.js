@@ -4,14 +4,16 @@ export class TransportService {
   constructor(client, config) {
     this.client = client;
 
+    const defaultDuration = 60;
+
     this.config = {
       journey: {
-        duration: 60
+        duration: defaultDuration
       },
       departures: {
-        duration: 60,
+        duration: defaultDuration,
         minResults: 5,
-        earlierOffset: 30 * 60 * 1000,
+        earlierOffset: 30 * defaultDuration * 1000,
         laterOffset: 0
       },
       ...config
