@@ -1,6 +1,7 @@
 # System
 .DS_Store
 ._*
+.VolumeIcon.icns
 
 # Environment/Secrets
 .env
