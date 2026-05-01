@@ -14,6 +14,7 @@
     "check": "npm-run-all check:js check:json",
     "check:js": "prettier --check \"**/*.js\" \"!**/*.min.js\"",
     "check:json": "prettier --check \"**/*.json\"",
+    "clear-mac-files": "find . -type f \\( -name '._*' -o -name '.VolumeIcon.icns' -o -name '.DS_Store' \\) -not -path './.git/*' -exec rm -f {} +",
     "format": "npm-run-all format:js format:css format:json format:shell",
     "format:js": "prettier --write \"**/*.js\" \"!**/*.min.js\"",
     "format:json": "prettier --write \"**/*.json\"",
@@ -28,7 +29,7 @@
     "minify": "npm-run-all -p minify:css minify:js minify:png minify:png-to-gif",
     "minify:css": "npm-run-all -p minify:css:default minify:css:ns4",
     "minify:css:default": "./scripts/minify.sh css src/public/css ./minify.config.json false",
-    "minify:css:ns4": "./scripts/minify.sh css src/public/css/ns2 ./minify.config.json false",
+    "minify:css:ns4": "./scripts/minify.sh css src/public/css/ns4 ./minify.config.json false",
     "minify:js": "./scripts/minify.sh js src/public/js ./minify.config.json false",
     "minify:png": "./scripts/minify.sh png src/public/images ./minify.config.json false",
     "minify:png-to-gif": "./scripts/minify.sh png-to-gif src/public/images ./minify.config.json false"
