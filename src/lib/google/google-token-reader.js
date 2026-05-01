@@ -31,7 +31,9 @@ export class GoogleTokenReader {
     const file = this.tokenFile(userId);
     try {
       fs.unlinkSync(file);
-    } catch (_) {}
+    } catch {
+      // ignore
+    }
   }
 
   loadTokens(userId) {
@@ -54,8 +56,8 @@ export class GoogleTokenReader {
       }
 
       return tokens;
-    } catch (err) {
-      throw new AppError(`Failed to read OAuth tokens.`, 500, false);
+    } catch {
+      throw new AppError('Failed to read OAuth tokens.', 500, false);
     }
   }
 
@@ -74,7 +76,7 @@ export class GoogleTokenReader {
     try {
       fs.writeFileSync(file, JSON.stringify(toSave, null, 2), 'utf8');
       return file;
-    } catch (err) {
+    } catch {
       throw new AppError('Failed to write OAuth tokens.', 500, false);
     }
   }

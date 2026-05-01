@@ -27,6 +27,7 @@ echo "5) docker compose down"
 echo "6) Run backup.sh"
 echo "7) Run create-certs (npm run create-certs)"
 echo "8) Run create-user (npm run create-user)"
+echo "9) docker compose build --no-cache"
 echo "q) Quit"
 echo
 read -rp "Your choice: " choice
@@ -55,6 +56,9 @@ case "$choice" in
   ;;
 8)
   docker compose run --rm node npm run create-user
+  ;;
+9)
+  docker compose build --no-cache
   ;;
 q | Q)
   exit 0

@@ -4,12 +4,14 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
 import { logger } from './middleware/logging.js';
+import { rateLimiter } from './middleware/rate-limiter.js';
 import { serviceRegistryScopeLoader } from './middleware/service-registry-scope-loader.js';
 import {
   secureRouteMarker,
   httpsRedirectEnforcer,
   loginEnforcer,
-  authMarker
+  authMarker,
+  botBlocker
 } from './middleware/security.js';
 import { viewBaseMarker, pageUrlMarker } from './middleware/view-support.js';
 import { setupNunjucks } from './middleware/nunjucks-setup.js';
@@ -29,8 +31,8 @@ export class Bootstrap {
   async init(app) {
     await setupServices(app, this.config);
     await this.#redis(app);
-    this.#middleware(app);
     this.#security(app);
+    this.#middleware(app);
     this.#view(app);
   }
 
@@ -50,6 +52,8 @@ export class Bootstrap {
   }
 
   #security(app) {
+    app.use(rateLimiter());
+    app.use(botBlocker());
     app.use(secureRouteMarker());
     app.use(authMarker());
     app.use(loginEnforcer({ routes: this.config.routes }));
@@ -90,5 +94,8 @@ export class Bootstrap {
             }
       )
     );
+    app.get('/robots.txt', (req, res) => {
+      res.sendFile(path.join(this.config.rootDir, 'src/public/robots.txt'));
+    });
   }
 }

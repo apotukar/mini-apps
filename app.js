@@ -26,6 +26,6 @@ routesBuilder.build(app);
 app.use(globalErrorHandler());
 
 const serverBuilder = new ServerBuilder({
-  config: { rootDir: ROOT_DIR, ...config }
+  config: { rootDir: ROOT_DIR, ...config, https: true, http: true }
 });
 serverBuilder.build(app);

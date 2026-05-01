@@ -1,5 +1,5 @@
 import { RedisManager } from '../lib/redis-manager.js';
-import { profile as dbProfile } from 'db-vendo-client/p/dbnav/index.js';
+import { profile as dbProfile } from 'db-vendo-client/p/dbweb/index.js';
 import { createClient as createDbClient } from 'db-vendo-client';
 import { serviceRegistry } from './service-registry.js';
 import { TransportService } from '../services/transport-service.js';
@@ -59,7 +59,7 @@ servicesSetup.register(({ config, registry }) => {
     () =>
       new TransportService(
         // db, dbnav, dbweb -> https://github.com/public-transport/db-vendo-client/blob/main/index.js
-        createDbClient(dbProfile, 'db'),
+        createDbClient(dbProfile, 'public-transport/hafas-client:test'),
         {
           transportLabels: config.transport.labels,
           transportCssTypeAppendices: config.transport.cssTypeAppendices

@@ -75,3 +75,17 @@ export function loginEnforcer(config) {
     next();
   };
 }
+
+export function botBlocker(options = {}) {
+  const blockedAgents = options.userAgents || ['GPTBot'];
+
+  return function (req, res, next) {
+    const ua = req.headers['user-agent'] || '';
+
+    if (blockedAgents.some(agent => ua.includes(agent))) {
+      return res.status(403).send('Bots not allowed');
+    }
+
+    next();
+  };
+}

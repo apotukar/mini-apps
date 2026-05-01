@@ -4,7 +4,7 @@ import importPlugin from 'eslint-plugin-import';
 
 export default [
   {
-    ignores: ['**/*.min.js']
+    ignores: ['**/*.min.js', '**/._*']
   },
 
   eslintPlugin.configs.recommended,

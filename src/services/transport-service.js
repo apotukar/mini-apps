@@ -10,7 +10,9 @@ export class TransportService {
       },
       departures: {
         duration: 60,
-        minResults: 5
+        minResults: 5,
+        earlierOffset: 30 * 60 * 1000,
+        laterOffset: 0
       },
       ...config
     };
@@ -108,9 +110,14 @@ export class TransportService {
     };
   }
 
-  async fetchJourneys(fromId, toId, options) {
-    const journeys = await this.client.journeys(fromId, toId, options);
-    return journeys;
+  async fetchJourneys(from, to, options) {
+    try {
+      const journeys = await this.client.journeys(from, to, options);
+      return journeys;
+    } catch (err) {
+      console.error(err.stack);
+      throw err;
+    }
   }
 
   #filterDeparturesByRadius(departures, center, radiusKm) {
@@ -205,9 +212,8 @@ export class TransportService {
     if (validTimes.length > 0) {
       const first = validTimes[0];
       const last = validTimes[validTimes.length - 1];
-      const halfHour = 30 * 60 * 1000;
-      earlierIso = new Date(first.getTime() - halfHour).toISOString();
-      laterIso = new Date(last.getTime() + halfHour).toISOString();
+      earlierIso = new Date(first.getTime() - this.config.departures.earlierOffset).toISOString();
+      laterIso = new Date(last.getTime() + this.config.departures.laterOffset).toISOString();
     }
 
     const cleanedItems = items.map(({ rawWhen: _, ...rest }) => rest);

@@ -221,13 +221,10 @@ export class JoplinService {
       const str = await fs.readFile(f, 'utf8');
       const cached = JSON.parse(str);
 
-      const sameEtag =
-        cached.etag && entry.etag && cached.etag === entry.etag;
+      const sameEtag = cached.etag && entry.etag && cached.etag === entry.etag;
 
       const sameLastmod =
-        cached.lastmod &&
-        entry.lastmod &&
-        String(cached.lastmod) === String(entry.lastmod);
+        cached.lastmod && entry.lastmod && String(cached.lastmod) === String(entry.lastmod);
 
       if (sameEtag || sameLastmod) {
         return cached;
