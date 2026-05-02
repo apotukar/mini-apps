@@ -1,17 +1,28 @@
-{% if pageUrl and pageUrl != "/" and pageUrl != "/browser" %}
-    {% if viewExt != "njk" %}
-    <p class="footer">
-        <a href="/">Zur Startseite</a>
-    </p>
-    {% else %}
-    <footer class="footer">
-        <a href="/">Zur Startseite</a>&nbsp;|&nbsp;
+{% if pageUrl != "/browser" %}
 
-        {% if isLoggedIn %}
-            <a href="/auth/logout">Logout</a>
-        {% else %}
-            <a href="/auth/login">Login</a>
-        {% endif %}
-    </footer>
+    {% set isHome = pageUrl == "/" %}
+    {% set homeLink %}
+        <a href="/">Zur Startseite</a>
+    {% endset %}
+
+    {% if viewExt != "njk" %}
+        <p class="footer">
+            {% if not isHome %}
+                {{ homeLink | safe }}
+            {% endif %}
+        </p>
+    {% else %}
+        <footer class="footer">
+            {% if not isHome %}
+                {{ homeLink | safe }}&nbsp;|&nbsp;
+            {% endif %}
+
+            {% if isLoggedIn %}
+                <a href="/auth/logout">Logout</a>
+            {% else %}
+                <a href="/auth/login">Login</a>
+            {% endif %}
+        </footer>
     {% endif %}
+
 {% endif %}

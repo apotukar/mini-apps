@@ -46,8 +46,13 @@ export class UserStore {
   }
 
   async findUser(username, password) {
-    const users = this.loadUsers();
+    if (!username || !password) {
+      return null;
+    }
 
+    username = username.trim();
+
+    const users = this.loadUsers();
     const matches = users.filter(u => u.username === username);
 
     if (matches.length > 1) {
@@ -67,15 +72,45 @@ export class UserStore {
     return ok ? user : null;
   }
 
-  async createUser(username, password, roles = []) {
+  async createUser({ username, password, roles = [], firstName = '', lastName = '', email = '' }) {
     this.ensureUserDir();
+
+    if (!username || !password) {
+      throw new Error('Username and password are required');
+    }
+
+    username = username.trim();
+    firstName = firstName.trim();
+    lastName = lastName.trim();
+    email = email.trim();
+
+    if (username.length < 3) {
+      throw new Error('Username must be at least 3 characters long');
+    }
+
+    if (password.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
+    const existing = this.loadUsers().find(u => u.username === username);
+    if (existing) {
+      throw new Error(`Username already exists: "${username}"`);
+    }
 
     const id = crypto.randomUUID();
     const file = this.userFilePath(id);
 
     const passwordHash = await argon2.hash(password, this.hashOptions);
 
-    const userData = { id, username, passwordHash, roles };
+    const userData = {
+      id,
+      username,
+      passwordHash,
+      roles,
+      firstName,
+      lastName,
+      email
+    };
 
     fs.writeFileSync(file, JSON.stringify(userData, null, 2), 'utf8');
 

@@ -13,7 +13,7 @@ export class TransportService {
       departures: {
         duration: defaultDuration,
         minResults: 5,
-        earlierOffset: 30 * defaultDuration * 1000,
+        earlierOffset: defaultDuration * 60 * 1000,
         laterOffset: 0
       },
       ...config

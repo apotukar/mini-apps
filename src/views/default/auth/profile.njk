@@ -6,9 +6,12 @@
 
 {% block content %}
 
-  <h2>Willkommen, {{ user.username }}!</h2>
+  <h2 style="color: darkblue;">Willkommen, {{ user.firstName }} {{ user.lastName }}</h2>
+  <h3>Benutzername (Login):</h3>
+  {{ user.username }}</p>
 
-  <p>User-ID: {{ user.id }}</p>
+  <h3>E-Mail:</h3>
+  {{ user.email }}</p>
 
   {% if user.roles %}
     <h3>Rollen:</h3>
@@ -18,9 +21,5 @@
       {% endfor %}
     </ul>
   {% endif %}
-
-  <p style="margin-top:20px;">
-    <a href="{{ basePath }}/logout">Logout</a>
-  </p>
 
 {% endblock %}

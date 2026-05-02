@@ -364,3 +364,9 @@ bookmarks:
   - title: OldWeb.today
     url: https://oldweb.today/
     description: Zeigt Websites in emulierten alten Browsern wie Netscape oder Mosaic.
+  - title: 68k.news
+    url: http://68k.news/
+    description: Schlagzeilen aus der Zukunft.
+  - title: eink.link
+    url: https://eink.link/
+    description: LLinks zu Websites, die auf einfachen Webbrowsern gut funktionieren, einschließlich derjenigen, die auf E-Readern vorinstalliert sind.

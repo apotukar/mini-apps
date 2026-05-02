@@ -9,11 +9,11 @@
   <h2>News</h2>
 
   <form method="get" action="/news">
-    <label for="proxy">Proxy:</label>
+    <label for="proxy">Links-Proxy:</label>
 
     <select id="proxy" name="proxy">
       <option value="" {% if not currentProxy %}selected{% endif %}>
-        Kein Proxy
+          Original-Link
       </option>
 
       {% for p in proxies %}
