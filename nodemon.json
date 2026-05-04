@@ -1,5 +1,5 @@
 {
-  "watch": [".env", "config.json", "app.js", "src", "views", "public"],
+  "watch": [".env", "config.yml", "app.js", "src", "views", "public"],
   "ignore": [
     "node_modules",
     "src/public/*.min.css",

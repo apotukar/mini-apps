@@ -4,15 +4,13 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
 import { logger } from './middleware/logging.js';
-import { rateLimiter } from './middleware/rate-limiter.js';
+import { rateLimiter } from './middleware/security/rate-limiter.js';
 import { serviceRegistryScopeLoader } from './middleware/service-registry-scope-loader.js';
-import {
-  secureRouteMarker,
-  httpsRedirectEnforcer,
-  loginEnforcer,
-  authMarker,
-  botBlocker
-} from './middleware/security.js';
+import { botBlocker } from './middleware/security/bot-blocker.js';
+import { secureRouteMarker } from './middleware/security/secure-route-marker.js';
+import { authMarker } from './middleware/security/auth-marker.js';
+import { httpsRedirectEnforcer } from './middleware/security/https-redirect-enforcer.js';
+import { loginEnforcer } from './middleware/security/login-enforcer.js';
 import { viewBaseMarker, pageUrlMarker } from './middleware/view-support.js';
 import { setupNunjucks } from './middleware/nunjucks-setup.js';
 import { serviceRegistry } from './service-registry/service-registry.js';

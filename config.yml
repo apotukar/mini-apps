@@ -189,6 +189,10 @@ transport:
         - Berlin Alexanderplatz
       Essen:
         - Essen Hbf
+      Stuttgart:
+        - Stuttgart Hbf
+      Nürnberg:
+        - Nürnberg Hbf
 weather:
   favorites:
     - München
@@ -369,4 +373,4 @@ bookmarks:
     description: Schlagzeilen aus der Zukunft.
   - title: eink.link
     url: https://eink.link/
-    description: LLinks zu Websites, die auf einfachen Webbrowsern gut funktionieren, einschließlich derjenigen, die auf E-Readern vorinstalliert sind.
+    description: Links zu Websites, die auf einfachen Webbrowsern gut funktionieren, einschließlich derjenigen, die auf E-Readern vorinstalliert sind.
