@@ -21,7 +21,6 @@ export function setupNunjucks(app, params) {
         const d = new Date(dateStr);
 
         return d.toLocaleString(locale, {
-          weekday: 'short',
           year: 'numeric',
           month: 'short',
           day: '2-digit',
@@ -54,6 +53,21 @@ export function setupNunjucks(app, params) {
       }
     }
   );
+
+  env.addFilter('formatWeekday', function (dateStr, locale = 'de-DE', timeZone = 'Europe/Berlin') {
+    try {
+      const d = new Date(dateStr);
+
+      const weekday = d.toLocaleDateString(locale, {
+        weekday: 'short',
+        timeZone
+      });
+
+      return weekday + '.';
+    } catch {
+      return dateStr;
+    }
+  });
 
   env.addFilter(
     'formatTime',

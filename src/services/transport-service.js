@@ -115,6 +115,7 @@ export class TransportService {
   async fetchJourneys(from, to, options) {
     try {
       const journeys = await this.client.journeys(from, to, options);
+      // console.dir(journeys, { depth: null, colors: true });
       return journeys;
     } catch (err) {
       console.error(err.stack);

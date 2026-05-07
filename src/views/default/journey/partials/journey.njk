@@ -1,5 +1,5 @@
 <div class="journey">
-  <b>{{ journey.number }}. Verbindung am {{ journey.departure | formatDate }}</b>
+  <b>{{ journey.number }}. Verbindung am {{ journey.departure | formatWeekday }} {{ journey.departure | formatDate }}</b>
   <br>
   <b>{{ journey.departure | formatTime }} - {{ journey.arrival | formatTime }} | {{ journey.duration | formatDuration }}</b>
   {% if journey.transfers == 1 %}

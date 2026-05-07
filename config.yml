@@ -128,6 +128,7 @@ routes:
     forceHttpsRedirect: true
     hasFavorites: false
 transport:
+  clientUserAgent: 'mini-apps (mailto:apotukar@gmail.com)'
   saveNormalizedFavName: true
   labels:
     bus: Bus

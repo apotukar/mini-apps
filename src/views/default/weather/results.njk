@@ -15,7 +15,7 @@
     Temperatur: {{ current.temperature }} °C<br>
     Wind: {{ current.windspeed }} km/h<br>
     <span title="Weather Code: {{ current.code }}">Zustand: {{ current.description }}</span><br>
-    Zeit: {{ current.time | formatDateTime }}<br>
+    Zeit: {{ current.time | formatWeekday }} {{ current.time | formatDateTime }}<br>
   </div>
 
   <b>Vorhersage (heute + 6 Tage):</b><br>
