@@ -1,6 +1,4 @@
 import { RedisManager } from '../lib/redis-manager.js';
-import { profile as dbProfile } from 'db-vendo-client/p/db/index.js';
-import { createClient as createDbClient } from 'db-vendo-client';
 import { serviceRegistry } from './service-registry.js';
 import { TransportService } from '../services/transport-service.js';
 import { WeatherService } from '../services/weather-service.js';
@@ -18,6 +16,7 @@ import { GoogleTokenReader } from '../lib/google/google-token-reader.js';
 import { TasksService } from '../services/tasks-service.js';
 import { fetchShipment as dhlFetchShipment } from '../lib/tracking/dhl.js';
 import { TrackService } from '../services/track-service.js';
+import { createClient as createMotisClient } from '@motis-project/motis-fptf-client';
 
 class ServicesSetup {
   constructor() {
@@ -54,14 +53,27 @@ servicesSetup.register(async ({ config, registry }) => {
 });
 
 servicesSetup.register(({ config, registry }) => {
-  registry.registerSingleton(
-    'transportService',
-    () =>
-      new TransportService(createDbClient(dbProfile, config.transport.clientUserAgent), {
-        transportLabels: config.transport.labels,
-        transportCssTypeAppendices: config.transport.cssTypeAppendices
-      })
-  );
+  registry.registerSingleton('transportService', () => {
+    const type = config.transport.clientType || 'transitous';
+
+    const getClient = async () => {
+      let mod;
+
+      try {
+        mod = await import(`@motis-project/motis-fptf-client/p/${type}/index.js`);
+      } catch (err) {
+        console.error('Transport profile load failed:', err.message);
+        throw new Error('Failed to load transport client. Please check your configuration.');
+      }
+
+      return createMotisClient(mod?.profile, config.transport.clientUserAgent);
+    };
+
+    return new TransportService(getClient, {
+      transportLabels: config.transport.labels,
+      transportCssTypeAppendices: config.transport.cssTypeAppendices
+    });
+  });
 });
 
 servicesSetup.register(({ config, registry }) => {

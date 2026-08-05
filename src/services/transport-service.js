@@ -1,8 +1,8 @@
 import { filterByRadius } from '../lib/geo/geo-radius.js';
 
 export class TransportService {
-  constructor(client, config) {
-    this.client = client;
+  constructor(getClientFn, config) {
+    this._getClient = getClientFn;
 
     const defaultDuration = 60;
 
@@ -25,6 +25,12 @@ export class TransportService {
 
     if (this.config.transportLabels === null) {
       throw new Error('config.transportLabels is required');
+    }
+  }
+
+  async init() {
+    if (!this.client) {
+      this.client = await this._getClient();
     }
   }
 
@@ -115,7 +121,7 @@ export class TransportService {
   async fetchJourneys(from, to, options) {
     try {
       const journeys = await this.client.journeys(from, to, options);
-      // console.dir(journeys, { depth: null, colors: true });
+      console.dir('journeys', journeys);
       return journeys;
     } catch (err) {
       console.error(err.stack);

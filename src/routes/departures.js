@@ -36,6 +36,7 @@ export function registerDeparturesRoutes(app, params = {}) {
 
     if (configSaveNormalizedFavName) {
       const transportService = req.services.get('transportService');
+      await transportService.init();
       const station = await transportService.findStation(rawStationName);
       stationName = station.normalizedName;
     }
@@ -90,6 +91,7 @@ export function registerDeparturesRoutes(app, params = {}) {
         const when = getWhen ? getWhen(req) : undefined;
 
         const transportService = req.services.get('transportService');
+        await transportService.init();
         const station = await transportService.findStation(inputName);
         const displayName = station.normalizedName || station.name || inputName;
         const { departures, stationNames } = await transportService.fetchDeparturesUntilFound(

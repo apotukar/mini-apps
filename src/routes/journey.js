@@ -52,6 +52,7 @@ export function registerJourneyRoutes(app, params) {
 
       if (configSaveNormalizedFavName) {
         const transportService = req.services.get('transportService');
+        await transportService.init();
 
         const fromStation = await transportService.findStation(rawFromName);
         fromName = fromStation.normalizedName;
@@ -145,6 +146,7 @@ export function registerJourneyRoutes(app, params) {
       }
 
       const transportService = req.services.get('transportService');
+      await transportService.init();
       const fromStation = await transportService.findStation(rawFromName);
       const toStation = await transportService.findStation(rawToName);
       const options = { results: 5 };
