@@ -240,20 +240,51 @@ joplin:
     password: ${JOPLIN_PASS}
 news:
   feeds:
-    https://www.jungewelt.de/aktuell/newsticker.rss: 100
-    https://www.freitag.de/@@RSS: 100
-    https://www.nd-aktuell.de/rss/aktuell.php: 100
-    https://jacobin.de/rss.xml: 100
-    https://www.wsws.org/de/rss.xml: 100
-    https://www.tagesschau.de/xml/rss2/: 50
-    https://www.heise.de/newsticker/heise.rdf: 200
-    https://rss.dw.com/xml/rss-de-all: 50
-    https://taz.de/!p4608;rss/: 400
-    https://newsfeed.zeit.de/index: 300
-    https://www.spiegel.de/schlagzeilen/index.rss: 300
-    https://www.handelsblatt.com/contentexport/feed/schlagzeilen: 300
-    https://nachrichtenfeeds.br.de/rss/nachrichten/seiten/QXAPkQJ: 400
-    https://rss.orf.at/news.xml: 400
+    https://www.jungewelt.de/feeds/newsticker.rss:
+      priority: 100
+      color: '#b91c1c'
+    https://www.freitag.de/@@RSS:
+      priority: 100
+      color: '#16a34a'
+    https://www.nd-aktuell.de/rss/aktuell.php:
+      priority: 100
+      color: '#dc2626'
+    https://jacobin.de/rss/:
+      priority: 100
+      color: '#991b1b'
+    https://www.wsws.org/de/rss.xml:
+      priority: 100
+      color: '#b91c1c'
+    https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml:
+      priority: 50
+      color: '#1d4ed8'
+    https://www.heise.de/rss/heise.rdf:
+      priority: 200
+      color: '#6b7280'
+    https://rss.dw.com/xml/rss-de-all:
+      priority: 50
+      color: '#0e7490'
+    https://taz.de/!p4608;rss/:
+      priority: 400
+      color: '#16a34a'
+    https://newsfeed.zeit.de/index:
+      priority: 300
+      color: '#7e22ce'
+    https://www.spiegel.de/schlagzeilen/index.rss:
+      priority: 300
+      color: '#9333ea'
+    https://feeds.cms.handelsblatt.com/schlagzeilen:
+      priority: 300
+      color: '#6b21a8'
+    https://nachrichtenfeeds.br.de/rss/nachrichten/seiten/QXAPkQJ:
+      priority: 400
+      color: '#1e40af'
+    https://rss.orf.at/news.xml:
+      priority: 400
+      color: '#075985'
+    https://sechzger.de/feed/:
+      priority: 10
+      color: '#63b3e3'
   limit: 7
   totalLimit: 84
   browserProxies:

@@ -13,13 +13,14 @@ export class FeedsService {
         feedList.push({ url, priority: 999 });
       }
     } else if (feeds && typeof feeds === 'object') {
-      for (const [url, priority] of Object.entries(feeds)) {
-        feedList.push({ url, priority: Number(priority) || 999 });
+      for (const [url, config] of Object.entries(feeds)) {
+        const { priority, color } = config;
+        feedList.push({ url, priority: Number(priority) || 999, color });
       }
     }
 
-    const promises = feedList.map(({ url, priority }) =>
-      this.#fetchFeed(url, limit, browserProxy, priority)
+    const promises = feedList.map(({ url, priority, color }) =>
+      this.#fetchFeed(url, limit, browserProxy, priority, color)
         .then(items => items)
         .catch(err => {
           errors.push({ url, message: err.message });
@@ -48,7 +49,7 @@ export class FeedsService {
     };
   }
 
-  async #fetchFeed(url, limit = 10, browserProxy, priority = 999) {
+  async #fetchFeed(url, limit = 10, browserProxy, priority = 999, color) {
     const feed = await this.parser.parseURL(url);
 
     return feed.items.slice(0, limit).map(item => {
@@ -64,7 +65,8 @@ export class FeedsService {
         date: item.pubDate || item.isoDate,
         description: this.#stripImages(item.contentSnippet || item.content || ''),
         source: feed.title || url,
-        priority
+        priority,
+        color
       };
     });
   }

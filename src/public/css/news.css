@@ -41,28 +41,6 @@ small {
   color: #666;
 }
 
-/* Quelle-spezifische Farben über Teilstrings */
-li[class*='tagesschau'] a {
-  color: #004f9f;
-}
-
-li[class*='spiegel'] a {
-  color: #c00;
-}
-
-li[class*='dw'] a,
-li[class*='deutsche-welle'] a {
-  color: #009688;
-}
-
-li[class*='zeit'] a {
-  color: #ff9800;
-}
-
-li[class*='heise'] a {
-  color: #673ab7;
-}
-
 .source-label {
   font-size: 12px;
   font-style: italic;

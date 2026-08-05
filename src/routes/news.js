@@ -1,7 +1,10 @@
 export function registerNewsRoutes(app, params) {
   const config = {
     feeds: {
-      'https://www.jungewelt.de/aktuell/newsticker.rss': 100
+      'https://www.jungewelt.de/feeds/newsticker.rss': {
+        priority: 100,
+        color: '#3b82f6'
+      }
     },
     limit: 10,
     totalLimit: 100,
