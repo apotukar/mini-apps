@@ -97,7 +97,7 @@ export function registerDeparturesRoutes(app, params = {}) {
         const { departures, stationNames } = await transportService.fetchDeparturesUntilFound(
           station,
           when,
-          5,
+          10,
           radius
         );
 
@@ -121,7 +121,8 @@ export function registerDeparturesRoutes(app, params = {}) {
           ...view
         };
 
-        return res.render('departures/results.njk', actualView);
+        const resultsView = res.locals.isNS4 ? 'departures/results.ns4' : 'departures/results.njk';
+        return res.render(resultsView, actualView);
       } catch (err) {
         console.error(err);
         return res.render('departures/error.njk', {
@@ -133,9 +134,9 @@ export function registerDeparturesRoutes(app, params = {}) {
     };
   }
 
-  function getRadiusSafe(radiusRaw, defaultRadius = 1) {
+  function getRadiusSafe(radiusRaw, defaultRadius = 0.3) {
     const radiusNum = Number((radiusRaw || '').trim());
 
-    return Number.isInteger(radiusNum) && radiusNum > 0 ? radiusNum : defaultRadius;
+    return Number.isFinite(radiusNum) && radiusNum > 0 ? radiusNum : defaultRadius;
   }
 }

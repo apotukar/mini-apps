@@ -11,17 +11,17 @@
       {{title}}
       {% if stationCount > 1 %}
       {{ image("nearbyred.min", viewExt, { alt: "nahe bei", class: 'icon-inline', height: 20, border: 0 })}}
-      <sup style="position: relative; left: -3px; top: 3px;"><small>{{ radius }} km</small></sup>
       {% else %}
       {{ image("stationred.min", viewExt, { alt: "Haltestelle", class: 'icon-inline', height: 20, border: 0 })}}
       {% endif %}
+      <sup style="position: relative; left: -3px; top: 3px;"><small>{% if radius < 1 %}{{ radius * 1000 }} m{% else %}{{ radius }} km{% endif %}</small></sup>
       {{ stationName }}
   </h2>
 
-  <a href="/departures?station={{ stationName | urlencode }}&radius={{ radius | default(1) }}">
+  <a href="/departures?station={{ stationName | urlencode }}&radius={{ radius | default(0.3) }}">
     Zurück
   </a>&nbsp;
-  <a href="/departures?radius={{ radius | default(1) }}">Neue Suche</a><br><br>
+  <a href="/departures?radius={{ radius | default(0.3) }}">Neue Suche</a><br><br>
 
   {% if departures.length %}
     {% for dep in departures %}

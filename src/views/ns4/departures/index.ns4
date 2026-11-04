@@ -9,6 +9,17 @@
 
 {% block content %}
 
+<script type="text/javascript">
+function updateDepartureRadius(select) {
+    for (var i = 0; i < document.links.length; i++) {
+        var link = document.links[i];
+        if (link.href.indexOf('/departures/search?') != -1) {
+            link.href = link.href.replace(/([?&])radius=[^&]*/, '$1radius=' + select.options[select.selectedIndex].value);
+        }
+    }
+}
+</script>
+
 <h2>{{ headline }}</h2>
 
 {{ hr() }}
@@ -26,6 +37,22 @@
             {% set inputFieldName = "station" %}
             {% set inputFieldValue = station %}
             {% include "common/partials/input-field-text.ns4" %}
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <label for="radius">Max. Entfernung:</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <select name="radius" id="radius" onchange="updateDepartureRadius(this)">
+                {% set rValue = radius | default(0.3) %}
+                {% set radiusOptions = [0.3, 0.5, 1, 2, 3, 5, 10] %}
+                {% for r in radiusOptions %}
+                    <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{% if r < 1 %}{{ r * 1000 }} m{% else %}{{ r }} km{% endif %}</option>
+                {% endfor %}
+            </select>
         </td>
     </tr>
     <tr>

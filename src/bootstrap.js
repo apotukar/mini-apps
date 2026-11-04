@@ -29,6 +29,7 @@ export class Bootstrap {
   async init(app) {
     await setupServices(app, this.config);
     await this.#redis(app);
+    this.#requestTimeouts(app);
     this.#security(app);
     this.#middleware(app);
     this.#view(app);
@@ -47,6 +48,20 @@ export class Bootstrap {
     app.use(express.urlencoded({ extended: true }));
     app.use(logger());
     app.use(cookieParser());
+  }
+
+  #requestTimeouts(app) {
+    app.use((req, res, next) => {
+      const route = this.config.routes.find(
+        route => route.timeout && (req.path === route.path || req.path.startsWith(`${route.path}`))
+      );
+
+      if (route) {
+        res.setTimeout(route.timeout);
+      }
+
+      next();
+    });
   }
 
   #security(app) {

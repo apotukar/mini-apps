@@ -87,27 +87,41 @@ export class BrowserService {
     const $ = cheerio.load(cleanHtml);
 
     // fix relative urls and remove unwanted elements
-    //this.domPreprocessor.absolutizeUrls($, url);
+    this.domPreprocessor.absolutizeUrls($, url);
     this.domPreprocessor.removeUnwanted($);
 
     // extract document title and detect navigation/content blocks
     const title = this.#extractTitle($, url);
-    const { navRoot, contentRoot } = this.contentAndStructureDetector.detectNavAndContent($);
+    const { navRoots } = this.contentAndStructureDetector.detectNavAndContent($);
+
+    // Collect menu links independently of the original site's layout.
+    const navigation = $('<ul></ul>');
+    const seenLinks = new Set();
+    navRoots.forEach($root => {
+      $root.find('a[href]').each((_, element) => {
+        const link = $(element);
+        const href = link.attr('href');
+        const label = link.text().replace(/\s+/g, ' ').trim();
+        if (!/^https?:\/\//i.test(href) || !label || seenLinks.has(href)) {
+          return;
+        }
+        seenLinks.add(href);
+        navigation.append($('<li></li>').append($('<a></a>').attr('href', href).text(label)));
+      });
+    });
+    navRoots.forEach($root => $root.remove());
 
     // flatten semantic tags and clean attributes
     this.domPreprocessor.flattenSemanticTags($);
+    this.domPreprocessor.flattenLayoutTables($);
     this.domPreprocessor.cleanAttributes($);
 
-    // remove images for a cleaner legacy layout
-    $('img, picture, figure').remove();
+    const $navigation = cheerio.load(navigation.toString());
+    this.domPreprocessor.cleanAttributes($navigation);
 
-    // remove navigation block if it appears inside content
-    if (navRoot && contentRoot && contentRoot.has(navRoot).length) {
-      navRoot.remove();
-    }
-
-    // extract html of nav/content or use body as fallback
-    const navHtml = navRoot?.html() || '';
+    // Re-select after flattening: replacing semantic tags invalidates old references.
+    const contentRoot = $('[data-browser-content-root]').first();
+    const navHtml = seenLinks.size ? $navigation('body').html() : '';
     const contentHtml = contentRoot?.html() || this.domPreprocessor.extractBody($);
 
     if (this.config.readMode) {

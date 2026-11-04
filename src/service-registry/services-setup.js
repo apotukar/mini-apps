@@ -17,6 +17,7 @@ import { TasksService } from '../services/tasks-service.js';
 import { fetchShipment as dhlFetchShipment } from '../lib/tracking/dhl.js';
 import { TrackService } from '../services/track-service.js';
 import { createClient as createMotisClient } from '@motis-project/motis-fptf-client';
+import { withDepartureRadius } from '../lib/transport-profile.js';
 
 class ServicesSetup {
   constructor() {
@@ -66,7 +67,7 @@ servicesSetup.register(({ config, registry }) => {
         throw new Error('Failed to load transport client. Please check your configuration.');
       }
 
-      return createMotisClient(mod?.profile, config.transport.clientUserAgent);
+      return createMotisClient(withDepartureRadius(mod.profile), config.transport.clientUserAgent);
     };
 
     return new TransportService(getClient, {

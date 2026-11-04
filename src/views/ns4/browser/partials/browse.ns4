@@ -1,9 +1,9 @@
-<table width="100%" cellpadding="6" cellspacing="0" border="0">
+<table width="100%" cellpadding="8" cellspacing="0" border="0">
 
   {# Header Row #}
   <tr>
-    <td colspan="2" align="center" bgcolor="{{ headerBg }}">
-      <h1>{{ title | escape }}</h1>
+    <td colspan="2" align="left">
+      <b>{{ title | escape }}</b><br>
       <small>
         {% if hasUrl %}
           Original: {{ url | escape }}
@@ -18,16 +18,22 @@
   {# Navigation + Content #}
   {% if hasUrl %}
   <tr>
-    <td width="22%" valign="top" bgcolor="{{ navBg }}">
+    <td class="browser-navigation" width="180" valign="top" bgcolor="{{ navBg }}" style="border-right: 1px solid #cccccc;">
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="{{ navigationLegacySize }}">
+      <b>Navigation</b>
+      <hr>
       {% if navHtml %}
         {{ navHtml | safe }}
       {% else %}
         <small>Keine Navigation erkannt.</small>
       {% endif %}
+      </font>
     </td>
 
-    <td width="78%" valign="top">
-      {{ contentHtml | safe }}
+    <td valign="top" align="center">
+      <table width="100%" cellpadding="4" cellspacing="0" border="0" style="max-width: 850px;">
+        <tr><td valign="top" align="left"><font face="{{ fontFamily }}" size="{{ contentLegacySize }}">{{ contentHtml | safe }}</font></td></tr>
+      </table>
     </td>
   </tr>
   {% endif %}

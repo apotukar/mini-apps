@@ -1,0 +1,64 @@
+{% extends "layout.ns4" %}
+
+{% set style = "common, transport" %}
+
+{% block title %}{{ title }} – {{ stationName }}{% endblock %}
+
+{% block content %}
+  <h2>
+    {{ title }}
+    {% if stationCount > 1 %}
+      <img src="/public/images/nearbyred.min.gif" alt="nahe bei" height="20" border="0" align="absmiddle">
+    {% else %}
+      <img src="/public/images/stationred.min.gif" alt="Haltestelle" height="20" border="0" align="absmiddle">
+    {% endif %}
+    <small>{% if radius < 1 %}{{ radius * 1000 }} m{% else %}{{ radius }} km{% endif %}</small>
+    {{ stationName }}
+  </h2>
+
+  <a href="/departures?station={{ stationName | urlencode }}&radius={{ radius | default(0.3) }}">Zurück</a>&nbsp;
+  <a href="/departures?radius={{ radius | default(0.3) }}">Neue Suche</a><br><br>
+
+  {% if departures.length %}
+    <table border="0" cellpadding="0" cellspacing="0">
+      {% for dep in departures %}
+        <tr>
+          <td valign="top">
+            {% if dep.delay > 0 %}
+              <font color="#cc0000"><b>{{ dep.actualTime | formatTime }} ({{ dep.time | formatTime }} + {{ dep.delay | formatDuration }})</b></font>
+            {% else %}
+              <b>{{ dep.actualTime | formatTime }}</b>
+            {% endif %}
+            {% if stationCount > 1 %}
+              <b><img src="/public/images/station.min.gif" alt="Haltestelle" height="10" border="0" align="absmiddle"> {{ dep.stationName }}</b>
+            {% endif %}
+            {% if dep.lineText or dep.direction %}<br>{% endif %}
+            {% if dep.lineText %}{{ dep.lineText }}{% endif %}
+            {% if dep.direction %}
+              <img src="/public/images/rarrow.min.gif" alt="-&gt;" height="10" border="0" align="absmiddle"> {{ dep.direction }}
+            {% endif %}
+            {% if dep.platform %} <small>Gleis/Steig: {{ dep.platform }}</small>{% endif %}
+            <br><br>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <table width="100%" border="0" cellpadding="4" cellspacing="0">
+      <tr>
+        <td align="left" valign="top">
+          {% if earlierIso %}
+            <a href="/departures/search?station={{ stationName | urlencode }}&radius={{ radius | default(0.3) }}&when={{ earlierIso | urlencode }}">Frühere Abfahrten <img src="/public/images/uarrow.min.gif" alt="früher" height="10" border="0" align="absmiddle"></a>
+          {% endif %}
+        </td>
+        <td align="right" valign="top">
+          {% if laterIso %}
+            <a href="/departures/search?station={{ stationName | urlencode }}&radius={{ radius | default(0.3) }}&when={{ laterIso | urlencode }}">Spätere Abfahrten <img src="/public/images/darrow.min.gif" alt="später" height="10" border="0" align="absmiddle"></a>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  {% else %}
+    <p>Keine Abfahrten gefunden.</p>
+  {% endif %}
+{% endblock %}

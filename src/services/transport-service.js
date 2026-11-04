@@ -51,33 +51,35 @@ export class TransportService {
     };
   }
 
-  // TODO: configure duration and stepMinutes
-  async fetchDeparturesUntilFound(station, initialWhen, minResults = 5, radius = 1) {
+  async fetchDeparturesUntilFound(station, initialWhen, maxResults = 10, radius = 0.3) {
     let whenDate = initialWhen ? new Date(initialWhen) : new Date();
     if (Number.isNaN(whenDate.getTime())) {
       whenDate = new Date();
     }
 
-    const duration = 60;
-    const stepMinutes = duration - 1;
+    const duration = 30;
+    const windowMs = duration * 60_000;
     let remainingTries = 12;
     const baseOpts = {
       duration,
-      results: 10
+      // Limit only after radius filtering, not in the client response parser.
+      results: null,
+      radius: radius * 1000
     };
 
     const departures = [];
+    const seen = new Set();
     const firstWhen = whenDate;
 
+    const location = station.location ?? station;
     const center =
-      station.type === 'location'
-        ? {
-            lat: station.location?.latitude || station.latitude,
-            lon: station.location?.longitude || station.longitude
-          }
+      Number.isFinite(location.latitude) && Number.isFinite(location.longitude)
+        ? { lat: location.latitude, lon: location.longitude }
         : null;
 
-    while (remainingTries-- > 0 && departures.length < minResults) {
+    while (remainingTries-- > 0 && departures.length < maxResults) {
+      const windowStart = whenDate.getTime();
+      const windowEnd = windowStart + windowMs;
       const opts = { ...baseOpts, when: whenDate };
       const data = await this.client.departures(station.id, opts);
       let batch = Array.isArray(data?.departures) ? data.departures : [];
@@ -86,22 +88,34 @@ export class TransportService {
         batch = this.#filterDeparturesByRadius(batch, center, radius);
       }
 
-      if (batch.length > 0) {
-        departures.push(...batch);
-        const last = batch[batch.length - 1];
-        const lastWhen = last?.when || last?.plannedWhen;
-        if (lastWhen) {
-          const lastDate = new Date(lastWhen);
-          whenDate = new Date(lastDate.getTime() + 60_000);
-        } else {
-          whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
+      for (const departure of batch) {
+        const time = new Date(departure.when || departure.plannedWhen).getTime();
+        // Half-open windows avoid duplicates and gaps at their boundaries.
+        if (!Number.isFinite(time) || time < windowStart || time >= windowEnd) {
+          continue;
         }
-      } else {
-        whenDate = new Date(whenDate.getTime() + stepMinutes * 60_000);
+        const key = JSON.stringify([
+          departure.tripId,
+          departure.stop?.id || departure.stop?.name,
+          departure.plannedWhen || departure.when,
+          departure.line?.id || departure.line?.name,
+          departure.direction
+        ]);
+        if (!seen.has(key)) {
+          seen.add(key);
+          departures.push(departure);
+        }
       }
+
+      whenDate = new Date(windowEnd);
     }
 
-    const stationsStats = departures.reduce((acc, station) => {
+    departures.sort(
+      (a, b) => new Date(a.when || a.plannedWhen) - new Date(b.when || b.plannedWhen)
+    );
+    const selectedDepartures = departures.slice(0, maxResults);
+
+    const stationsStats = selectedDepartures.reduce((acc, station) => {
       const id = station.stop.name;
       if (!acc[id]) {
         acc[id] = 0;
@@ -112,7 +126,7 @@ export class TransportService {
     }, {});
 
     return {
-      departures,
+      departures: selectedDepartures,
       usedWhen: firstWhen,
       stationNames: Object.keys(stationsStats)
     };

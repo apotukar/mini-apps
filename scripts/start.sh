@@ -19,16 +19,16 @@ fi
 PORT="${PORT:-3443}"
 
 echo "Select an option:"
-echo "1) Open interactive bash in container"
-echo "2) Run create-tokens (npm run create-tokens)"
-echo "3) MODE_ENV=DEV  docker compose up"
-echo "4) MODE_ENV=PROD docker compose up"
-echo "5) docker compose down"
-echo "6) Run backup.sh"
-echo "7) Run create-certs (npm run create-certs)"
-echo "8) Run create-user (npm run create-user)"
-echo "9) docker compose build --no-cache"
-echo "q) Quit"
+echo "1) BASH"
+echo "2) CREATE TOKENS"
+echo "3) START DEV"
+echo "4) START PROD"
+echo "5) STOP"
+echo "6) BACKUP"
+echo "7) CREATE CERTS"
+echo "8) CREATE USER"
+echo "9) RECREATE IMAGE"
+echo "q) QUIT"
 echo
 read -rp "Your choice: " choice
 

@@ -1,6 +1,24 @@
+import { fetchLegacyImage } from '../lib/browser/content/image-fetcher.js';
+
 export function registerBrowserRoutes(app, params) {
   const route = params.route || {};
   const title = route.title;
+
+  app.get('/browser/image', async (req, res) => {
+    if (typeof req.query.url !== 'string' || req.query.url.length > 8192) {
+      res.sendStatus(400);
+      return;
+    }
+    try {
+      const { buffer, contentType } = await fetchLegacyImage(req.query.url);
+      res.set('Content-Type', contentType);
+      res.set('X-Content-Type-Options', 'nosniff');
+      res.set('Cache-Control', 'no-store');
+      res.send(buffer);
+    } catch {
+      res.status(502).end();
+    }
+  });
 
   app.get('/browser', (_, res) => {
     res.render('browser/index.ns4', {
@@ -8,8 +26,9 @@ export function registerBrowserRoutes(app, params) {
       title,
       navHtml: '',
       contentHtml: '',
-      fallbackColor: '#dbeafe',
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif'
+      fallbackColor: '#f7f3e8',
+      fontFamily: 'Georgia, Times New Roman, Times, serif',
+      fontSize: '16px'
     });
   });
 
@@ -27,9 +46,9 @@ export function registerBrowserRoutes(app, params) {
         title: 'Suchmaschine blockiert',
         navHtml: '',
         contentHtml: '',
-        fallbackColor: '#dbeafe',
-        fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
-        fontSize: '10px'
+        fallbackColor: '#f7f3e8',
+        fontFamily: 'Georgia, Times New Roman, Times, serif',
+        fontSize: '16px'
       });
       return;
     }
@@ -42,9 +61,9 @@ export function registerBrowserRoutes(app, params) {
       title,
       navHtml,
       contentHtml,
-      fallbackColor: '#dbeafe',
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
-      fontSize: '10px'
+      fallbackColor: '#f7f3e8',
+      fontFamily: 'Georgia, Times New Roman, Times, serif',
+      fontSize: '16px'
     });
   });
 
@@ -63,8 +82,9 @@ export function registerBrowserRoutes(app, params) {
       title: 'Suche',
       navHtml: dummyNav,
       contentHtml: dummyContent,
-      fallbackColor: '#dbeafe',
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif'
+      fallbackColor: '#f7f3e8',
+      fontFamily: 'Georgia, Times New Roman, Times, serif',
+      fontSize: '16px'
     });
   });
 }

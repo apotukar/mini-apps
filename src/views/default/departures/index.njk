@@ -19,7 +19,7 @@
       autocomplete="off" />
     {% set radiusLabel = "Max. Entfernung:" %}
     {% set radiusName = "radius" %}
-    {% set radiusOptions = [1, 2, 3, 5, 10] %}
+    {% set radiusOptions = [0.3, 0.5, 1, 2, 3, 5, 10] %}
     {% set radiusOnChange = "updateRadius(this)" %}
     {% include "common/partials/radius.njk" %}
     <button type="submit" formaction="/departures/search" class="btn btn-primary">

@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN SHFMT_VERSION=v3.13.1  \
+RUN SHFMT_VERSION=v3.14.1  \
     && case "$TARGETARCH" in \
     amd64) ARCH=amd64 ;; \
     arm64) ARCH=arm64 ;; \

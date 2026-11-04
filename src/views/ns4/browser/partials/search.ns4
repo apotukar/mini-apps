@@ -19,7 +19,7 @@
   {% if hasUrl %}
   <tr>
     <td width="78%" valign="top">
-      {{ contentHtml | safe }}
+      <font face="{{ fontFamily }}" size="{{ contentLegacySize }}">{{ contentHtml | safe }}</font>
     </td>
   </tr>
   {% endif %}

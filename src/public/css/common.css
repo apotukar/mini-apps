@@ -24,7 +24,8 @@ body {
   }
 }
 
-.is-old-gecko .page {
+.is-old-gecko .page,
+.is-old-opera .page {
   max-width: 560px;
 }
 

@@ -1,10 +1,40 @@
 export class ContentStructureDetector {
   detectNavAndContent($) {
-    const navBlocks = this.#collectNavBlocks($);
+    const mainBlocks = [];
+    $('main, [role="main"]').each((_, element) => {
+      const $el = $(element);
+      if ($el.closest('[hidden], [aria-hidden="true"]').length) {
+        return;
+      }
+      // Some article layouts put the headline and lead image outside role="main".
+      // Keep the enclosing article instead of dropping its header and images.
+      const article = $el.closest('article');
+      const info = this.#measureBlock($, article.length ? article[0] : element);
+      if (info) {
+        mainBlocks.push(info);
+      }
+    });
+    const mainBlock = mainBlocks.reduce(
+      (best, block) => (!best || block.len > best.len ? block : best),
+      null
+    );
+    const navBlocks = this.#collectNavBlocks($).filter(block => {
+      if (!mainBlock) {
+        return true;
+      }
+      if (block.$el.is(mainBlock.$el) || block.$el.has(mainBlock.$el).length) {
+        return false;
+      }
+      return (
+        !mainBlock.$el.has(block.$el).length ||
+        block.$el.closest('nav, [role="navigation"]').length > 0
+      );
+    });
     const contentBlocks = this.#collectContentBlocks($);
 
-    let navBlock = this.#chooseNavBlock(navBlocks);
-    let contentBlock = this.#chooseContentBlock(contentBlocks, navBlock);
+    const navBlock = this.#chooseNavBlock(navBlocks);
+    // News indexes are mostly linked text; an explicit main area needs no density filter.
+    let contentBlock = mainBlock || this.#chooseContentBlock(contentBlocks, navBlock);
 
     if (!contentBlock) {
       const fallbackBlocks = [];
@@ -27,7 +57,20 @@ export class ContentStructureDetector {
       contentRoot.attr('data-browser-content-root', '1');
     }
 
-    return { navRoot, contentRoot };
+    const navRoots = navBlocks
+      .filter(block => block.linkCount >= 3 && block.linkDensity >= 0.25)
+      .map(block => block.$el)
+      .filter($el => {
+        if (!contentRoot) {
+          return true;
+        }
+        if ($el.is(contentRoot) || $el.has(contentRoot).length) {
+          return false;
+        }
+        return !contentRoot.has($el).length || $el.closest('nav, [role="navigation"]').length > 0;
+      });
+
+    return { navRoot, navRoots, contentRoot };
   }
 
   #collectNavBlocks($) {

@@ -24,7 +24,9 @@ export class ServerBuilder {
 
   build(app) {
     if (this.config.https) {
-      https.createServer(this.httpsOptions, app).listen(this.config.httpsPort, '0.0.0.0', () => {
+      const server = https.createServer(this.httpsOptions, app);
+      server.timeout = this.config.serverTimeout;
+      server.listen(this.config.httpsPort, '0.0.0.0', () => {
         console.log('HTTPS server running on port', this.config.httpsPort);
 
         this.config.routes
@@ -38,7 +40,9 @@ export class ServerBuilder {
     }
 
     if (this.config.http) {
-      http.createServer(app).listen(this.config.httpPort, '0.0.0.0', () => {
+      const server = http.createServer(app);
+      server.timeout = this.config.serverTimeout;
+      server.listen(this.config.httpPort, '0.0.0.0', () => {
         console.log('HTTP server running on port', this.config.httpPort);
 
         this.config.routes

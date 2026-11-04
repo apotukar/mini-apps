@@ -18,6 +18,48 @@ export class ContentFetcher {
       const page = await browser.newPage();
       page.setDefaultNavigationTimeout(this.timeout);
       await page.goto(url, { waitUntil: this.waitUntil });
+      await page.evaluate(() => {
+        document.querySelectorAll('img').forEach(image => {
+          // Responsive duplicates must be filtered while the original CSS still applies.
+          const visibility = getComputedStyle(image).visibility;
+          if (visibility === 'hidden' || visibility === 'collapse') {
+            image.remove();
+            return;
+          }
+          for (let element = image; element; element = element.parentElement) {
+            if (element.hidden || getComputedStyle(element).display === 'none') {
+              image.remove();
+              return;
+            }
+          }
+          const loadedSource = image.currentSrc;
+          const candidates = [
+            image.getAttribute('data-src'),
+            image.getAttribute('data-original'),
+            image.getAttribute('data-lazy-src'),
+            loadedSource,
+            image.getAttribute('src')
+          ]
+            .filter(Boolean)
+            .map(value => {
+              try {
+                return new URL(value, document.baseURI).href;
+              } catch {
+                return '';
+              }
+            })
+            .filter(value => /^https?:\/\//i.test(value));
+          const source =
+            candidates.find(value => /\.(?:jpe?g|gif|png)(?:[?#]|$)/i.test(value)) || candidates[0];
+          if (source) {
+            image.setAttribute('src', source);
+          }
+          if (source === loadedSource && image.naturalWidth && image.naturalHeight) {
+            image.setAttribute('width', image.naturalWidth);
+            image.setAttribute('height', image.naturalHeight);
+          }
+        });
+      });
       const html = await page.content();
 
       return html;

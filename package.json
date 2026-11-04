@@ -7,7 +7,7 @@
     "create-certs": "./scripts/create_certs.sh",
     "create-tokens": "./scripts/create_tokens.mjs",
     "create-user": "./scripts/create_user.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test tests/*.test.js",
     "watch": "node nodemon.js",
     "start": "node app.js",
     "fix": "npm-run-all lint:fix format",
@@ -43,8 +43,8 @@
     "@mozilla/readability": "^0.6.0",
     "argon2": "^0.45.1",
     "cheerio": "^1.2.0",
-    "commander": "^14.0.3",
-    "connect-redis": "^9.0.0",
+    "commander": "^15.0.0",
+    "connect-redis": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "dompurify": "^3.4.13",
     "dotenv": "^17.4.2",
@@ -53,33 +53,47 @@
     "express-rate-limit": "^8.6.2",
     "express-session": "^1.19.0",
     "js-yaml": "^4.3.1",
-    "jsdom": "^27.4.0",
-    "marked": "^17.0.6",
+    "jsdom": "^30.0.1",
+    "marked": "^18.0.9",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.14",
     "nunjucks": "^3.2.4",
-    "puppeteer-core": "^24.43.1",
+    "puppeteer-core": "^25.5.0",
     "qrcode-terminal": "^0.12.0",
-    "redis": "^5.12.1",
+    "redis": "^6.2.0",
     "rss-parser": "^3.13.0",
     "sharp": "^0.35.3",
     "webdav": "^5.10.0",
     "xml2js": "^0.6.2"
   },
+  "overrides": {
+    "webdav": {
+      "minimatch": "^11.0.1"
+    },
+    "nodemon": {
+      "minimatch": "^11.0.1"
+    },
+    "eslint-plugin-import": {
+      "brace-expansion": "1.1.18"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "clean-css-cli": "^5.6.3",
     "eslint": "^9.39.5",
+    "clean-css-cli": "^5.6.3",
     "eslint-import-resolver-node": "^0.4.0",
     "eslint-plugin-import": "^2.32.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.5.25",
-    "postcss-discard-comments": "^7.0.8",
+    "postcss": "^8.5.26",
+    "postcss-discard-comments": "^8.0.2",
     "prettier": "^3.9.6",
     "shfmt": "^0.0.1",
-    "stylelint": "^16.26.1",
-    "stylelint-config-standard": "^39.0.1",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
     "stylelint-prettier": "^5.0.3",
     "terser": "^5.49.2"
+  },
+  "allowScripts": {
+    "argon2@0.45.1": true
   }
 }

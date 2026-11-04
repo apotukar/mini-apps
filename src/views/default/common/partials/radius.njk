@@ -10,6 +10,6 @@
       {% set radiusOptions = [1, 2, 3, 5, 8, 15, 20, 30] %}
     {% endif %}
     {% for r in radiusOptions %}
-      <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{{ r }} km</option>
+      <option value="{{ r }}"{% if rValue == r %} selected{% endif %}>{% if r < 1 %}{{ r * 1000 }} m{% else %}{{ r }} km{% endif %}</option>
     {% endfor %}
   </select>

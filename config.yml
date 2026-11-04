@@ -1,6 +1,7 @@
 modeEnv: ${MODE_ENV}
 httpPort: ${HTTP_PORT}
 httpsPort: ${HTTPS_PORT}
+serverTimeout: 60000
 sessionSecret: ${SESSION_SECRET}
 authTokenKey: ${AUTH_TOKEN_KEY}
 redis:
@@ -49,7 +50,7 @@ routes:
     headline: Google Tasks
     description: Alle Google-Tasks-Listen (Leseansicht).
     requiresLogin: true
-    roles: []
+    roles: ['google']
     scheme:
       - https
     forceHttpsRedirect: true
@@ -92,12 +93,12 @@ routes:
     hasFavorites: true
   - name: joplin
     path: /joplin
+    timeout: 300000
     title: Joplin
     headline: Joplin-Notizen
     description: Alle Notizen (Leseansicht).
     requiresLogin: true
-    roles:
-      - joplin
+    roles: ['joplin']
     scheme:
       - https
     forceHttpsRedirect: true
@@ -293,7 +294,7 @@ news:
     - link: www.textise.net/showText.aspx?strURL=
       description: Textise
     - link: /browser/browse?url=
-      description: Lokaler textbasierter Browser
+      description: RetroFit
 pois:
   zoom: 16
   tiles: 3

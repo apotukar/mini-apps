@@ -1,6 +1,6 @@
 <tr>
     <td>
-        <a class="fav" href="/departures/search?station={{ fav | urlencode }}">
+        <a class="fav" href="/departures/search?station={{ fav | urlencode }}&radius={{ radius | default(0.3) }}">
             {{ fav }}
         </a>
     </td>
