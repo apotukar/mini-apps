@@ -4,16 +4,9 @@ export class TransportService {
   constructor(getClientFn, config) {
     this._getClient = getClientFn;
 
-    const defaultDuration = 60;
-
     this.config = {
-      journey: {
-        duration: defaultDuration
-      },
       departures: {
-        duration: defaultDuration,
-        minResults: 5,
-        earlierOffset: defaultDuration * 60 * 1000,
+        earlierOffset: 60 * 60 * 1000,
         laterOffset: 0
       },
       ...config
@@ -81,7 +74,6 @@ export class TransportService {
 
     const departures = [];
     const seen = new Set();
-    const firstWhen = whenDate;
 
     const location = station.location ?? station;
     const center =
@@ -137,32 +129,14 @@ export class TransportService {
     );
     const selectedDepartures = departures.slice(0, maxResults);
 
-    const stationsStats = selectedDepartures.reduce((acc, station) => {
-      const id = station.stop.name;
-      if (!acc[id]) {
-        acc[id] = 0;
-      }
-      acc[id] += 1;
-
-      return acc;
-    }, {});
-
     return {
       departures: selectedDepartures,
-      usedWhen: firstWhen,
-      stationNames: Object.keys(stationsStats)
+      stationNames: [...new Set(selectedDepartures.map(departure => departure.stop.name))]
     };
   }
 
   async fetchJourneys(from, to, options) {
-    try {
-      const journeys = await this.client.journeys(from, to, options);
-      console.dir('journeys', journeys);
-      return journeys;
-    } catch (err) {
-      console.error(err.stack);
-      throw err;
-    }
+    return this.client.journeys(from, to, options);
   }
 
   #filterDeparturesByRadius(departures, center, radiusKm) {
@@ -278,12 +252,12 @@ export class TransportService {
     const firstLeg = legs[0];
     const lastLeg = legs[legs.length - 1];
 
-    const dep = new Date(firstLeg.departure);
-    const depPlanned = new Date(firstLeg.plannedDeparture);
+    const depPlanned = this.#parseTime(firstLeg.plannedDeparture);
+    const dep = this.#parseTime(firstLeg.departure) ?? depPlanned;
     const depDelayMin =
       firstLeg.departureDelay !== null ? Math.round(firstLeg.departureDelay / 60) : 0;
-    const arr = new Date(lastLeg.arrival);
-    const arrPlanned = new Date(lastLeg.plannedArrival);
+    const arrPlanned = this.#parseTime(lastLeg.plannedArrival);
+    const arr = this.#parseTime(lastLeg.arrival) ?? arrPlanned;
     const arrDelayMin =
       legs.length > 1
         ? lastLeg.arrivalDelay !== null
@@ -291,15 +265,15 @@ export class TransportService {
           : 0
         : null;
 
-    const durationMinutes = ((arr - dep) / 60000).toFixed(0);
+    const durationMinutes = dep && arr ? ((arr - dep) / 60000).toFixed(0) : null;
     const transfers = Math.max(0, legs.length - 1);
 
     const legsView = legs.map((leg, idx) => {
-      const dep = leg.departure ? new Date(leg.departure) : null;
-      const depPlanned = leg.plannedDeparture ? new Date(leg.plannedDeparture) : null;
+      const depPlanned = this.#parseTime(leg.plannedDeparture);
+      const dep = this.#parseTime(leg.departure) ?? depPlanned;
       const depDelayMin = leg.departureDelay !== null ? Math.round(leg.departureDelay / 60) : 0;
-      const arr = leg.arrival ? new Date(leg.arrival) : null;
-      const arrPlanned = leg.plannedArrival ? new Date(leg.plannedArrival) : null;
+      const arrPlanned = this.#parseTime(leg.plannedArrival);
+      const arr = this.#parseTime(leg.arrival) ?? arrPlanned;
       const arrDelayMin = leg.arrivalDelay !== null ? Math.round(leg.arrivalDelay / 60) : 0;
       const line = leg.line || {};
       const productKey = line.product || line.mode || '';
@@ -332,13 +306,13 @@ export class TransportService {
         loadFactor: leg.loadFactor || null,
 
         depTime: dep,
-        depPlannedTime: depPlanned,
+        depPlannedTime: depPlanned ?? dep,
         depDelayMin,
         depPlatform: leg.departurePlatform || null,
         depPlatformPlanned: leg.plannedDeparturePlatform || null,
 
         arrTime: arr,
-        arrPlannedTime: arrPlanned,
+        arrPlannedTime: arrPlanned ?? arr,
         arrDelayMin,
         arrPlatform: leg.arrivalPlatform || null,
         arrPlatformPlanned: leg.plannedArrivalPlatform || null,
@@ -351,16 +325,24 @@ export class TransportService {
 
     return {
       number: index + 1,
-      departure: dep ?? depPlanned,
+      departure: dep,
       plannedDeparture: depPlanned ?? dep,
       departureDelayMin: depDelayMin,
-      arrival: arr ?? arrPlanned,
+      arrival: arr,
       plannedArrival: arrPlanned ?? arr,
       arrivalDelayMin: arrDelayMin,
       duration: durationMinutes,
       transfers,
       legs: legsView
     };
+  }
+
+  #parseTime(value) {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? date : null;
   }
 
   #normalizeIfUpper(word) {

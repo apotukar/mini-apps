@@ -76,7 +76,7 @@ test('continues through empty windows but stops after six hours', async () => {
   assert.equal(calls[11].when.getTime(), start.getTime() + 330 * 60_000);
   assert.deepEqual(result.departures, [departure(31)]);
   assert.deepEqual(result.stationNames, ['Near']);
-  assert.equal(result.usedWhen.getTime(), start.getTime());
+  assert.equal(calls[0].when.getTime(), start.getTime());
 });
 
 test('ignores invalid times and uses planned times when realtime is absent', async () => {
