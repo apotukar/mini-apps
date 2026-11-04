@@ -37,7 +37,7 @@ export function registerDeparturesRoutes(app, params = {}) {
     if (configSaveNormalizedFavName) {
       const transportService = req.services.get('transportService');
       await transportService.init();
-      const station = await transportService.findStation(rawStationName);
+      const station = await transportService.findStation(rawStationName, { allowLocations: true });
       stationName = station.normalizedName;
     }
 
@@ -92,7 +92,7 @@ export function registerDeparturesRoutes(app, params = {}) {
 
         const transportService = req.services.get('transportService');
         await transportService.init();
-        const station = await transportService.findStation(inputName);
+        const station = await transportService.findStation(inputName, { allowLocations: true });
         const displayName = station.normalizedName || station.name || inputName;
         const { departures, stationNames } = await transportService.fetchDeparturesUntilFound(
           station,
@@ -118,6 +118,7 @@ export function registerDeparturesRoutes(app, params = {}) {
           title: route.title,
           headline: route.headline,
           stationCount: stationNames.length,
+          showStationNames: station.searchByCoordinates === true,
           ...view
         };
 

@@ -7,7 +7,7 @@
 {% block content %}
   <h2>
     {{ title }}
-    {% if stationCount > 1 %}
+    {% if showStationNames or stationCount > 1 %}
       <img src="/public/images/nearbyred.min.gif" alt="nahe bei" height="20" border="0" align="absmiddle">
     {% else %}
       <img src="/public/images/stationred.min.gif" alt="Haltestelle" height="20" border="0" align="absmiddle">
@@ -29,7 +29,7 @@
             {% else %}
               <b>{{ dep.actualTime | formatTime }}</b>
             {% endif %}
-            {% if stationCount > 1 %}
+            {% if showStationNames or stationCount > 1 %}
               <b><img src="/public/images/station.min.gif" alt="Haltestelle" height="10" border="0" align="absmiddle"> {{ dep.stationName }}</b>
             {% endif %}
             {% if dep.lineText or dep.direction %}<br>{% endif %}

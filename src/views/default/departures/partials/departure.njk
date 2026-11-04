@@ -8,7 +8,7 @@
         {{ dep.actualTime | formatTime }}
     {% endif %}
     </strong>
-    {% if stationCount > 1 %}
+    {% if showStationNames or stationCount > 1 %}
     <strong>
         {{ image("station.min", viewExt, { alt: "Haltestelle", class: 'icon-inline', height: 10, border: 0 })}}
         {{ dep.stationName }}

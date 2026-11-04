@@ -9,7 +9,7 @@
 {% block content %}
   <h2>
       {{title}}
-      {% if stationCount > 1 %}
+      {% if showStationNames or stationCount > 1 %}
       {{ image("nearbyred.min", viewExt, { alt: "nahe bei", class: 'icon-inline', height: 20, border: 0 })}}
       {% else %}
       {{ image("stationred.min", viewExt, { alt: "Haltestelle", class: 'icon-inline', height: 20, border: 0 })}}

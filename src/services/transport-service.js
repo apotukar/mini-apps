@@ -34,20 +34,32 @@ export class TransportService {
     }
   }
 
-  async findStation(name) {
-    const stations = await this.client.locations(name, { results: 1 });
+  async findStation(name, { allowLocations = false } = {}) {
+    const stations = await this.client.locations(name, {
+      results: 1,
+      stops: true,
+      addresses: allowLocations,
+      poi: allowLocations
+    });
     if (!stations || stations.length === 0) {
       throw new Error('Station nicht gefunden: ' + name);
     }
 
     const station = stations[0];
-    if (!station.id) {
+    const isLocation = allowLocations && station.type === 'location';
+    if (isLocation) {
+      const location = station.location ?? station;
+      if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) {
+        throw new Error('Ort hat keine gültigen Koordinaten: ' + name);
+      }
+    } else if (!station.id) {
       throw new Error('Station hat keine ID: ' + name);
     }
 
     return {
       ...station,
-      normalizedName: this.#normalizeIfUpper(station.name || '')
+      ...(isLocation ? { searchByCoordinates: true } : {}),
+      normalizedName: isLocation ? name : this.#normalizeIfUpper(station.name || '')
     };
   }
 
@@ -77,11 +89,21 @@ export class TransportService {
         ? { lat: location.latitude, lon: location.longitude }
         : null;
 
+    // Geocoder IDs for addresses and POIs are not transit stop IDs.
+    const useCoordinates = station.searchByCoordinates === true;
+    if (useCoordinates && !center) {
+      throw new Error('Ort hat keine gültigen Koordinaten');
+    }
+    const departureId = useCoordinates ? `${center.lat},${center.lon}` : station.id;
+    if (useCoordinates) {
+      baseOpts.center = departureId;
+    }
+
     while (remainingTries-- > 0 && departures.length < maxResults) {
       const windowStart = whenDate.getTime();
       const windowEnd = windowStart + windowMs;
       const opts = { ...baseOpts, when: whenDate };
-      const data = await this.client.departures(station.id, opts);
+      const data = await this.client.departures(departureId, opts);
       let batch = Array.isArray(data?.departures) ? data.departures : [];
 
       if (center) {
