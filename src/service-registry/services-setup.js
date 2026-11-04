@@ -171,7 +171,6 @@ servicesSetup.register(({ config, registry }) => {
     const dhlFetcher = trackingNumber =>
       dhlFetchShipment(trackingNumber, {
         apiKey: config.track.dhl.apiKey,
-        service: 'parcel-de',
         requesterCountryCode: 'DE',
         language: 'de'
       });

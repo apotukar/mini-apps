@@ -1,8 +1,18 @@
 const DHL_BASE_URL = 'https://api-eu.dhl.com/track/shipments';
 
+export class DhlApiError extends Error {
+  constructor(status, problem = {}) {
+    super(`DHL-API antwortete mit Status ${status}`);
+    this.name = 'DhlApiError';
+    this.status = status;
+    this.title = typeof problem?.title === 'string' ? problem.title : '';
+    this.detail = typeof problem?.detail === 'string' ? problem.detail : '';
+  }
+}
+
 export async function fetchShipment(
   trackingNumber,
-  { apiKey, service = 'parcel-de', requesterCountryCode = 'DE', language = 'de' } = {}
+  { apiKey, service, requesterCountryCode = 'DE', language = 'de' } = {}
 ) {
   if (!apiKey) {
     throw new Error('DHL API-Key fehlt.');
@@ -14,7 +24,9 @@ export async function fetchShipment(
 
   const url = new URL(DHL_BASE_URL);
   url.searchParams.set('trackingNumber', trackingNumber);
-  url.searchParams.set('service', service);
+  if (service) {
+    url.searchParams.set('service', service);
+  }
   url.searchParams.set('requesterCountryCode', requesterCountryCode);
   url.searchParams.set('language', language);
 
@@ -27,7 +39,13 @@ export async function fetchShipment(
   });
 
   if (!response.ok) {
-    throw new Error(`DHL-API antwortete mit Status ${response.status}`);
+    let problem;
+    try {
+      problem = await response.json();
+    } catch {
+      // Proxies and unavailable backends may return HTML or an empty body.
+    }
+    throw new DhlApiError(response.status, problem);
   }
 
   const data = await response.json();

@@ -1,3 +1,8 @@
+import { DhlApiError } from '../lib/tracking/dhl.js';
+
+const NO_SHIPMENT_DATA =
+  'Keine Sendungsdaten verfügbar. Bitte Nummer prüfen oder später erneut versuchen.';
+
 export function registerTrackRoutes(app, params) {
   const route = params.route;
 
@@ -26,7 +31,7 @@ export function registerTrackRoutes(app, params) {
       if (!shipment) {
         res.render(indexPage, {
           query,
-          error: 'Keine Sendung gefunden.',
+          error: NO_SHIPMENT_DATA,
           shipment: null,
           history: trackingNumbers
         });
@@ -46,7 +51,10 @@ export function registerTrackRoutes(app, params) {
 
       res.render(indexPage, {
         query,
-        error: 'Fehler beim Abruf der DHL-Daten.',
+        error:
+          error instanceof DhlApiError && error.status === 404
+            ? NO_SHIPMENT_DATA
+            : 'Fehler beim Abruf der DHL-Daten.',
         shipment: null,
         history: trackingNumbers
       });
