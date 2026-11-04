@@ -4,6 +4,35 @@ export function registerBrowserRoutes(app, params) {
   const route = params.route || {};
   const title = route.title;
 
+  function getColors(url) {
+    const colors = {
+      backgroundColor: '#f7f3e8',
+      textColor: '#292929',
+      linkColor: '#174a7e',
+      visitedColor: '#551a8b'
+    };
+    const configured = params.config?.colors || {};
+    let domainColors;
+    try {
+      const hostname = new URL(url).hostname.toLowerCase();
+      const match = Object.entries(configured.domains || {}).find(([domain]) => {
+        const normalizedDomain = domain.toLowerCase();
+        return hostname === normalizedDomain || hostname.endsWith('.' + normalizedDomain);
+      });
+      domainColors = match?.[1];
+    } catch {
+      // Empty or invalid URLs use the configured default colors.
+    }
+    for (const palette of [configured.defaults, domainColors]) {
+      for (const key of Object.keys(colors)) {
+        if (typeof palette?.[key] === 'string' && /^#[0-9a-f]{6}$/i.test(palette[key])) {
+          colors[key] = palette[key];
+        }
+      }
+    }
+    return { ...colors, fallbackColor: colors.backgroundColor };
+  }
+
   app.get('/browser/image', async (req, res) => {
     if (typeof req.query.url !== 'string' || req.query.url.length > 8192) {
       res.sendStatus(400);
@@ -26,7 +55,7 @@ export function registerBrowserRoutes(app, params) {
       title,
       navHtml: '',
       contentHtml: '',
-      fallbackColor: '#f7f3e8',
+      ...getColors(),
       fontFamily: 'Georgia, Times New Roman, Times, serif',
       fontSize: '16px'
     });
@@ -46,7 +75,7 @@ export function registerBrowserRoutes(app, params) {
         title: 'Suchmaschine blockiert',
         navHtml: '',
         contentHtml: '',
-        fallbackColor: '#f7f3e8',
+        ...getColors(),
         fontFamily: 'Georgia, Times New Roman, Times, serif',
         fontSize: '16px'
       });
@@ -61,7 +90,7 @@ export function registerBrowserRoutes(app, params) {
       title,
       navHtml,
       contentHtml,
-      fallbackColor: '#f7f3e8',
+      ...getColors(url),
       fontFamily: 'Georgia, Times New Roman, Times, serif',
       fontSize: '16px'
     });
@@ -82,7 +111,7 @@ export function registerBrowserRoutes(app, params) {
       title: 'Suche',
       navHtml: dummyNav,
       contentHtml: dummyContent,
-      fallbackColor: '#f7f3e8',
+      ...getColors(),
       fontFamily: 'Georgia, Times New Roman, Times, serif',
       fontSize: '16px'
     });

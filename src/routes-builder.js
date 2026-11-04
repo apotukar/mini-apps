@@ -89,6 +89,7 @@ export class RoutesBuilder {
     registerJoplinRoutes(app, { route: this.#findByNameMapped(this.config.routes, 'joplin') });
 
     registerBrowserRoutes(app, {
+      config: this.config.browser,
       route: this.#findByNameMapped(this.config.routes, 'browser')
     });
 

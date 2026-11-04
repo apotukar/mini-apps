@@ -287,7 +287,7 @@ news:
       priority: 10
       color: '#63b3e3'
   limit: 7
-  totalLimit: 84
+  totalLimit: 120
   browserProxies:
     - link: frogfind.com/read.php?a=
       description: Frogfind
@@ -381,6 +381,28 @@ tasks:
 browser:
   timeout: 120000
   waitUntil: domcontentloaded
+  colors:
+    defaults:
+      backgroundColor: '#f7f3e8'
+      textColor: '#292929'
+      linkColor: '#174a7e'
+      visitedColor: '#551a8b'
+    domains:
+      sechzger.de:
+        backgroundColor: '#dcebf8'
+        textColor: '#293440'
+        linkColor: '#264c75'
+        visitedColor: '#635578'
+      jungewelt.de:
+        backgroundColor: '#f4e9e6'
+        textColor: '#3b302e'
+        linkColor: '#8a3c40'
+        visitedColor: '#73556b'
+      tagesschau.de:
+        backgroundColor: '#004b76'
+        textColor: '#ffffff'
+        linkColor: '#ffffff'
+        visitedColor: '#d9e8ff'
 bookmarks:
   - title: FrogFind!
     url: http://frogfind.com

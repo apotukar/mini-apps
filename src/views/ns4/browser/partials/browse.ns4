@@ -6,7 +6,7 @@
       <b>{{ title | escape }}</b><br>
       <small>
         {% if hasUrl %}
-          Original: {{ url | escape }}
+          Original: <a href="{{ url | escape }}">{{ url | escape }}</a>
         {% else %}
           Bitte gib eine URL ein.
         {% endif %}
@@ -19,7 +19,7 @@
   {% if hasUrl %}
   <tr>
     <td class="browser-navigation" width="180" valign="top" bgcolor="{{ navBg }}" style="border-right: 1px solid #cccccc;">
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="{{ navigationLegacySize }}">
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="{{ navigationLegacySize }}" color="{{ textColor or '#292929' }}">
       <b>Navigation</b>
       <hr>
       {% if navHtml %}
@@ -32,7 +32,7 @@
 
     <td valign="top" align="center">
       <table width="100%" cellpadding="4" cellspacing="0" border="0" style="max-width: 850px;">
-        <tr><td valign="top" align="left"><font face="{{ fontFamily }}" size="{{ contentLegacySize }}">{{ contentHtml | safe }}</font></td></tr>
+        <tr><td valign="top" align="left" bgcolor="{{ fallbackColor }}"><font face="{{ fontFamily }}" size="{{ contentLegacySize }}" color="{{ textColor or '#292929' }}">{{ contentHtml | safe }}</font></td></tr>
       </table>
     </td>
   </tr>

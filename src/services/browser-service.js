@@ -81,6 +81,8 @@ export class BrowserService {
 
   // full simplification pipeline: preprocess → detect structure → normalize → render
   #simplifyHtml(html, url, localUrl) {
+    // Sanitizing the page body removes the document's <title> element.
+    const title = this.#extractTitle(cheerio.load(html), url);
     const windowForPurify = new JSDOM('').window;
     const domPurify = createDOMPurify(windowForPurify);
     const cleanHtml = domPurify.sanitize(html);
@@ -90,8 +92,7 @@ export class BrowserService {
     this.domPreprocessor.absolutizeUrls($, url);
     this.domPreprocessor.removeUnwanted($);
 
-    // extract document title and detect navigation/content blocks
-    const title = this.#extractTitle($, url);
+    // detect navigation/content blocks
     const { navRoots } = this.contentAndStructureDetector.detectNavAndContent($);
 
     // Collect menu links independently of the original site's layout.

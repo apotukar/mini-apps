@@ -9,8 +9,8 @@
 
   <style type="text/css">
     body, td {
-     background-color: #f7f3e8;
-     color: #292929;
+     background-color: {{ fallbackColor }};
+     color: {{ textColor or '#292929' }};
      font-size: {{ '20px' if isNS4 else fontSize }};
      font-family: {{ fontFamily }};
     }
@@ -41,8 +41,8 @@
   </style>
 </head>
 
-<body bgcolor="#f7f3e8" text="#292929" link="#174a7e" vlink="#551a8b" alink="#ff0000">
-<font face="{{ fontFamily }}" size="{{ contentLegacySize }}">
+<body bgcolor="{{ fallbackColor }}" text="{{ textColor or '#292929' }}" link="{{ linkColor or '#174a7e' }}" vlink="{{ visitedColor or '#551a8b' }}" alink="#ff0000">
+<font face="{{ fontFamily }}" size="{{ contentLegacySize }}" color="{{ textColor or '#292929' }}">
 
 {# ------------------------- Toolbar ------------------------- #}
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
