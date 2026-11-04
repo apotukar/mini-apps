@@ -64,6 +64,14 @@
 
 ## Prüfungen und Abschluss
 
+- Projektweite automatische Korrekturen bei entsprechendem Auftrag nacheinander ausführen:
+
+  ```sh
+  npm run lint:fix
+  npm run format
+  ```
+
+- `npm run format` formatiert JavaScript, CSS, JSON und Shell-Skripte. Für den Shell-Schritt muss `shfmt` verfügbar sein; fehlt es, den nicht ausgeführten Schritt melden.
 - `npm test`: alle Tests unter `tests/*.test.js` ausführen.
 - Für geänderte JavaScript-Dateien gezielt ESLint und Prettier prüfen, beispielsweise:
 
