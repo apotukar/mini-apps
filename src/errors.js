@@ -32,6 +32,7 @@ export class OAuthReauthRequiredError extends AppError {
     const label = providerLabel ?? provider.charAt(0).toUpperCase() + provider.slice(1);
 
     const messages = {
+      missing_tokens: `Your ${label} account is not connected. Please connect your account.`,
       expired_or_revoked: `Your ${label} authorization has expired or was revoked. Please reconnect your account.`,
       missing_refresh_token: `Your ${label} authorization is incomplete. Please reconnect your account.`,
       unknown: `Your ${label} authorization is no longer valid. Please reconnect your account.`

@@ -9,6 +9,7 @@ import { registerJoplinRoutes } from './routes/joplin.js';
 import { registerBrowserRoutes } from './routes/browser.js';
 import { registerTrackRoutes } from './routes/track.js';
 import { registerAuthRoutes } from './routes/auth.js';
+import { registerGoogleAuthRoutes } from './routes/google-auth.js';
 
 import { createObservables } from './events/create-observables.js';
 
@@ -61,6 +62,13 @@ export class RoutesBuilder {
     registerTaskRoutes(app, {
       config: { authTokenKey: this.config.authTokenKey, ...this.config.tasks },
       route: this.#findByNameMapped(this.config.routes, 'tasks')
+    });
+
+    registerGoogleAuthRoutes(app, {
+      redirectUri:
+        this.config.tasks.redirectUri ||
+        `https://localhost:${this.config.httpsPort}/oauth2callback`,
+      roles: this.config.routes.find(route => route.name === 'tasks')?.roles || []
     });
 
     registerNewsRoutes(app, {

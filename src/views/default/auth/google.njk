@@ -1,0 +1,28 @@
+{% extends "layout.njk" %}
+{% set style = "common" %}
+{% block title %}Google verbinden{% endblock %}
+{% block content %}
+  {% if isNS4 %}
+  <table width="560" align="center" border="0" cellpadding="6" cellspacing="0"><tr><td align="left">
+  {% endif %}
+  <h2>Google verbinden</h2>
+  {% if connected %}
+    <p>Google wurde erfolgreich verbunden. Du kannst dieses Fenster schließen.</p>
+    <p>Klicke im ursprünglichen Browser auf „Verbindung prüfen“, um deine Aufgaben zu laden.</p>
+  {% elif error %}
+    <p><strong>{{ error }}</strong></p>
+    <p><a href="/auth/google?restart=1">Neue Anmeldung starten</a></p>
+  {% else %}
+    <p>Für Google Tasks ist eine neue Google-Anmeldung erforderlich.</p>
+    <p>Scanne diesen QR-Code mit deinem Smartphone und bestätige den Zugriff bei Google.
+      Das Smartphone muss die Callback-Adresse dieses Servers über HTTPS erreichen können.</p>
+    <p><img src="/auth/google/qr.png" width="360" height="360" border="0" alt="QR-Code für die Google-Anmeldung"></p>
+    <p><a href="{{ authUrl }}">Google-Anmeldung in diesem Browser öffnen</a></p>
+    <p>Der QR-Code ist zehn Minuten gültig. Teile ihn nicht mit anderen Personen.</p>
+    <p><a href="/auth/google?restart=1">Neuen QR-Code anfordern</a></p>
+  {% endif %}
+  <p><a href="/tasks">Verbindung prüfen / Aufgaben öffnen</a></p>
+  {% if isNS4 %}
+  </td></tr></table>
+  {% endif %}
+{% endblock %}

@@ -7,9 +7,13 @@ export function logger() {
       const duration = Date.now() - start;
       const parts = req.path.split('/').filter(Boolean);
       const segment = parts[0] || '';
+      const loggedUrl =
+        req.query.code !== undefined || req.query.state !== undefined
+          ? `${req.path}?[redacted]`
+          : req.originalUrl;
 
       console.log(
-        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${req.originalUrl}` +
+        `[${humanTimestamp({ format: 'de' })}] ${req.method} ${loggedUrl}` +
           ` → ${res.statusCode} (${duration}ms)` +
           ` - SEG: ${segment} - UA: ${ua}`
       );

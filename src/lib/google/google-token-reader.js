@@ -40,10 +40,6 @@ export class GoogleTokenReader {
     const file = this.tokenFile(userId);
 
     try {
-      if (!fs.existsSync(file)) {
-        throw new Error(`Token file not found at: ${file}`);
-      }
-
       const raw = fs.readFileSync(file, 'utf8');
       const tokens = JSON.parse(raw);
 
@@ -56,7 +52,10 @@ export class GoogleTokenReader {
       }
 
       return tokens;
-    } catch {
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        throw new OAuthReauthRequiredError({ provider: 'google', reason: 'missing_tokens' });
+      }
       throw new AppError('Failed to read OAuth tokens.', 500, false);
     }
   }
@@ -74,7 +73,8 @@ export class GoogleTokenReader {
     }
 
     try {
-      fs.writeFileSync(file, JSON.stringify(toSave, null, 2), 'utf8');
+      fs.mkdirSync(this.tokensPath, { recursive: true });
+      fs.writeFileSync(file, JSON.stringify(toSave, null, 2), { encoding: 'utf8', mode: 0o600 });
       return file;
     } catch {
       throw new AppError('Failed to write OAuth tokens.', 500, false);
@@ -107,8 +107,6 @@ export class GoogleTokenReader {
     const data = await res.json();
 
     if (!res.ok || !data.access_token) {
-      console.warn('OAuth token refresh failed:', data);
-
       if (data.error === 'invalid_grant') {
         this.deleteTokens(userId);
         throw new OAuthReauthRequiredError({

@@ -374,6 +374,7 @@ track:
     label: DHL
     apiKey: ${DHL_API_KEY}
 tasks:
+  redirectUri: ${GOOGLE_REDIRECT_URL}
   clientId: ${GOOGLE_CLIENT_ID}
   clientSecret: ${GOOGLE_CLIENT_SECRET}
   tokensPath: data/gtokens

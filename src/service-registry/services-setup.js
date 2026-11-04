@@ -13,6 +13,7 @@ import { geocodePlace } from '../lib/geo/geocode.js';
 import { generateStaticMap } from '../lib/geo/map-generator.js';
 import { FavoritesManager } from '../lib/favs/favorites.js';
 import { GoogleTokenReader } from '../lib/google/google-token-reader.js';
+import { GoogleOAuth } from '../lib/google/google-oauth.js';
 import { TasksService } from '../services/tasks-service.js';
 import { fetchShipment as dhlFetchShipment } from '../lib/tracking/dhl.js';
 import { TrackService } from '../services/track-service.js';
@@ -163,6 +164,21 @@ servicesSetup.register(({ _, registry }) => {
   registry.registerSingleton(
     'tasksService',
     () => new TasksService(registry.resolve('googleTokenReader'))
+  );
+});
+
+servicesSetup.register(({ config, registry }) => {
+  registry.registerSingleton(
+    'googleOAuth',
+    () =>
+      new GoogleOAuth({
+        clientId: config.tasks.clientId,
+        clientSecret: config.tasks.clientSecret,
+        redirectUri:
+          config.tasks.redirectUri || `https://localhost:${config.httpsPort}/oauth2callback`,
+        redis: registry.resolve('redisManager').client,
+        tokenReader: registry.resolve('googleTokenReader')
+      })
   );
 });
 
