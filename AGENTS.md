@@ -12,14 +12,14 @@
 ## Ausführungsumgebung
 
 - Projektpfad: `/home/apotukar/Workdir/mini-apps`.
-- Befehle standardmäßig über SSH auf `jetson` im Compose-Service `node` ausführen. Beispiel:
+- `npm`- und `npx`-Befehle dürfen ohne erneute Rückfrage direkt im lokalen Projektverzeichnis ausgeführt werden, statt über SSH auf `jetson`. Das gilt insbesondere für Tests, ESLint und Prettier. Beispiel:
 
   ```sh
-  ssh jetson 'cd /home/apotukar/Workdir/mini-apps && docker compose exec -T node npm test'
+  npm run test
   ```
 
-- Wenn der Nutzer lokale Ausführung erlaubt oder ausdrücklich verlangt, Befehle direkt im lokalen Projektverzeichnis ausführen.
-- Ist `jetson` nicht erreichbar, den Fehler melden und nicht ungefragt auf eine andere Umgebung ausweichen.
+- Andere umgebungsabhängige Befehle standardmäßig über SSH auf `jetson` im Compose-Service `node` ausführen, sofern der Nutzer nichts anderes vorgibt.
+- Ist `jetson` nicht erreichbar, den Fehler melden und bei diesen Befehlen nicht ungefragt auf eine andere Umgebung ausweichen. Lokale `npm`- und `npx`-Prüfungen bleiben erlaubt.
 - Docker-Builds, Image-Pulls und Neustarts sind keine Voraussetzung für reine Quelltextänderungen. Vor Ausführung den Auftrag und mögliche Auswirkungen prüfen.
 
 ## Projektstruktur und Stil
